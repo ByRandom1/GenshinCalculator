@@ -63,7 +63,7 @@ int Deployment::init_check_data()
     bool valid;
     double prevalue[data_list.size()];
 
-    if (debug) outfile << (c_point->name + "--" + w_point->name + "--" + suit1->name + "--" + suit2->name + "--" + a_main3 + "--" + a_main4 + "--" + a_main5 + ",");
+    outfile_debug << (c_point->name + "--" + w_point->name + "--" + suit1->name + "--" + suit2->name + "--" + a_main3 + "--" + a_main4 + "--" + a_main5 + ",");
 
     Weapon::modify_useful_attribute(this);
     Artifact::modify_useful_attribute(this);
@@ -96,7 +96,7 @@ int Deployment::init_check_data()
         check_weapon_special(valid);
         if (!valid)
         {
-            if (debug) outfile << (w_point->name + "_failure\n");
+            outfile_debug << (w_point->name + "_failure\n");
             return 2;
         }
     }
@@ -123,11 +123,8 @@ int Deployment::init_check_data()
         check_artifact_special(valid);
         if (!valid)
         {
-            if (debug)
-            {
-                if (suit1 == suit2) outfile << (suit1->name + "_piece4_failure\n");
-                else outfile << (suit1->name + "_piece2_failure\n");
-            }
+            if (suit1 == suit2) outfile_debug << (suit1->name + "_piece4_failure\n");
+            else outfile_debug << (suit1->name + "_piece2_failure\n");
             return 3;
         }
     }
@@ -154,7 +151,7 @@ int Deployment::init_check_data()
             check_artifact_special(valid);
             if (!valid)
             {
-                if (debug) outfile << (suit2->name + "_piece2_failure\n");
+                outfile_debug << (suit2->name + "_piece2_failure\n");
                 return 3;
             }
         }
@@ -176,20 +173,20 @@ int Deployment::init_check_data()
         if ((a_main3 == "生命值" && !data_list[0]->useful) || (a_main3 == "攻击力" && !data_list[1]->useful) || (a_main3 == "防御力" && !data_list[2]->useful) ||
             (a_main3 == "元素精通" && !data_list[4]->useful) || (a_main3 == "元素充能效率" && !data_list[5]->useful))
         {
-            if (debug) outfile << (a_main3 + "_main3_failure\n");
+            outfile_debug << (a_main3 + "_main3_failure\n");
             return 4;
         }
         if ((a_main4 == "生命值" && !data_list[0]->useful) || (a_main4 == "攻击力" && !data_list[1]->useful) || (a_main4 == "防御力" && !data_list[2]->useful) ||
             (a_main4 == "元素精通" && !data_list[4]->useful) || (a_main4 == "伤害加成" && !data_list[8]->useful))
         {
-            if (debug) outfile << (a_main4 + "_main4_failure\n");
+            outfile_debug << (a_main4 + "_main4_failure\n");
             return 5;
         }
         if ((a_main5 == "生命值" && !data_list[0]->useful) || (a_main5 == "攻击力" && !data_list[1]->useful) || (a_main5 == "防御力" && !data_list[2]->useful) ||
             (a_main5 == "元素精通" && !data_list[4]->useful) || (a_main5 == "暴击率" && !data_list[6]->useful) || (a_main5 == "暴击伤害" && !data_list[7]->useful) ||
             (a_main5 == "治疗加成" && !data_list[12]->useful))
         {
-            if (debug) outfile << (a_main5 + "_main5_failure\n");
+            outfile_debug << (a_main5 + "_main5_failure\n");
             return 6;
         }
     }
@@ -200,11 +197,11 @@ int Deployment::init_check_data()
 
     if (!check_recharge_requirement())
     {
-        if (debug) outfile << ("recharge_failure\n");
+        outfile_debug << ("recharge_failure\n");
         return 1;
     }
 
-    if (debug) outfile << "\n";
+    outfile_debug << "\n";
 
     return 0;
 }
@@ -215,10 +212,10 @@ bool Deployment::add_percentage(string type_, double value_, string source)
         if (type_ == i->name)
         {
             i->percentage += value_;
-            if (debug) outfile << (source + "_" + type_ + "_" + to_string(value_) + ",");
+            outfile_debug << (source + "_" + type_ + "_" + to_string(value_) + ",");
             return true;
         }
-    if (debug) outfile << (source + "--" + type_ + "--" + to_string(value_) + "_failure" + ",");
+    outfile_debug << (source + "--" + type_ + "--" + to_string(value_) + "_failure" + ",");
     return false;
 }
 
@@ -392,4 +389,26 @@ void Deployment::cal_damage_entry_num()
     double defence_ratio = (c_level + 100) / (c_level + 100 + (1 - owndefencedec) * (1 - owndefenceign) * (enemy_level + 100));
 
     damage = damage * resistence_ratio * defence_ratio;
+}
+
+void Deployment::out()
+{
+    outfile_result << c_point->name << "," << config->condition->attack_way << "," << config->react_type << "," << (config->teammate_all + config->team_weapon_artifact)
+                   << "," << w_point->name << "," << suit1->name << "," << suit2->name << "," << a_main3 << "," << a_main4 << "," << a_main5 << "," << damage << ",";
+    outfile_result << base_life << "," << base_life * (data_list[0]->entry_num * data_list[0]->value_per_entry + data_list[0]->percentage - 1) << ",";
+    outfile_result << base_atk << "," << base_atk * (data_list[1]->entry_num * data_list[1]->value_per_entry + data_list[1]->percentage - 1) << ",";
+    outfile_result << base_def << "," << base_def * (data_list[2]->entry_num * data_list[2]->value_per_entry + data_list[2]->percentage - 1) << ",";
+    outfile_result << data_list[4]->entry_num * data_list[4]->value_per_entry + data_list[4]->percentage << ",";
+    outfile_result << data_list[5]->entry_num * data_list[5]->value_per_entry + data_list[5]->percentage << ",";
+    outfile_result << data_list[6]->entry_num * data_list[6]->value_per_entry + data_list[6]->percentage << ",";
+    outfile_result << data_list[7]->entry_num * data_list[7]->value_per_entry + data_list[7]->percentage << ",";
+    outfile_result << data_list[8]->percentage << ",";
+    outfile_result << data_list[9]->percentage << ",";
+    outfile_result << data_list[0]->entry_num << ",";
+    outfile_result << data_list[1]->entry_num << ",";
+    outfile_result << data_list[2]->entry_num << ",";
+    outfile_result << data_list[4]->entry_num << ",";
+    outfile_result << data_list[5]->entry_num << ",";
+    outfile_result << data_list[6]->entry_num << ",";
+    outfile_result << data_list[7]->entry_num << "\n";
 }

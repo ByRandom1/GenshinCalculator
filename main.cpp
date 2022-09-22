@@ -8,14 +8,67 @@
 #include "Deployment.h"
 
 using namespace std;
-vector<Character *> character_list;
-vector<Weapon *> weapon_list;
-vector<Artifact *> artifact_list;
-//parameters
-bool debug;
-string filter_type;
-ofstream outfile;
 //"生命值"-0 "攻击力"-1 "防御力"-2 "额外倍率"-3 "元素精通"-4 "元素充能效率"-5 "暴击率"-6 "暴击伤害"-7 "伤害加成"-8 "抗性削弱"-9 "防御削弱"-10 "防御无视"-11 "治疗加成"-12 "护盾强效"-13
+vector<Character *> character_list;
+
+Character *find_character_by_name(string c_name)
+{
+    for (auto &c: character_list)
+        if (c->name == c_name)
+            return c;
+    return nullptr;
+}
+
+vector<Weapon *> weapon_list;
+
+Weapon *find_weapon_by_name(string w_name)
+{
+    for (auto &w: weapon_list)
+        if (w->name == w_name)
+            return w;
+    return nullptr;
+}
+
+vector<Artifact *> artifact_list;
+
+Artifact *find_artifact_by_name(string a_name)
+{
+    for (auto &a: artifact_list)
+        if (a->name == a_name)
+            return a;
+    return nullptr;
+}
+
+string a_main3[5] = {"生命值", "攻击力", "防御力", "元素精通", "元素充能效率"};
+string a_main4[5] = {"生命值", "攻击力", "防御力", "元素精通", "伤害加成"};
+string a_main5[7] = {"生命值", "攻击力", "防御力", "元素精通", "暴击率", "暴击伤害", "治疗加成"};
+
+vector<vector<string>> pre_cal_data;
+
+void read_pre_cal_data(string filename)
+{
+    ifstream infile;
+    infile.open(filename);
+    string line;
+    getline(infile, line);
+    while (!infile.eof())
+    {
+        getline(infile, line);
+        vector<string> temp;
+        for (int i = 0; i < 11; ++i)
+        {
+            int pos = line.find(',');
+            if (pos != string::npos) temp.push_back(line.substr(0, pos));
+            line = line.substr(pos + 1);
+        }
+        pre_cal_data.push_back(temp);
+    }
+//    for (auto &i: pre_cal_data)
+//    {
+//        for (auto &j: i) cout << j << " ";
+//        cout << endl;
+//    }
+}
 
 class Character_special_arguments
 {
@@ -964,8 +1017,9 @@ bool Weapon::get_extra_special(Deployment *data) const
     else if (name == "曚云之月")
     {
         if (data->config->condition->attack_way == "Q")
-            data->add_percentage("伤害加成", min(334, data->c_point->Q_energy + data->config->teammate_1->Q_energy + data->config->teammate_2->Q_energy + data->config->teammate_3->Q_energy)
-                                             * 0.0012 * (0.75 + level * 0.25), (name + "_extra_special"));
+            data->add_percentage("伤害加成",
+                                 min(334, data->c_point->Q_energy + data->config->teammate_1->Q_energy + data->config->teammate_2->Q_energy + data->config->teammate_3->Q_energy)
+                                 * 0.0012 * (0.75 + level * 0.25), (name + "_extra_special"));
     }
     else if (name == "弓藏")
     {
@@ -1033,8 +1087,9 @@ bool Weapon::get_extra_special(Deployment *data) const
     else if (name == "恶王丸")
     {
         if (data->config->condition->attack_way == "Q")
-            data->add_percentage("伤害加成", min(334, data->c_point->Q_energy + data->config->teammate_1->Q_energy + data->config->teammate_2->Q_energy + data->config->teammate_3->Q_energy)
-                                             * 0.0012 * (0.75 + level * 0.25), (name + "_extra_special"));
+            data->add_percentage("伤害加成",
+                                 min(334, data->c_point->Q_energy + data->config->teammate_1->Q_energy + data->config->teammate_2->Q_energy + data->config->teammate_3->Q_energy)
+                                 * 0.0012 * (0.75 + level * 0.25), (name + "_extra_special"));
     }
     else if (name == "钟剑")
     {
@@ -1080,8 +1135,9 @@ bool Weapon::get_extra_special(Deployment *data) const
     else if (name == "断浪长鳍")
     {
         if (data->config->condition->attack_way == "Q")
-            data->add_percentage("伤害加成", min(334, data->c_point->Q_energy + data->config->teammate_1->Q_energy + data->config->teammate_2->Q_energy + data->config->teammate_3->Q_energy)
-                                             * 0.0012 * (0.75 + level * 0.25), (name + "_extra_special"));
+            data->add_percentage("伤害加成",
+                                 min(334, data->c_point->Q_energy + data->config->teammate_1->Q_energy + data->config->teammate_2->Q_energy + data->config->teammate_3->Q_energy)
+                                 * 0.0012 * (0.75 + level * 0.25), (name + "_extra_special"));
     }
     else if (name == "千岩长枪")
     {
@@ -1279,7 +1335,8 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
     }
     else if (if_4_piece && name == "逆飞的流星")
     {
-        if (data->c_point->args->shield_sustain || data->config->teammate_1->args->shield_sustain || data->config->teammate_2->args->shield_sustain || data->config->teammate_3->args->shield_sustain)
+        if (data->c_point->args->shield_sustain || data->config->teammate_1->args->shield_sustain || data->config->teammate_2->args->shield_sustain ||
+            data->config->teammate_3->args->shield_sustain)
             if (data->config->condition->attack_way == "平A" || data->config->condition->attack_way == "重A")
                 data->add_percentage("伤害加成", 0.4, (name + "_extra_special"));
     }
@@ -1593,9 +1650,7 @@ void Deployment::get_team_data()
     if (config->teammate_all.find("枫原万叶") != string::npos)
     {
         //talent 扩散
-        if (config->condition->ele_type == "水" || config->condition->ele_type == "火" || config->condition->ele_type == "雷" || config->condition->ele_type == "冰")
-            //if (config->ele_attach_type.find(config->condition->ele_type) != string::npos)//TODO:扩散与元素附着
-            add_percentage("伤害加成", 0.36, "team_枫原万叶");
+        //扩散增伤由于是转化的，放在get_convert里避免二阶转化
         //constellation>=2 Q后
 //        if (back_character.find(c_point->name) == string::npos)
 //            add_percentage("元素精通", 200.0, "team_枫原万叶");
@@ -1837,74 +1892,89 @@ bool Deployment::check_recharge_requirement()
 //build new character(needed)||build new weapon(all)||build new artifact(all)
 void Deployment::get_convert_value(double &life, double &atk, double &def, double &mastery, double &recharge, double &critrate, double &critdam, double &damplus)
 {
-    //生命->攻击/精通 充能->增伤/攻击 精通->增伤/充能/攻击
+    //按传入面板计算转化，最后再执行加成
+    double life_add = 0, atk_add = 0, def_add = 0, mastery_add = 0, recharge_add = 0, critrate_add = 0, critdam_add = 0, damplus_add = 0;
+    //character
+    if (c_point->name == "胡桃")//生命->攻击
+        atk_add += min(life * 0.0626 * base_life / base_atk, 4.0);
+    else if (c_point->name == "雷电将军" && config->condition->ele_type == "雷")//充能->增伤
+        damplus_add += (recharge - 1) * 0.4;
+    else if (c_point->name == "八重神子" && config->condition->attack_way == "E")//精通->E增伤
+        damplus_add += mastery * 0.0015;
+    else if (c_point->name == "莫娜" && config->condition->ele_type == "水")//充能->增伤
+        damplus_add += recharge * 0.2;
+
     //weapon
     if (w_point->name == "磐岩结绿")//生命->攻击
-        atk += life * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk;//生命->攻击
-        // TODO:NEW 出现重复转化但不冲突
+        atk_add += life * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk;//生命->攻击
     else if (w_point->name == "圣显之钥")//生命->精通
     {
         if (c_point->args->E_hit_interval < 10 && c_point->args->E_hit_interval > 0)
         {
-            mastery += life * 0.0012 * 3 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
-            mastery += life * 0.002 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
+            mastery_add += life * 0.0012 * 3 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
+            mastery_add += life * 0.002 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
         }
         else if (c_point->args->E_hit_interval < 20 && c_point->args->E_hit_interval > 0)
         {
-            mastery += life * 0.0012 * 2 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
+            mastery_add += life * 0.0012 * 2 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
         }
         else if (c_point->args->E_hit_interval > 0)
         {
-            mastery += life * 0.0012 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
+            mastery_add += life * 0.0012 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
         }
     }
-        // TODO:NEW 出现重复转化
+        // TODO:NEW
     else if (w_point->name == "西福斯的月光")//精通->充能
-        recharge += mastery * 0.00036 * (0.75 + w_point->level * 0.25);//精通->充能
+        recharge_add += mastery * 0.00036 * (0.75 + w_point->level * 0.25);//精通->充能
         // TODO:NEW
     else if (w_point->name == "流浪的晚星")//精通->攻击
-        atk += mastery * 0.24 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
+        atk_add += mastery * 0.24 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
         // TODO:NEW
     else if (w_point->name == "玛海菈的水色")//精通->攻击
-        atk += mastery * 0.24 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
+        atk_add += mastery * 0.24 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
     else if (w_point->name == "护摩之杖")//生命->攻击
     {
-        atk += life * 0.008 * (0.75 + w_point->level * 0.25) * base_life / base_atk;//生命->攻击
+        atk_add += life * 0.008 * (0.75 + w_point->level * 0.25) * base_life / base_atk;//生命->攻击
         if (c_point->args->polearm_humo_halflife)
-            atk += life * (0.008 + w_point->level * 0.002) * base_life / base_atk;//生命->攻击
+            atk_add += life * (0.008 + w_point->level * 0.002) * base_life / base_atk;//生命->攻击
     }
     else if (w_point->name == "薙草之稻光")//充能->攻击
-        atk += min((recharge - 1) * (0.75 + w_point->level * 0.25) * 0.28, (0.7 + w_point->level * 0.1));
+        atk_add += min((recharge - 1) * (0.75 + w_point->level * 0.25) * 0.28, (0.7 + w_point->level * 0.1));
         //TODO:NEW
     else if (w_point->name == "赤沙之杖")//精通->攻击
     {
-        atk += mastery * 0.52 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
+        atk_add += mastery * 0.52 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
         if (c_point->args->E_hit_interval < 5 && c_point->args->E_hit_interval > 0)
         {
-            atk += mastery * 0.28 * 3 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
+            atk_add += mastery * 0.28 * 3 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
         }
         else if (c_point->args->E_hit_interval < 10 && c_point->args->E_hit_interval > 0)
         {
-            atk += mastery * 0.28 * 2 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
+            atk_add += mastery * 0.28 * 2 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
         }
         else if (c_point->args->E_hit_interval > 0)
         {
-            atk += mastery * 0.28 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
+            atk_add += mastery * 0.28 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
         }
     }
 
     //artifact
     if (suit1->name == "绝缘之旗印" && suit2->name == "绝缘之旗印" && config->condition->attack_way == "Q")//充能->增伤
-        damplus += min(recharge * 0.25, 0.75);
-    //character
-    if (c_point->name == "胡桃")//生命->攻击
-        atk += min(life * 0.0626 * base_life / base_atk, 4.0);
-    else if (c_point->name == "雷电将军" && config->condition->ele_type == "雷")//充能->增伤
-        damplus += (recharge - 1) * 0.4;
-    else if (c_point->name == "八重神子" && config->condition->attack_way == "E")//精通->E增伤
-        damplus += mastery * 0.0015;
-    else if (c_point->name == "莫娜" && config->condition->ele_type == "水")//充能->增伤
-        damplus += recharge * 0.2;
+        damplus_add += min(recharge * 0.25, 0.75);
+
+    //team
+    if (config->condition->ele_type == "水" || config->condition->ele_type == "火" || config->condition->ele_type == "雷" || config->condition->ele_type == "冰")
+        //if (config->ele_attach_type.find(config->condition->ele_type) != string::npos)//TODO:扩散与元素附着
+        add_percentage("伤害加成", 0.36, "team_枫原万叶");
+
+    life += life_add;
+    atk += atk_add;
+    def += def_add;
+    mastery += mastery_add;
+    recharge += recharge_add;
+    critrate += critrate_add;
+    critdam += critdam_add;
+    damplus += damplus_add;
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
@@ -2015,6 +2085,13 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
     }
 }
 
+//parameters
+string filter_type;
+ofstream outfile_result;
+ofstream outfile_debug;
+
+#define topk 3
+
 //加快计算速度
 void Deployment::modify_useful_attribute()
 {
@@ -2051,14 +2128,7 @@ string Deployment::check_disabled_combinations()
     else return "none";
 }
 
-Character *find_character_by_name(string c_name)
-{
-    for (auto &c: character_list)
-        if (c->name == c_name)
-            return c;
-    return nullptr;
-}
-
+//配置编写
 void get_all_config(string c_name, vector<Config *> &config_list)
 {
     //"终末_讨龙"
@@ -2243,6 +2313,79 @@ void get_all_config(string c_name, vector<Config *> &config_list)
     }
 }
 
+void get_certain_combination(string c_name, vector<vector<string>> &combination_list)
+{
+    if (c_name == "行秋")
+    {
+        vector<string> temp1;
+        temp1.emplace_back("祭礼剑");
+        temp1.emplace_back("沉沦之心");
+        temp1.emplace_back("昔日宗室之仪");
+        temp1.emplace_back("攻击力");
+        temp1.emplace_back("伤害加成");
+        temp1.emplace_back("暴击率");
+        combination_list.push_back(temp1);
+
+        vector<string> temp2;
+        temp2.emplace_back("祭礼剑");
+        temp2.emplace_back("绝缘之旗印");
+        temp2.emplace_back("绝缘之旗印");
+        temp2.emplace_back("攻击力");
+        temp2.emplace_back("伤害加成");
+        temp2.emplace_back("暴击率");
+        combination_list.push_back(temp2);
+    }
+    if (c_name == "香菱")
+    {
+        vector<string> temp1;
+        temp1.emplace_back("断浪长鳍");
+        temp1.emplace_back("流浪大地的乐团");
+        temp1.emplace_back("昔日宗室之仪");
+        temp1.emplace_back("元素充能效率");
+        temp1.emplace_back("伤害加成");
+        temp1.emplace_back("暴击率");
+        combination_list.push_back(temp1);
+
+        vector<string> temp2;
+        temp2.emplace_back("断浪长鳍");
+        temp2.emplace_back("炽烈的炎之魔女");
+        temp2.emplace_back("炽烈的炎之魔女");
+        temp2.emplace_back("元素充能效率");
+        temp2.emplace_back("伤害加成");
+        temp2.emplace_back("暴击率");
+        combination_list.push_back(temp2);
+
+        vector<string> temp3;
+        temp3.emplace_back("断浪长鳍");
+        temp3.emplace_back("绝缘之旗印");
+        temp3.emplace_back("绝缘之旗印");
+        temp3.emplace_back("元素充能效率");
+        temp3.emplace_back("伤害加成");
+        temp3.emplace_back("暴击率");
+        combination_list.push_back(temp3);
+    }
+    if (c_name == "八重神子")
+    {
+        vector<string> temp1;
+        temp1.emplace_back("流浪乐章");
+        temp1.emplace_back("追忆之注连");
+        temp1.emplace_back("角斗士的终幕礼");
+        temp1.emplace_back("攻击力");
+        temp1.emplace_back("伤害加成");
+        temp1.emplace_back("暴击率");
+        combination_list.push_back(temp1);
+
+        vector<string> temp2;
+        temp2.emplace_back("流浪乐章");
+        temp2.emplace_back("如雷的盛怒");
+        temp2.emplace_back("角斗士的终幕礼");
+        temp2.emplace_back("攻击力");
+        temp2.emplace_back("伤害加成");
+        temp2.emplace_back("暴击率");
+        combination_list.push_back(temp2);
+    }
+}
+
 struct cmp
 {
     bool operator()(Deployment *a, Deployment *b)
@@ -2252,39 +2395,36 @@ struct cmp
     }
 };
 
-void cal_all_deployment(int topk)
+void cal_all_deployment(string mode)
 {
     vector<Config *> config_list;
-    priority_queue<Deployment *, vector<Deployment *>, cmp> c_w_pair;
-    string a_main3[5] = {"生命值", "攻击力", "防御力", "元素精通", "元素充能效率"};
-    string a_main4[5] = {"生命值", "攻击力", "防御力", "元素精通", "伤害加成"};
-    string a_main5[7] = {"生命值", "攻击力", "防御力", "元素精通", "暴击率", "暴击伤害", "治疗加成"};
     for (auto &c_index: character_list)
     {
         get_all_config(c_index->name, config_list);
         for (auto &conf_index: config_list)
         {
-            for (auto &w_index: weapon_list)
+            if (mode == "cal_all")
             {
-                if (c_index->weapon_type != w_index->weapon_type) continue;
+                priority_queue<Deployment *, vector<Deployment *>, cmp> c_w_pair;
+                for (auto &w_index: weapon_list)
+                {
+                    if (c_index->weapon_type != w_index->weapon_type) continue;
 
-                clock_t start = clock();
+                    clock_t start = clock();
 
-                for (int a_index1 = 0; a_index1 < artifact_list.size(); a_index1++)
-                    for (int a_index2 = a_index1; a_index2 < artifact_list.size(); a_index2++)
-                    {
-                        for (int main3_index = 0; main3_index < 5; main3_index++)
+                    for (int a_index1 = 0; a_index1 < artifact_list.size(); a_index1++)
+                        for (int a_index2 = a_index1; a_index2 < artifact_list.size(); a_index2++)
                         {
-                            for (int main4_index = (main3_index == 4) ? 0 : main3_index; main4_index < 5; main4_index++)
+                            for (int main3_index = 0; main3_index < 5; main3_index++)
                             {
-                                for (int main5_index = (main4_index == 4) ? ((main3_index == 4) ? 0 : main3_index) : main4_index; main5_index < 7; main5_index++)
+                                for (int main4_index = (main3_index == 4) ? 0 : main3_index; main4_index < 5; main4_index++)
                                 {
-                                    auto *temp = new Deployment(c_index, w_index, artifact_list[a_index1], artifact_list[a_index2],
-                                                                a_main3[main3_index], a_main4[main4_index], a_main5[main5_index], conf_index);
-                                    int check_num = temp->init_check_data();
-                                    if (check_num == 0)//pass
+                                    for (int main5_index = (main4_index == 4) ? ((main3_index == 4) ? 0 : main3_index) : main4_index; main5_index < 7; main5_index++)
                                     {
-                                        if (!debug)
+                                        auto *temp = new Deployment(c_index, w_index, artifact_list[a_index1], artifact_list[a_index2],
+                                                                    a_main3[main3_index], a_main4[main4_index], a_main5[main5_index], conf_index);
+                                        int check_num = temp->init_check_data();
+                                        if (check_num == 0)//pass
                                         {
                                             temp->cal_damage_entry_num();
                                             if (c_w_pair.size() < topk) c_w_pair.push(temp);
@@ -2297,188 +2437,88 @@ void cal_all_deployment(int topk)
                                             }
                                             else delete temp;
                                         }
-                                        else delete temp;
+                                        else if (check_num == 1)//error:special_restriction(character_restriction,recharge_failure)
+                                        {
+                                            delete temp;
+                                        }
+                                        else if (check_num == 2)//error:weapon
+                                        {
+                                            delete temp;
+                                            goto NEXTWEAPON;
+                                        }
+                                        else if (check_num == 3)//error:suit1 or suit2
+                                        {
+                                            delete temp;
+                                            goto NEXTARTIFACT;
+                                        }
+                                        else if (check_num == 4)//error:main3
+                                        {
+                                            delete temp;
+                                            goto NEXTMAIN3;
+                                        }
+                                        else if (check_num == 5)//error:main4
+                                        {
+                                            delete temp;
+                                            goto NEXTMAIN4;
+                                        }
+                                        else if (check_num == 6)//error:main5
+                                        {
+                                            delete temp;
+                                            goto NEXTMAIN5;
+                                        }
+                                        NEXTMAIN5:;
                                     }
-                                    else if (check_num == 1)//error:special_restriction(character_restriction,recharge_failure)
-                                    {
-                                        delete temp;
-                                    }
-                                    else if (check_num == 2)//error:weapon
-                                    {
-                                        delete temp;
-                                        goto NEXTWEAPON;
-                                    }
-                                    else if (check_num == 3)//error:suit1 or suit2
-                                    {
-                                        delete temp;
-                                        goto NEXTARTIFACT;
-                                    }
-                                    else if (check_num == 4)//error:main3
-                                    {
-                                        delete temp;
-                                        goto NEXTMAIN3;
-                                    }
-                                    else if (check_num == 5)//error:main4
-                                    {
-                                        delete temp;
-                                        goto NEXTMAIN4;
-                                    }
-                                    else if (check_num == 6)//error:main5
-                                    {
-                                        delete temp;
-                                        goto NEXTMAIN5;
-                                    }
-                                    NEXTMAIN5:;
+                                    NEXTMAIN4:;
                                 }
-                                NEXTMAIN4:;
+                                NEXTMAIN3:;
                             }
-                            NEXTMAIN3:;
+                            NEXTARTIFACT:;
                         }
-                        NEXTARTIFACT:;
+                    NEXTWEAPON:;
+
+                    clock_t end = clock();
+
+                    while (!c_w_pair.empty())
+                    {
+                        Deployment *c_w = c_w_pair.top();
+                        c_w_pair.pop();
+                        c_w->out();
+                        delete c_w;
                     }
-                NEXTWEAPON:;
-
-                clock_t end = clock();
-
-                while (!c_w_pair.empty())
-                {
-                    Deployment *c_w = c_w_pair.top();
-                    c_w_pair.pop();
-                    c_w->out();
-                    delete c_w;
+                    cout << c_index->name << " " << conf_index->condition->attack_way << " " << conf_index->react_type << " " << conf_index->teammate_all << " " << conf_index->team_weapon_artifact << " " << w_index->name
+                         << " time=" << (double) (end - start) / CLOCKS_PER_SEC << "s" << "\n";
                 }
-                cout << c_index->name << " " << conf_index->condition->attack_way << " " << conf_index->react_type << " " << conf_index->teammate_all << " " << conf_index->team_weapon_artifact << " "
-                     << w_index->name
-                     << " time=" << (double) (end - start) / CLOCKS_PER_SEC << "s" << "\n";
             }
-            NEXTCONFIG:;
+            else if (mode == "cal_update")
+            {
+
+            }
+            else if (mode == "cal_certain")
+            {
+                vector<vector<string>> combination_list;
+                get_certain_combination(c_index->name, combination_list);
+                for (auto & i : combination_list)
+                {
+                    Weapon *w_point = find_weapon_by_name(i[0]);
+                    Artifact *suit1 = find_artifact_by_name(i[1]);
+                    Artifact *suit2 = find_artifact_by_name(i[2]);
+                    if (w_point != nullptr && suit1 != nullptr && suit2 != nullptr)
+                    {
+                        auto *temp = new Deployment(c_index, w_point, suit1, suit2, i[3], i[4], i[5], conf_index);
+                        int check_num = temp->init_check_data();
+                        if (check_num == 0)
+                        {
+                            temp->cal_damage_entry_num();
+                            temp->out();
+                        }
+                        else cout << check_num << endl;
+                        delete temp;
+                    }
+                }
+            }
         }
-        NEXTCHARACTER:;
         config_list.clear();
     }
-}
-
-bool generate_and_cal_certain_deployment(string c_name, string w_name, string a_name1, string a_name2, string main1, string main2, string main3, Config *config)
-{
-    Character *c_point = nullptr;
-    for (auto &i: character_list)
-        if (i->name == c_name)
-            c_point = i;
-
-    Weapon *w_point = nullptr;
-    for (auto &i: weapon_list)
-        if (i->name == w_name)
-            w_point = i;
-
-    Artifact *suit1 = nullptr;
-    for (auto &i: artifact_list)
-        if (i->name == a_name1)
-            suit1 = i;
-
-    Artifact *suit2 = nullptr;
-    for (auto &i: artifact_list)
-        if (i->name == a_name2)
-            suit2 = i;
-
-    if (c_point != nullptr && w_point != nullptr && suit1 != nullptr && suit2 != nullptr)
-    {
-        auto *temp = new Deployment(c_point, w_point, suit1, suit2, main1, main2, main3, config);
-        int check_num = temp->init_check_data();
-        if (!debug && check_num == 0)
-        {
-            temp->cal_damage_entry_num();
-            temp->out();
-        }
-        else if (!debug) cout << check_num << endl;
-        delete temp;
-        return true;
-    }
-    return false;
-}
-
-void cal_certain_deployment()
-{
-    vector<Config *> config_list;
-
-    get_all_config("行秋", config_list);
-    for (auto &i: config_list)
-    {
-        generate_and_cal_certain_deployment("行秋", "祭礼剑", "沉沦之心", "昔日宗室之仪", "攻击力", "伤害加成", "暴击率", i);
-        generate_and_cal_certain_deployment("行秋", "祭礼剑", "绝缘之旗印", "绝缘之旗印", "攻击力", "伤害加成", "暴击率", i);
-    }
-    config_list.clear();
-
-    get_all_config("香菱", config_list);
-    for (auto &i: config_list)
-    {
-        generate_and_cal_certain_deployment("香菱", "断浪长鳍", "流浪大地的乐团", "昔日宗室之仪", "元素充能效率", "伤害加成", "暴击率", i);
-        generate_and_cal_certain_deployment("香菱", "断浪长鳍", "炽烈的炎之魔女", "昔日宗室之仪", "元素充能效率", "伤害加成", "暴击率", i);
-        generate_and_cal_certain_deployment("香菱", "断浪长鳍", "绝缘之旗印", "绝缘之旗印", "元素充能效率", "伤害加成", "暴击率", i);
-    }
-    config_list.clear();
-
-    get_all_config("八重神子", config_list);
-    for (auto &i: config_list)
-    {
-        generate_and_cal_certain_deployment("八重神子", "流浪乐章", "追忆之注连", "角斗士的终幕礼", "攻击力", "伤害加成", "暴击率", i);
-        generate_and_cal_certain_deployment("八重神子", "流浪乐章", "如雷的盛怒", "角斗士的终幕礼", "攻击力", "伤害加成", "暴击率", i);
-    }
-    config_list.clear();
-}
-
-//TODO:角色、武器、圣遗物增量更新
-vector<vector<string>> pre_cal_data;
-
-void read_pre_cal_data(string filename)
-{
-    ifstream infile;
-    infile.open(filename);
-    string line;
-    getline(infile, line);
-    while (!infile.eof())
-    {
-        getline(infile, line);
-        vector<string> temp;
-        for (int i = 0; i < 11; ++i)
-        {
-            int pos = line.find(",");
-            if (pos != string::npos) temp.push_back(line.substr(0, pos));
-            line = line.substr(pos + 1);
-        }
-        pre_cal_data.push_back(temp);
-    }
-//    for (auto &i: pre_cal_data)
-//    {
-//        for (auto &j: i) cout << j << " ";
-//        cout << endl;
-//    }
-}
-
-void cal_update_deployment(int topk, int update_type)
-{
-    cout << topk << " " << update_type << endl;
-}
-
-void Deployment::out()
-{
-    outfile << c_point->name << "," << config->condition->attack_way << "," << config->react_type << "," << (config->teammate_all + config->team_weapon_artifact)
-            << "," << w_point->name << "," << suit1->name << "," << suit2->name << "," << a_main3 << "," << a_main4 << "," << a_main5 << "," << damage << "," << ",";
-    outfile << base_life << "," << base_life * (data_list[0]->entry_num * data_list[0]->value_per_entry + data_list[0]->percentage - 1) << ",";
-    outfile << base_atk << "," << base_atk * (data_list[1]->entry_num * data_list[1]->value_per_entry + data_list[1]->percentage - 1) << ",";
-    outfile << base_def << "," << base_def * (data_list[2]->entry_num * data_list[2]->value_per_entry + data_list[2]->percentage - 1) << ",";
-    outfile << data_list[4]->entry_num * data_list[4]->value_per_entry + data_list[4]->percentage << ",";
-    outfile << data_list[5]->entry_num * data_list[5]->value_per_entry + data_list[5]->percentage << ",";
-    outfile << data_list[6]->entry_num * data_list[6]->value_per_entry + data_list[6]->percentage << ",";
-    outfile << data_list[7]->entry_num * data_list[7]->value_per_entry + data_list[7]->percentage << ",";
-    outfile << data_list[8]->percentage << ",";
-    outfile << data_list[9]->percentage << ",";
-    outfile << data_list[0]->entry_num << ",";
-    outfile << data_list[1]->entry_num << ",";
-    outfile << data_list[2]->entry_num << ",";
-    outfile << data_list[4]->entry_num << ",";
-    outfile << data_list[5]->entry_num << ",";
-    outfile << data_list[6]->entry_num << ",";
-    outfile << data_list[7]->entry_num << "\n";
 }
 
 int main()
@@ -2487,80 +2527,51 @@ int main()
     init_character_data();
     init_weapon_data();
     init_artifact_data();
+
     int mode;
-    cout << "输入计算方式(1:全计算 2:特定计算):";
+    int filter;
+    cout << "输入计算方式(1:全计算 2:增量计算 3:特定计算):";
     cin >> mode;
+    cout << "输入filter_type(1:all 2:artifact 3:main 4:none):";
+    cin >> filter;
+
     if (mode == 1)
     {
-        int top_k;
-        int filter;
-        cout << "输入模式(1:run 2:debug):";
-        cin >> mode;
-        cout << "输入top_k:";
-        cin >> top_k;
-        cout << "输入filter_type(1:all 2:artifact 3:main 4:none):";
-        cin >> filter;
         if (filter == 1) filter_type = "all";
         else if (filter == 2) filter_type = "artifact";
         else if (filter == 3) filter_type = "main";
         else if (filter == 4) filter_type = "none";
-        else return 0;
-        if (mode == 1)
-        {
-            cout << "输入模式(1:直接计算 2:武器增量更新 3:全增量更新):";
-            cin >> mode;
-            if (mode == 1)
-            {
-                debug = false;
-                outfile.open("./data.csv");
-                outfile << "人物名称" << "," << "攻击方式" << "," << "反应类型" << "," << "队友" << "," << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位"
-                        << "," << "4号位" << "," << "5号位" << "," << "期望伤害" << "," << "伤害比率" << "," << "LIFE" << "," << "life" << "," << "ATK" << "," << "atk" << "," << "DEF"
-                        << "," << "def" << "," << "mastery" << "," << "recharge" << "," << "critrate" << "," << "critdam" << "," << "damplus" << "," << "resistdec" << "," << "lifenum"
-                        << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
-                cal_all_deployment(top_k);
-            }
-            else if (mode == 2 || mode == 3)
-            {
-                debug = false;
-                outfile.open("./update_data.csv");
-                outfile << "人物名称" << "," << "攻击方式" << "," << "反应类型" << "," << "队友" << "," << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位"
-                        << "," << "4号位" << "," << "5号位" << "," << "期望伤害" << "," << "伤害比率" << "," << "LIFE" << "," << "life" << "," << "ATK" << "," << "atk" << "," << "DEF"
-                        << "," << "def" << "," << "mastery" << "," << "recharge" << "," << "critrate" << "," << "critdam" << "," << "damplus" << "," << "resistdec" << "," << "lifenum"
-                        << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
-                cal_update_deployment(top_k, mode);
-            }
-            else return 0;
-        }
-        else if (mode == 2)
-        {
-            debug = true;
-            outfile.open("./log_data.csv");
-            cal_all_deployment(top_k);
-        }
-        else return 0;
+        outfile_result.open("./data.csv");
+        outfile_result << "人物名称" << "," << "攻击方式" << "," << "反应类型" << "," << "队友" << "," << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位" << "," << "4号位" << "," << "5号位" << "," << "期望伤害"
+        << "," << "LIFE" << "," << "life" << "," << "ATK" << "," << "atk" << "," << "DEF" << "," << "def" << "," << "mastery" << "," << "recharge" << "," << "critrate" << "," << "critdam" << "," << "damplus" << "," << "resistdec"
+        << "," << "lifenum" << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
+        outfile_debug.open("./log_data.csv");
+        cal_all_deployment("cal_all");
     }
     else if (mode == 2)
     {
-        cout << "输入模式(1:run 2:debug):";
-        cin >> mode;
-        if (mode == 1)
-        {
-            debug = false;
-            outfile.open("./certain_data.csv");
-            outfile << "人物名称" << "," << "攻击方式" << "," << "反应类型" << "," << "队友" << "," << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位"
-                    << "," << "4号位" << "," << "5号位" << "," << "期望伤害" << "," << "伤害比率" << "," << "LIFE" << "," << "life" << "," << "ATK" << "," << "atk" << "," << "DEF"
-                    << "," << "def" << "," << "mastery" << "," << "recharge" << "," << "critrate" << "," << "critdam" << "," << "damplus" << "," << "resistdec" << "," << "lifenum"
-                    << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
-        }
-        else if (mode == 2)
-        {
-            debug = true;
-            outfile.open("./certain_log_data.csv");
-        }
-        else return 0;
-        filter_type = "none";
-        cal_certain_deployment();
+        if (filter == 1) filter_type = "all";
+        else if (filter == 2) filter_type = "artifact";
+        else if (filter == 3) filter_type = "main";
+        else if (filter == 4) filter_type = "none";
+        outfile_result.open("");//TODO
+        outfile_result << "人物名称" << "," << "攻击方式" << "," << "反应类型" << "," << "队友" << "," << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位" << "," << "4号位" << "," << "5号位" << "," << "期望伤害"
+                       << "," << "LIFE" << "," << "life" << "," << "ATK" << "," << "atk" << "," << "DEF" << "," << "def" << "," << "mastery" << "," << "recharge" << "," << "critrate" << "," << "critdam" << "," << "damplus" << "," << "resistdec"
+                       << "," << "lifenum" << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
+        outfile_debug.open("");//TODO
+        cal_all_deployment("cal_update");
     }
-    outfile.close();
+    else if (mode == 3)
+    {
+        filter_type = "none";
+        outfile_result.open("./certain_data.csv");
+        outfile_result << "人物名称" << "," << "攻击方式" << "," << "反应类型" << "," << "队友" << "," << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位" << "," << "4号位" << "," << "5号位" << "," << "期望伤害"
+                       << "," << "LIFE" << "," << "life" << "," << "ATK" << "," << "atk" << "," << "DEF" << "," << "def" << "," << "mastery" << "," << "recharge" << "," << "critrate" << "," << "critdam" << "," << "damplus" << "," << "resistdec"
+                       << "," << "lifenum" << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
+        outfile_debug.open("./certain_log_data.csv");
+        cal_all_deployment("cal_certain");
+    }
+    outfile_result.close();
+    outfile_debug.close();
     return 0;
 }

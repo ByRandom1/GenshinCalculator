@@ -16,9 +16,9 @@
 
 using namespace std;
 
-extern bool debug;
 extern string filter_type;
-extern ofstream outfile;
+extern ofstream outfile_result;
+extern ofstream outfile_debug;
 #define max_up_num_per_base 4
 #define max_attribute_num_per_pos 3
 #define artifact_2_2_max_entry_bonus 2
@@ -145,7 +145,7 @@ public:
     void cal_damage_entry_num();
 
     //输出到文件
-    void out();//在main中实现
+    void out();
 };
 
 #endif //GENSHINCALCULATOR_DEPLOYMENT_H

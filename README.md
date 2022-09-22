@@ -3,7 +3,7 @@
 
 ### 人物建构
 
-具体资料以原神wiki：https://wiki.biligame.com/ys/和https://genshin.honeyhunterworld.com为准。
+具体资料以原神wiki：https://wiki.biligame.com/ys/ 和 https://genshin.honeyhunterworld.com 为准。
 
 目前仅构建了胡桃1、神里绫华0、雷电将军0、甘雨0、夜兰0、行秋6、香菱6、八重神子1、枫原万叶0、班尼特5、温迪0、莫娜1、钟离0。
 
@@ -11,7 +11,7 @@
 
 ### 武器建构
 
-具体资料以原神wiki：https://wiki.biligame.com/ys/和https://genshin.honeyhunterworld.com为准。
+具体资料以原神wiki：https://wiki.biligame.com/ys/ 和 https://genshin.honeyhunterworld.com 为准。
 
 构建了所有武器，构建时忽略了持续时间的限制，而仅考虑触发条件的限制，并总是取最大的可能数值加成。
 
@@ -19,11 +19,19 @@
 
 ### 圣遗物建构
 
-具体资料以原神wiki：https://wiki.biligame.com/ys/和https://genshin.honeyhunterworld.com为准。
+具体资料以原神wiki：https://wiki.biligame.com/ys/ 和 https://genshin.honeyhunterworld.com 为准。
 
 构建了所有圣遗物，忽略了染血4件套和追忆4件套的加成（条件苛刻，效果太强）。
 
 将这些圣遗物的属性分为自身加成init_artifact_data（特殊加成get_extra_special)、有关转化类的加成（modify_useful_attribute、get_convert_value、get_extra_rate_value），对队友的加成（get_team_data)
+
+### 如何更新数据
+
+在每个版本的第一天，需要做如下工作：
+
+1、检查上个版本的预览数据的正确性
+
+2、更新下个版本的预览角色、武器、圣遗物等数据
 
 ### 最佳搭配条件限制
 
@@ -43,7 +51,7 @@
 
 ### 计算算法
 
-首先获得有效配置（人物-武器-圣遗物套装1-圣遗物套装2-圣遗物主词条），其次采用遍历的方法，结合上述限制，对每一个可能的副词条数量，按照https://nga.178.com/read.php?tid=25564438中所述的伤害计算公式进行计算，最后取伤害最大值作为该配置的结果。
+首先获得有效配置（人物-武器-圣遗物套装1-圣遗物套装2-圣遗物主词条），其次采用遍历的方法，结合上述限制，对每一个可能的副词条数量，按照 https://nga.178.com/read.php?tid=25564438 中所述的伤害计算公式进行计算，最后取伤害最大值作为该配置的结果。
 
 根据用户定义的topk，保留配置（人物-武器）中伤害最大的topk个配置作为结果。
 
@@ -60,3 +68,13 @@
 在MAC中，请将文件的编码改为UTF-8，即可正常运行。
 
 在WIN中，请首先在设置中将项目的文件编码改为UTF-8，并在编辑界面将所有文件的编码改为GBK，并使用ctrl+alt+shift+.打开控制台注册表界面，并勾选run.process.with.pty，如此可解决运行过程中中文乱码的问题。但是在调试过程中仍会出现中文乱码和显示string为16进制字符的问题。
+
+### 未来工作
+
+1、考虑组合伤害的计算（技能组、技能+剧变）
+
+2、添加更多角色（主要是5星）
+
+3、配置文件化
+
+4、GUI
