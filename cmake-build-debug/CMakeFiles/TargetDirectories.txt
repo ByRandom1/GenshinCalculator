@@ -1,0 +1,3 @@
+/Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinCalculator/cmake-build-debug/CMakeFiles/GenshinCalculator.dir
+/Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinCalculator/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinCalculator/cmake-build-debug/CMakeFiles/rebuild_cache.dir
