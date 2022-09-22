@@ -2126,7 +2126,7 @@ void read_pre_cal_data(string filename)
 //    }
 }
 
-//TODO:需要检查config的全部信息，圣遗物增量更新（每次总是更新最后两个）
+//TODO:圣遗物增量更新（每次总是更新最后两个）
 bool if_pre_cal_data_exists(string c_name, Config *config, string w_name)
 {
     for (auto &i: pre_cal_data)
