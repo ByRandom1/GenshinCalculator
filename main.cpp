@@ -43,33 +43,6 @@ string a_main3[5] = {"生命值", "攻击力", "防御力", "元素精通", "元
 string a_main4[5] = {"生命值", "攻击力", "防御力", "元素精通", "伤害加成"};
 string a_main5[7] = {"生命值", "攻击力", "防御力", "元素精通", "暴击率", "暴击伤害", "治疗加成"};
 
-vector<vector<string>> pre_cal_data;
-
-void read_pre_cal_data(string filename)
-{
-    ifstream infile;
-    infile.open(filename);
-    string line;
-    getline(infile, line);
-    while (!infile.eof())
-    {
-        getline(infile, line);
-        vector<string> temp;
-        for (int i = 0; i < 11; ++i)
-        {
-            int pos = line.find(',');
-            if (pos != string::npos) temp.push_back(line.substr(0, pos));
-            line = line.substr(pos + 1);
-        }
-        pre_cal_data.push_back(temp);
-    }
-//    for (auto &i: pre_cal_data)
-//    {
-//        for (auto &j: i) cout << j << " ";
-//        cout << endl;
-//    }
-}
-
 class Character_special_arguments
 {
 public:
@@ -2086,9 +2059,83 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
 }
 
 //parameters
+bool out_header;
 string filter_type;
 ofstream outfile_result;
 ofstream outfile_debug;
+
+//in and out
+vector<vector<string>> pre_cal_data;//c_name,config,w_name,suit1_name,suit2_name,a_main3,a_main4,a_main5,damage
+
+void Deployment::out()
+{
+    if (out_header)
+    {
+        outfile_result << "人物名称" << "," << "配置信息" << "," << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位" << "," << "4号位" << "," << "5号位" << "," << "期望伤害" << ","
+                       << "LIFE" << "," << "life" << "," << "ATK" << "," << "atk" << "," << "DEF" << "," << "def" << "," << "mastery" << "," << "recharge" << "," << "critrate" << "," << "critdam" << "," << "damplus" << "," << "resistdec" << ","
+                       << "defdec" << "," << "defign" << "," << "heal" << "," << "shield" << ","
+                       << "lifenum" << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
+        out_header = false;
+    }
+    outfile_result << c_point->name << "," << (config->condition->attack_way + "_" + config->react_type + "_" + config->ele_attach_type + "_" + to_string(config->max_entry_all) + "_" + config->teammate_all + "_" + config->team_weapon_artifact) << ","
+                   << w_point->name << "," << suit1->name << "," << suit2->name << "," << a_main3 << "," << a_main4 << "," << a_main5 << "," << damage << ",";
+    outfile_result << base_life << "," << base_life * (data_list[0]->entry_num * data_list[0]->value_per_entry + data_list[0]->percentage - 1) << ",";
+    outfile_result << base_atk << "," << base_atk * (data_list[1]->entry_num * data_list[1]->value_per_entry + data_list[1]->percentage - 1) << ",";
+    outfile_result << base_def << "," << base_def * (data_list[2]->entry_num * data_list[2]->value_per_entry + data_list[2]->percentage - 1) << ",";
+    outfile_result << data_list[4]->entry_num * data_list[4]->value_per_entry + data_list[4]->percentage << ",";
+    outfile_result << data_list[5]->entry_num * data_list[5]->value_per_entry + data_list[5]->percentage << ",";
+    outfile_result << data_list[6]->entry_num * data_list[6]->value_per_entry + data_list[6]->percentage << ",";
+    outfile_result << data_list[7]->entry_num * data_list[7]->value_per_entry + data_list[7]->percentage << ",";
+    outfile_result << data_list[8]->percentage << ",";
+    outfile_result << data_list[9]->percentage << ",";
+    outfile_result << data_list[10]->percentage << ",";
+    outfile_result << data_list[11]->percentage << ",";
+    outfile_result << data_list[12]->percentage << ",";
+    outfile_result << data_list[13]->percentage << ",";
+    outfile_result << data_list[0]->entry_num << ",";
+    outfile_result << data_list[1]->entry_num << ",";
+    outfile_result << data_list[2]->entry_num << ",";
+    outfile_result << data_list[4]->entry_num << ",";
+    outfile_result << data_list[5]->entry_num << ",";
+    outfile_result << data_list[6]->entry_num << ",";
+    outfile_result << data_list[7]->entry_num << "\n";
+}
+
+void read_pre_cal_data(string filename)
+{
+    ifstream infile;
+    infile.open(filename);
+    string line;
+    getline(infile, line);
+    while (!infile.eof())
+    {
+        getline(infile, line);
+        vector<string> temp;
+        for (int i = 0; i < 9; ++i)
+        {
+            int pos = (int) line.find(',');
+            if (pos != string::npos) temp.push_back(line.substr(0, pos));
+            line = line.substr(pos + 1);
+        }
+        pre_cal_data.push_back(temp);
+    }
+//    for (auto &i: pre_cal_data)
+//    {
+//        for (auto &j: i) cout << j << " ";
+//        cout << endl;
+//    }
+}
+
+//TODO:需要检查config的全部信息，圣遗物增量更新（每次总是更新最后两个）
+bool if_pre_cal_data_exists(string c_name, Config *config, string w_name)
+{
+    for (auto &i: pre_cal_data)
+    {
+        if (c_name == i[0] && (config->condition->attack_way + "_" + config->react_type + "_" + config->ele_attach_type + "_" + to_string(config->max_entry_all) + "_" + config->teammate_all + "_" + config->team_weapon_artifact) == i[1] && w_name == i[2])
+            return true;
+    }
+    return false;
+}
 
 #define topk 3
 
@@ -2395,20 +2442,23 @@ struct cmp
     }
 };
 
-void cal_all_deployment(string mode)
+void cal_deployment(string mode)
 {
-    vector<Config *> config_list;
     for (auto &c_index: character_list)
     {
+        vector<Config *> config_list;
         get_all_config(c_index->name, config_list);
         for (auto &conf_index: config_list)
         {
-            if (mode == "cal_all")
+            if (mode == "cal_all" || mode == "cal_update")
             {
-                priority_queue<Deployment *, vector<Deployment *>, cmp> c_w_pair;
                 for (auto &w_index: weapon_list)
                 {
                     if (c_index->weapon_type != w_index->weapon_type) continue;
+
+                    if (mode == "cal_update" && if_pre_cal_data_exists(c_index->name, conf_index, w_index->name)) continue;
+
+                    priority_queue<Deployment *, vector<Deployment *>, cmp> c_w_pair;
 
                     clock_t start = clock();
 
@@ -2489,15 +2539,11 @@ void cal_all_deployment(string mode)
                          << " time=" << (double) (end - start) / CLOCKS_PER_SEC << "s" << "\n";
                 }
             }
-            else if (mode == "cal_update")
-            {
-
-            }
             else if (mode == "cal_certain")
             {
                 vector<vector<string>> combination_list;
                 get_certain_combination(c_index->name, combination_list);
-                for (auto & i : combination_list)
+                for (auto &i: combination_list)
                 {
                     Weapon *w_point = find_weapon_by_name(i[0]);
                     Artifact *suit1 = find_artifact_by_name(i[1]);
@@ -2515,6 +2561,7 @@ void cal_all_deployment(string mode)
                         delete temp;
                     }
                 }
+                combination_list.clear();
             }
         }
         config_list.clear();
@@ -2537,39 +2584,33 @@ int main()
 
     if (mode == 1)
     {
+        out_header = true;
         if (filter == 1) filter_type = "all";
         else if (filter == 2) filter_type = "artifact";
         else if (filter == 3) filter_type = "main";
         else if (filter == 4) filter_type = "none";
         outfile_result.open("./data.csv");
-        outfile_result << "人物名称" << "," << "攻击方式" << "," << "反应类型" << "," << "队友" << "," << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位" << "," << "4号位" << "," << "5号位" << "," << "期望伤害"
-        << "," << "LIFE" << "," << "life" << "," << "ATK" << "," << "atk" << "," << "DEF" << "," << "def" << "," << "mastery" << "," << "recharge" << "," << "critrate" << "," << "critdam" << "," << "damplus" << "," << "resistdec"
-        << "," << "lifenum" << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
         outfile_debug.open("./log_data.csv");
-        cal_all_deployment("cal_all");
+        cal_deployment("cal_all");
     }
     else if (mode == 2)
     {
+        out_header = false;
         if (filter == 1) filter_type = "all";
         else if (filter == 2) filter_type = "artifact";
         else if (filter == 3) filter_type = "main";
         else if (filter == 4) filter_type = "none";
-        outfile_result.open("");//TODO
-        outfile_result << "人物名称" << "," << "攻击方式" << "," << "反应类型" << "," << "队友" << "," << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位" << "," << "4号位" << "," << "5号位" << "," << "期望伤害"
-                       << "," << "LIFE" << "," << "life" << "," << "ATK" << "," << "atk" << "," << "DEF" << "," << "def" << "," << "mastery" << "," << "recharge" << "," << "critrate" << "," << "critdam" << "," << "damplus" << "," << "resistdec"
-                       << "," << "lifenum" << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
-        outfile_debug.open("");//TODO
-        cal_all_deployment("cal_update");
+        outfile_result.open("./data.csv", ios::app);
+        outfile_debug.open("./log_data.csv", ios::app);
+        cal_deployment("cal_update");
     }
     else if (mode == 3)
     {
+        out_header = true;
         filter_type = "none";
         outfile_result.open("./certain_data.csv");
-        outfile_result << "人物名称" << "," << "攻击方式" << "," << "反应类型" << "," << "队友" << "," << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位" << "," << "4号位" << "," << "5号位" << "," << "期望伤害"
-                       << "," << "LIFE" << "," << "life" << "," << "ATK" << "," << "atk" << "," << "DEF" << "," << "def" << "," << "mastery" << "," << "recharge" << "," << "critrate" << "," << "critdam" << "," << "damplus" << "," << "resistdec"
-                       << "," << "lifenum" << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
         outfile_debug.open("./certain_log_data.csv");
-        cal_all_deployment("cal_certain");
+        cal_deployment("cal_certain");
     }
     outfile_result.close();
     outfile_debug.close();

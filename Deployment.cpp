@@ -390,25 +390,3 @@ void Deployment::cal_damage_entry_num()
 
     damage = damage * resistence_ratio * defence_ratio;
 }
-
-void Deployment::out()
-{
-    outfile_result << c_point->name << "," << config->condition->attack_way << "," << config->react_type << "," << (config->teammate_all + config->team_weapon_artifact)
-                   << "," << w_point->name << "," << suit1->name << "," << suit2->name << "," << a_main3 << "," << a_main4 << "," << a_main5 << "," << damage << ",";
-    outfile_result << base_life << "," << base_life * (data_list[0]->entry_num * data_list[0]->value_per_entry + data_list[0]->percentage - 1) << ",";
-    outfile_result << base_atk << "," << base_atk * (data_list[1]->entry_num * data_list[1]->value_per_entry + data_list[1]->percentage - 1) << ",";
-    outfile_result << base_def << "," << base_def * (data_list[2]->entry_num * data_list[2]->value_per_entry + data_list[2]->percentage - 1) << ",";
-    outfile_result << data_list[4]->entry_num * data_list[4]->value_per_entry + data_list[4]->percentage << ",";
-    outfile_result << data_list[5]->entry_num * data_list[5]->value_per_entry + data_list[5]->percentage << ",";
-    outfile_result << data_list[6]->entry_num * data_list[6]->value_per_entry + data_list[6]->percentage << ",";
-    outfile_result << data_list[7]->entry_num * data_list[7]->value_per_entry + data_list[7]->percentage << ",";
-    outfile_result << data_list[8]->percentage << ",";
-    outfile_result << data_list[9]->percentage << ",";
-    outfile_result << data_list[0]->entry_num << ",";
-    outfile_result << data_list[1]->entry_num << ",";
-    outfile_result << data_list[2]->entry_num << ",";
-    outfile_result << data_list[4]->entry_num << ",";
-    outfile_result << data_list[5]->entry_num << ",";
-    outfile_result << data_list[6]->entry_num << ",";
-    outfile_result << data_list[7]->entry_num << "\n";
-}

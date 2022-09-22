@@ -16,6 +16,7 @@
 
 using namespace std;
 
+extern bool out_header;
 extern string filter_type;
 extern ofstream outfile_result;
 extern ofstream outfile_debug;
@@ -145,7 +146,7 @@ public:
     void cal_damage_entry_num();
 
     //输出到文件
-    void out();
+    void out();//在main中实现
 };
 
 #endif //GENSHINCALCULATOR_DEPLOYMENT_H
