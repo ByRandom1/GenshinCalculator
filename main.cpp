@@ -1337,7 +1337,7 @@ void Artifact::modify_useful_attribute(Deployment *data)
     if (data->suit1->name == "绝缘之旗印" && data->suit2->name == "绝缘之旗印" && data->config->condition->attack_way == "Q") data->data_list[5]->useful = true;
 }
 
-//build new artifact(all) 提供队友加成的有效
+//build new artifact(all) 提供充能、队友加成的有效
 void Deployment::check_artifact_special(bool &valid)
 {
     //特殊判断圣遗物套装
