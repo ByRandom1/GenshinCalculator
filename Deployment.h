@@ -129,7 +129,7 @@ public:
 
     void get_team_data();//在main中实现
 
-    void satisfy_recharge_requirement();//在main中实现
+    bool satisfy_recharge_requirement();//在main中实现
 
     //单人最佳伤害(副词条)计算
     void get_convert_value(double &life, double &atk, double &def, double &mastery, double &recharge, double &critrate, double &critdam, double &damplus);//在main中实现

@@ -154,7 +154,11 @@ int Deployment::init_check_data()
 
     get_team_data();
 
-    satisfy_recharge_requirement();
+    if (!satisfy_recharge_requirement())
+    {
+        outfile_debug << ("recharge_failure\n");
+        return 1;
+    }
 
     outfile_debug << "\n";
 

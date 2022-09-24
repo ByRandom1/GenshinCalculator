@@ -1410,6 +1410,7 @@ void Deployment::check_artifact_special(bool &valid)
 //build new character(needed)||build new weapon(all)||build new artifact(all) 所有转化类属性的有效百分比决定开关
 void Deployment::check_useful_attributes()
 {
+    //实际上应该采用（武器-圣遗物）对的形式考虑还原useful
     //convert:如果useful相对于config没有改变，那不影响；如果useful相对与config改变了，一定是转化类的属性新增了有效词条，那要检查是否值得新增
     if (w_point->name == "磐岩结绿")
     {
@@ -1458,6 +1459,8 @@ void Deployment::check_useful_attributes()
 
     //artifact
     //绝缘肯定有效（增伤效益认为无穷）
+    if (suit1->name == "绝缘之旗印" && suit2->name == "绝缘之旗印" && config->condition->attack_way == "Q")
+        data_list[5]->useful = true;
 
     //character
     if (c_point->name == "胡桃") data_list[1]->useful = false;//生命>攻击，除非有攻击转什么
@@ -1719,7 +1722,7 @@ void Deployment::get_team_data()
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all) 有关充能的转化类属性要考虑
-void Deployment::satisfy_recharge_requirement()
+bool Deployment::satisfy_recharge_requirement()
 {
     string double_E_per_round = "神里绫华甘雨温迪";//TODO:recharge parameter
     //调整充能数值
@@ -1873,7 +1876,11 @@ void Deployment::satisfy_recharge_requirement()
         else energy = Q_energy_modify;
 
         data_list[5]->entry_num = max(0, (int) round((Q_energy_modify / energy - data_list[5]->percentage - extra_recharge) / data_list[5]->value_per_entry));
+
+        if (data_list[5]->entry_num > 12) return false;
+        else return true;
     }
+    return true;
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
@@ -2400,10 +2407,9 @@ void cal_deployment()
                                             }
                                             else delete temp;
                                         }
-                                        else if (check_num == 1)//error:weapon
+                                        else if (check_num == 1)//error:recharge
                                         {
                                             delete temp;
-                                            goto NEXTWEAPON;
                                         }
                                         else if (check_num == 2)//error:suit1 or suit2
                                         {
@@ -2434,7 +2440,6 @@ void cal_deployment()
                             NEXTARTIFACT:;
                         }
                     }
-                    NEXTWEAPON:;
 
                     clock_t end = clock();
                     double time = (double) (end - start) / CLOCKS_PER_SEC;
