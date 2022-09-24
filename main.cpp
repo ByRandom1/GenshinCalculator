@@ -1279,23 +1279,23 @@ void Deployment::check_weapon_special(bool &valid)
             valid = true;
     }
     //TODO:NEW
-//    else if (w_point->name == "圣显之钥")
-//    {
-//        if (c_point->args->E_hit_interval < 10 && c_point->args->E_hit_interval > 0)
-//            valid = true;
-//    }
-//    else if (w_point->name == "西福斯的月光")
-//    {
-//        valid = true;
-//    }
-//    else if (w_point->name == "流浪的晚星")
-//    {
-//        valid = true;
-//    }
-//    else if (w_point->name == "玛海菈的水色")
-//    {
-//        valid = true;
-//    }
+    else if (w_point->name == "圣显之钥")
+    {
+        if (c_point->args->E_hit_interval < 10 && c_point->args->E_hit_interval > 0)
+            valid = true;
+    }
+    else if (w_point->name == "西福斯的月光")
+    {
+        valid = true;
+    }
+    else if (w_point->name == "流浪的晚星")
+    {
+        valid = true;
+    }
+    else if (w_point->name == "玛海菈的水色")
+    {
+        valid = true;
+    }
 }
 
 //build new artifact(all)
@@ -1574,26 +1574,26 @@ void Deployment::get_team_data()
         add_percentage("攻击力", 0.32, "team_贯月矢");
     }
     //TODO:NEW
-//    if (config->team_weapon_artifact.find("圣显之钥") != string::npos)
-//    {
-//        //TODO:转化类加成不能被二次转化
-//        add_percentage("元素精通", 100, "team_圣显之钥");
-//    }
-//    if (config->team_weapon_artifact.find("西福斯的月光") != string::npos)
-//    {
-//        //TODO:转化类加成不能被二次转化
-//        add_percentage("元素充能效率", 0.12, "team_西福斯的月光");
-//    }
-//    if (config->team_weapon_artifact.find("流浪的晚星") != string::npos)
-//    {
-//        //TODO:转化类加成不能被二次转化
-//        add_percentage("攻击力", 40 / base_atk, "team_流浪的晚星");
-//    }
-//    if (config->team_weapon_artifact.find("玛海菈的水色") != string::npos)
-//    {
-//        //TODO:转化类加成不能被二次转化
-//        add_percentage("攻击力", 40 / base_atk, "team_玛海菈的水色");
-//    }
+    if (config->team_weapon_artifact.find("圣显之钥") != string::npos)
+    {
+        //TODO:转化类加成不能被二次转化
+        add_percentage("元素精通", 60, "team_圣显之钥");
+    }
+    if (config->team_weapon_artifact.find("西福斯的月光") != string::npos)
+    {
+        //TODO:转化类加成不能被二次转化
+        add_percentage("元素充能效率", 0.06, "team_西福斯的月光");
+    }
+    if (config->team_weapon_artifact.find("流浪的晚星") != string::npos)
+    {
+        //TODO:转化类加成不能被二次转化
+        add_percentage("攻击力", 40 / base_atk, "team_流浪的晚星");
+    }
+    if (config->team_weapon_artifact.find("玛海菈的水色") != string::npos)
+    {
+        //TODO:转化类加成不能被二次转化
+        add_percentage("攻击力", 40 / base_atk, "team_玛海菈的水色");
+    }
 
     //artifact
     if (config->team_weapon_artifact.find("岩套") != string::npos)
@@ -1943,7 +1943,7 @@ void Deployment::adjust_recharge_requirement()
 //build new character(needed)||build new weapon(all)||build new artifact(all) 所有转化类属性的有效百分比决定开关
 void Deployment::limit_useful_attributes()
 {
-    if (c_point->name != "雷电将军" || c_point->name != "莫娜" || w_point->name != "薙草之稻光" || (suit1->name == "绝缘之旗印" && suit2->name == "绝缘之旗印")) data_list[5]->useful = false;
+    if (c_point->name != "雷电将军" && c_point->name != "莫娜" && w_point->name != "薙草之稻光" && (suit1->name == "绝缘之旗印" && suit2->name == "绝缘之旗印")) data_list[5]->useful = false;
     if (c_point->name == "胡桃") data_list[1]->useful = false;
     if (c_point->name == "钟离") data_list[1]->useful = false;
 }
@@ -2457,7 +2457,7 @@ void cal_deployment()
 
                                     for (int main5_index = (main4_index == 4) ? ((main3_index == 4) ? 0 : main3_index) : main4_index; main5_index < 7; main5_index++)
                                     {
-                                        if (comb_index->a_main5 != "" && comb_index->a_main5 != a_main4[main5_index]) continue;
+                                        if (comb_index->a_main5 != "" && comb_index->a_main5 != a_main5[main5_index]) continue;
 
                                         auto *temp = new Deployment(c_index, w_index, artifact_list[a_index1], artifact_list[a_index2],
                                                                     a_main3[main3_index], a_main4[main4_index], a_main5[main5_index], conf_index);
