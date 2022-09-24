@@ -1943,9 +1943,63 @@ void Deployment::adjust_recharge_requirement()
 //build new character(needed)||build new weapon(all)||build new artifact(all) 所有转化类属性的有效百分比决定开关
 void Deployment::limit_useful_attributes()
 {
-    if (c_point->name != "雷电将军" && c_point->name != "莫娜" && w_point->name != "薙草之稻光" && (suit1->name == "绝缘之旗印" && suit2->name == "绝缘之旗印")) data_list[5]->useful = false;
+    //recharge
+    if (c_point->name != "雷电将军" && c_point->name != "莫娜" && w_point->name != "薙草之稻光" && (suit1->name == "绝缘之旗印" && suit2->name == "绝缘之旗印" && config->condition->attack_way == "Q")) data_list[5]->useful = false;
+
+    //相较于config里角色词条有效值，词条的有效值仅由武器和圣遗物改变，判断武器和圣遗物的组合是否能提供有效转化加成，如果不能说明被转化词条的有效改变是无效的，还原为config中的属性
+    //convert
+    if (w_point->name == "磐岩结绿")
+    {
+        if ((data_list[0]->value_per_entry * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk) < data_list[1]->value_per_entry)
+            data_list[0]->useful = config->useful_attributes[0];
+    }
+    else if (w_point->name == "圣显之钥")
+    {
+        if ((data_list[0]->value_per_entry * 0.0056 * (0.75 + w_point->level * 0.25) * base_life) < data_list[4]->value_per_entry)
+            data_list[0]->useful = config->useful_attributes[0];
+    }
+        // TODO:NEW
+    else if (w_point->name == "西福斯的月光")
+    {
+        if ((data_list[4]->value_per_entry * 0.00036 * (0.75 + w_point->level * 0.25)) < data_list[5]->value_per_entry)
+            data_list[4]->useful = config->useful_attributes[4];
+    }
+        // TODO:NEW
+    else if (w_point->name == "流浪的晚星")
+    {
+        if ((data_list[4]->value_per_entry * 0.24 * (0.75 + w_point->level * 0.25) / base_atk) < data_list[1]->value_per_entry)
+            data_list[4]->useful = config->useful_attributes[4];
+    }
+        // TODO:NEW
+    else if (w_point->name == "玛海菈的水色")
+    {
+        if ((data_list[4]->value_per_entry * 0.24 * (0.75 + w_point->level * 0.25) / base_atk) < data_list[1]->value_per_entry)
+            data_list[4]->useful = config->useful_attributes[4];
+    }
+    else if (w_point->name == "护摩之杖")
+    {
+        if ((data_list[0]->value_per_entry * (0.008 * (0.75 + w_point->level * 0.25) + (0.008 + w_point->level * 0.002)) * base_life / base_atk) < data_list[1]->value_per_entry)
+            data_list[0]->useful = config->useful_attributes[0];
+    }
+    else if (w_point->name == "薙草之稻光")
+    {
+        if ((data_list[5]->value_per_entry * 0.28 * (0.75 + w_point->level * 0.25)) < data_list[1]->value_per_entry)
+            data_list[5]->useful = config->useful_attributes[5];
+    }
+        //TODO:NEW
+    else if (w_point->name == "赤沙之杖")
+    {
+        if ((data_list[4]->value_per_entry * 1.36 * (0.75 + w_point->level * 0.25) / base_atk) < data_list[1]->value_per_entry)
+            data_list[4]->useful = config->useful_attributes[4];
+    }
+
+    //artifact
+    if (suit1->name == "绝缘之旗印" && suit2->name == "绝缘之旗印" && config->condition->attack_way == "Q")
+        data_list[5]->useful = true;
+
+    //character
     if (c_point->name == "胡桃") data_list[1]->useful = false;
-    if (c_point->name == "钟离") data_list[1]->useful = false;
+    if (c_point->name == "钟离") data_list[1]->useful = false;//要考虑盾
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
@@ -2527,8 +2581,8 @@ void cal_deployment()
                          << " time=" << time << "s" << ((time > 30) ? "!!!" : "") << "\n";
                 }
             }
-            combination_list.clear();
         }
+        combination_list.clear();
         config_list.clear();
     }
 }
