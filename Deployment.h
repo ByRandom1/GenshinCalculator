@@ -124,13 +124,11 @@ public:
 
     bool add_percentage(string type_, double value_, string source);
 
-    string check_disabled_combinations();//在main中实现
+    string check_special_restrictions();//在main中实现
 
     void check_weapon_special(bool &valid);//在main中实现
 
     void check_artifact_special(bool &valid);//在main中实现
-
-    void modify_useful_attribute();//在main中实现
 
     void get_team_data();//在main中实现
 

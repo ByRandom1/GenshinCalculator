@@ -56,8 +56,8 @@ Deployment::~Deployment()
 int Deployment::init_check_data()
 {
     //check
-    string result = check_disabled_combinations();
-    if (result == "false") return 1;
+    string result = check_special_restrictions();
+    if (result.find("false") != string::npos) return 1;
 
     //LOG START
     bool valid;
@@ -84,7 +84,7 @@ int Deployment::init_check_data()
     w_point->get_vice(this);
     w_point->get_extra(this);
     //check
-    if (filter_type == "all" && result != "weapon_skip")
+    if (filter_type == "all" && result.find("weapon_skip") != string::npos)
     {
         valid = false;
         for (int i = 0; i < data_list.size(); i++)
@@ -111,7 +111,7 @@ int Deployment::init_check_data()
     //get
     suit1->get_extra(this, suit1 == suit2);
     //check
-    if ((filter_type == "all" || filter_type == "artifact") && result != "artifact_skip")
+    if ((filter_type == "all" || filter_type == "artifact") && result.find("artifact_skip") != string::npos)
     {
         valid = false;
         for (int i = 0; i < data_list.size(); i++)
@@ -137,7 +137,7 @@ int Deployment::init_check_data()
     //get
     suit2->get_extra(this, false);
     //check
-    if ((filter_type == "all" || filter_type == "artifact") && result != "artifact_skip")
+    if ((filter_type == "all" || filter_type == "artifact") && result.find("artifact_skip") != string::npos)
     {
         if (suit1 != suit2)
         {
@@ -161,8 +161,6 @@ int Deployment::init_check_data()
     {
         for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
     }
-
-    modify_useful_attribute();
 
     //main
     //get
