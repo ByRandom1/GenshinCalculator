@@ -124,15 +124,15 @@ public:
 
     bool add_percentage(string type_, double value_, string source);
 
-    string check_special_restrictions();//在main中实现
-
     void check_weapon_special(bool &valid);//在main中实现
 
     void check_artifact_special(bool &valid);//在main中实现
 
     void get_team_data();//在main中实现
 
-    bool check_recharge_requirement();//在main中实现
+    void adjust_recharge_requirement();//在main中实现
+
+    void limit_useful_attributes();//在main中实现
 
     //单人最佳伤害(副词条)计算
     void get_convert_value(double &life, double &atk, double &def, double &mastery, double &recharge, double &critrate, double &critdam, double &damplus);//在main中实现

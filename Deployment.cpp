@@ -55,10 +55,6 @@ Deployment::~Deployment()
 
 int Deployment::init_check_data()
 {
-    //check
-    string result = check_special_restrictions();
-    if (result.find("false") != string::npos) return 1;
-
     //LOG START
     bool valid;
     double prevalue[data_list.size()];
@@ -84,7 +80,7 @@ int Deployment::init_check_data()
     w_point->get_vice(this);
     w_point->get_extra(this);
     //check
-    if (filter_type == "all" && result.find("weapon_skip") != string::npos)
+    if (filter_type == "all")
     {
         valid = false;
         for (int i = 0; i < data_list.size(); i++)
@@ -97,7 +93,7 @@ int Deployment::init_check_data()
         if (!valid)
         {
             outfile_debug << (w_point->name + "_failure\n");
-            return 2;
+            return 1;
         }
     }
     //update
@@ -111,7 +107,7 @@ int Deployment::init_check_data()
     //get
     suit1->get_extra(this, suit1 == suit2);
     //check
-    if ((filter_type == "all" || filter_type == "artifact") && result.find("artifact_skip") != string::npos)
+    if (filter_type == "all" || filter_type == "artifact")
     {
         valid = false;
         for (int i = 0; i < data_list.size(); i++)
@@ -125,7 +121,7 @@ int Deployment::init_check_data()
         {
             if (suit1 == suit2) outfile_debug << (suit1->name + "_piece4_failure\n");
             else outfile_debug << (suit1->name + "_piece2_failure\n");
-            return 3;
+            return 2;
         }
     }
     //update
@@ -137,7 +133,7 @@ int Deployment::init_check_data()
     //get
     suit2->get_extra(this, false);
     //check
-    if ((filter_type == "all" || filter_type == "artifact") && result.find("artifact_skip") != string::npos)
+    if (filter_type == "all" || filter_type == "artifact")
     {
         if (suit1 != suit2)
         {
@@ -152,7 +148,7 @@ int Deployment::init_check_data()
             if (!valid)
             {
                 outfile_debug << (suit2->name + "_piece2_failure\n");
-                return 3;
+                return 2;
             }
         }
     }
@@ -172,32 +168,28 @@ int Deployment::init_check_data()
             (a_main3 == "元素精通" && !data_list[4]->useful) || (a_main3 == "元素充能效率" && !data_list[5]->useful))
         {
             outfile_debug << (a_main3 + "_main3_failure\n");
-            return 4;
+            return 3;
         }
         if ((a_main4 == "生命值" && !data_list[0]->useful) || (a_main4 == "攻击力" && !data_list[1]->useful) || (a_main4 == "防御力" && !data_list[2]->useful) ||
             (a_main4 == "元素精通" && !data_list[4]->useful) || (a_main4 == "伤害加成" && !data_list[8]->useful))
         {
             outfile_debug << (a_main4 + "_main4_failure\n");
-            return 5;
+            return 4;
         }
         if ((a_main5 == "生命值" && !data_list[0]->useful) || (a_main5 == "攻击力" && !data_list[1]->useful) || (a_main5 == "防御力" && !data_list[2]->useful) ||
             (a_main5 == "元素精通" && !data_list[4]->useful) || (a_main5 == "暴击率" && !data_list[6]->useful) || (a_main5 == "暴击伤害" && !data_list[7]->useful) ||
             (a_main5 == "治疗加成" && !data_list[12]->useful))
         {
             outfile_debug << (a_main5 + "_main5_failure\n");
-            return 6;
+            return 5;
         }
     }
     //update
 //    for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
 
     get_team_data();
-
-    if (!check_recharge_requirement())
-    {
-        outfile_debug << ("recharge_failure\n");
-        return 1;
-    }
+    adjust_recharge_requirement();
+    limit_useful_attributes();
 
     outfile_debug << "\n";
 
