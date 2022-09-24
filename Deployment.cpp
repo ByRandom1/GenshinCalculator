@@ -64,50 +64,45 @@ int Deployment::init_check_data()
     Weapon::modify_useful_attribute(this);
     Artifact::modify_useful_attribute(this);
 
-    //character
-    //get
+    //character get
     c_point->get_break(this);
     c_point->get_extra(this);
-    //check
-    //update
-    if (filter_type == "all")
-    {
-        for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
-    }
-
-    //weapon
-    //get
+    //weapon get
     w_point->get_vice(this);
     w_point->get_extra(this);
-    //check
-    if (filter_type == "all")
-    {
-        valid = false;
-        for (int i = 0; i < data_list.size(); i++)
-            if (data_list[i]->useful && data_list[i]->percentage > prevalue[i])
-            {
-                valid = true;
-                break;
-            }
-        check_weapon_special(valid);
-        if (!valid)
-        {
-            outfile_debug << (w_point->name + "_failure\n");
-            return 1;
-        }
-    }
     //update
-    if (filter_type == "all" || filter_type == "artifact")
-    {
-        for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
-    }
+    for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
 
     //artifact
     //先检测四件套或者两个两件套中的一个是否有效
     //get
     suit1->get_extra(this, suit1 == suit2);
     //check
-    if (filter_type == "all" || filter_type == "artifact")
+    valid = false;
+    for (int i = 0; i < data_list.size(); i++)
+        if (data_list[i]->useful && data_list[i]->percentage > prevalue[i])
+        {
+            valid = true;
+            break;
+        }
+    check_artifact_special(valid);
+    //Q充能考虑
+    if (config->condition->attack_way == "Q" && data_list[5]->percentage > prevalue[5]) valid = true;
+
+    if (!valid)
+    {
+        if (suit1 == suit2) outfile_debug << (suit1->name + "_piece4_failure\n");
+        else outfile_debug << (suit1->name + "_piece2_failure\n");
+        return 2;
+    }
+    //update
+    for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
+
+    //若是四件套直接加两件套效果，如果不是还要检测另外一个两件套是否有效
+    //get
+    suit2->get_extra(this, false);
+    //check
+    if (suit1 != suit2)
     {
         valid = false;
         for (int i = 0; i < data_list.size(); i++)
@@ -117,79 +112,49 @@ int Deployment::init_check_data()
                 break;
             }
         check_artifact_special(valid);
+        //Q充能考虑
+        if (config->condition->attack_way == "Q" && data_list[5]->percentage > prevalue[5]) valid = true;
+
         if (!valid)
         {
-            if (suit1 == suit2) outfile_debug << (suit1->name + "_piece4_failure\n");
-            else outfile_debug << (suit1->name + "_piece2_failure\n");
+            outfile_debug << (suit2->name + "_piece2_failure\n");
             return 2;
-        }
-    }
-    //update
-    if (filter_type == "all" || filter_type == "artifact")
-    {
-        for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
-    }
-    //若是四件套直接加两件套效果，如果不是还要检测另外一个两件套是否有效
-    //get
-    suit2->get_extra(this, false);
-    //check
-    if (filter_type == "all" || filter_type == "artifact")
-    {
-        if (suit1 != suit2)
-        {
-            valid = false;
-            for (int i = 0; i < data_list.size(); i++)
-                if (data_list[i]->useful && data_list[i]->percentage > prevalue[i])
-                {
-                    valid = true;
-                    break;
-                }
-            check_artifact_special(valid);
-            if (!valid)
-            {
-                outfile_debug << (suit2->name + "_piece2_failure\n");
-                return 2;
-            }
-        }
-    }
-    //update
-    if (filter_type == "all" || filter_type == "artifact" || filter_type == "main")
-    {
-        for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
-    }
-
-    //main
-    //get
-    Artifact::get_main(this);
-    //check
-    if (filter_type == "all" || filter_type == "artifact" || filter_type == "main")
-    {
-        if ((a_main3 == "生命值" && !data_list[0]->useful) || (a_main3 == "攻击力" && !data_list[1]->useful) || (a_main3 == "防御力" && !data_list[2]->useful) ||
-            (a_main3 == "元素精通" && !data_list[4]->useful) || (a_main3 == "元素充能效率" && !data_list[5]->useful))
-        {
-            outfile_debug << (a_main3 + "_main3_failure\n");
-            return 3;
-        }
-        if ((a_main4 == "生命值" && !data_list[0]->useful) || (a_main4 == "攻击力" && !data_list[1]->useful) || (a_main4 == "防御力" && !data_list[2]->useful) ||
-            (a_main4 == "元素精通" && !data_list[4]->useful) || (a_main4 == "伤害加成" && !data_list[8]->useful))
-        {
-            outfile_debug << (a_main4 + "_main4_failure\n");
-            return 4;
-        }
-        if ((a_main5 == "生命值" && !data_list[0]->useful) || (a_main5 == "攻击力" && !data_list[1]->useful) || (a_main5 == "防御力" && !data_list[2]->useful) ||
-            (a_main5 == "元素精通" && !data_list[4]->useful) || (a_main5 == "暴击率" && !data_list[6]->useful) || (a_main5 == "暴击伤害" && !data_list[7]->useful) ||
-            (a_main5 == "治疗加成" && !data_list[12]->useful))
-        {
-            outfile_debug << (a_main5 + "_main5_failure\n");
-            return 5;
         }
     }
     //update
 //    for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
 
+    check_useful_attributes();
+
+    //main
+    //get
+    Artifact::get_main(this);
+    //check
+    if ((a_main3 == "生命值" && !data_list[0]->useful) || (a_main3 == "攻击力" && !data_list[1]->useful) || (a_main3 == "防御力" && !data_list[2]->useful) ||
+        (a_main3 == "元素精通" && !data_list[4]->useful) || (a_main3 == "元素充能效率" && (!data_list[5]->useful && config->condition->attack_way != "Q")))//Q充能考虑
+    {
+        outfile_debug << (a_main3 + "_main3_failure\n");
+        return 3;
+    }
+    if ((a_main4 == "生命值" && !data_list[0]->useful) || (a_main4 == "攻击力" && !data_list[1]->useful) || (a_main4 == "防御力" && !data_list[2]->useful) ||
+        (a_main4 == "元素精通" && !data_list[4]->useful) || (a_main4 == "伤害加成" && !data_list[8]->useful))
+    {
+        outfile_debug << (a_main4 + "_main4_failure\n");
+        return 4;
+    }
+    if ((a_main5 == "生命值" && !data_list[0]->useful) || (a_main5 == "攻击力" && !data_list[1]->useful) || (a_main5 == "防御力" && !data_list[2]->useful) ||
+        (a_main5 == "元素精通" && !data_list[4]->useful) || (a_main5 == "暴击率" && !data_list[6]->useful) || (a_main5 == "暴击伤害" && !data_list[7]->useful) ||
+        (a_main5 == "治疗加成" && !data_list[12]->useful))
+    {
+        outfile_debug << (a_main5 + "_main5_failure\n");
+        return 5;
+    }
+    //update
+//    for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
+
     get_team_data();
-    adjust_recharge_requirement();
-    limit_useful_attributes();
+
+    satisfy_recharge_requirement();
 
     outfile_debug << "\n";
 
