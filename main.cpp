@@ -1338,51 +1338,51 @@ void Artifact::modify_useful_attribute(Deployment *data)
 }
 
 //build new artifact(all) 提供充能、队友加成的有效
-void Deployment::check_artifact_special(bool &valid)
+void Deployment::check_artifact_special(bool &suit1_valid, bool &suit2_valid, bool if_4_piece)
 {
-    //特殊判断圣遗物套装
-    if (suit1 == suit2)
+    //特殊判断圣遗物套装，原来肯定-现在肯定；原来否定-现在肯定；原来肯定-现在否定；原来否定-现在否定
+    if (if_4_piece)
     {
         if (suit1->name == "悠古的磐岩")
         {
             if (c_point->ele_type == "岩")
-                valid = true;
+                suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
         else if (suit1->name == "翠绿之影")
         {
             if (c_point->ele_type == "风")
-                valid = true;
+                suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
         else if (suit1->name == "如雷的盛怒")
         {
             if (c_point->ele_type == "雷")
-                valid = true;
+                suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
         else if (suit1->name == "绝缘之旗印")
         {
             if (config->condition->attack_way == "Q")
-                valid = true;
+                suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
         else if (suit1->name == "海染砗磲" || suit1->name == "被怜爱的少女")
         {
             if (c_point->args->heal_sustain)
-                valid = true;
+                suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
 
         //team
         if (suit1->name == "昔日宗室之仪")
         {
-            valid = true;
+            suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
         else if (suit1->name == "千岩牢固")
         {
             if (c_point->args->E_hit_interval < 3 && c_point->args->E_hit_interval > 0)
-                valid = true;
+                suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
         else if (suit1->name == "深林的记忆")
         {
             if (c_point->args->E_hit_interval > 0 || c_point->args->Q_hit_interval > 0)
-                valid = true;
+                suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
 
         //recharge
@@ -1391,19 +1391,16 @@ void Deployment::check_artifact_special(bool &valid)
     {
         //2+2
         //只允许 角斗+其他/追忆 染血+其他/苍白 少女+其他/海染 乐团+其他/饰金
-        if (suit1->name == "追忆之注连" || suit2->name == "追忆之注连") valid = false;
-        if (suit1->name == "辰砂往生录" || suit2->name == "辰砂往生录") valid = false;
-        if (suit1->name == "来歆余响" || suit2->name == "来歆余响") valid = false;
-        if ((suit1->name == "追忆之注连" && suit2->name == "角斗士的终幕礼") || (suit2->name == "追忆之注连" && suit1->name == "角斗士的终幕礼")) valid = true;
-
-        if (suit1->name == "苍白之火" || suit2->name == "苍白之火") valid = false;
-        if ((suit1->name == "染血的骑士道" && suit2->name == "苍白之火") || (suit2->name == "染血的骑士道" && suit1->name == "苍白之火")) valid = true;
-
-        if (suit1->name == "海染砗磲" || suit2->name == "海染砗磲") valid = false;
-        if ((suit1->name == "被怜爱的少女" && suit2->name == "海染砗磲") || (suit2->name == "被怜爱的少女" && suit1->name == "海染砗磲")) valid = true;
-
-        if (suit1->name == "饰金之梦" || suit2->name == "饰金之梦") valid = false;
-        if ((suit1->name == "流浪大地的乐团" && suit2->name == "饰金之梦") || (suit2->name == "流浪大地的乐团" && suit1->name == "饰金之梦")) valid = true;
+        //suit1
+        if ((suit1->name == "追忆之注连" && suit2->name != "角斗士的终幕礼") || suit1->name == "辰砂往生录" || suit1->name == "来歆余响") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit1->name == "苍白之火" && suit2->name != "染血的骑士道") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit1->name == "海染砗磲" && suit2->name != "被怜爱的少女") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit1->name == "饰金之梦" && suit2->name != "流浪大地的乐团") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        //suit2
+        if ((suit2->name == "追忆之注连" && suit1->name != "角斗士的终幕礼") || suit2->name == "辰砂往生录" || suit2->name == "来歆余响") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit2->name == "苍白之火" && suit1->name != "染血的骑士道") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit2->name == "海染砗磲" && suit1->name != "被怜爱的少女") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit2->name == "饰金之梦" && suit1->name != "流浪大地的乐团") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
     }
 }
 
@@ -1527,12 +1524,12 @@ void Deployment::get_team_data()
     if (config->team_weapon_artifact.find("流浪的晚星") != string::npos)
     {
         //TODO:转化类加成不能被二次转化
-        add_percentage("攻击力", 40 / base_atk, "team_流浪的晚星");
+        add_percentage("攻击力", 40.0 / base_atk, "team_流浪的晚星");
     }
     if (config->team_weapon_artifact.find("玛海菈的水色") != string::npos)
     {
         //TODO:转化类加成不能被二次转化
-        add_percentage("攻击力", 40 / base_atk, "team_玛海菈的水色");
+        add_percentage("攻击力", 40.0 / base_atk, "team_玛海菈的水色");
     }
 
     //artifact

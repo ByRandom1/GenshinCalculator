@@ -56,7 +56,6 @@ Deployment::~Deployment()
 int Deployment::init_check_data()
 {
     //LOG START
-    bool valid;
     double prevalue[data_list.size()];
 
     outfile_debug << (c_point->name + "--" + w_point->name + "--" + suit1->name + "--" + suit2->name + "--" + a_main3 + "--" + a_main4 + "--" + a_main5 + ",");
@@ -70,52 +69,69 @@ int Deployment::init_check_data()
     //weapon get
     w_point->get_vice(this);
     w_point->get_extra(this);
+
     //update
     for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
 
     //artifact
-    //先检测四件套或者两个两件套中的一个是否有效
-    //get
-    suit1->get_extra(this, suit1 == suit2);
-    //check
-    valid = false;
-    for (int i = 0; i < data_list.size(); i++)
-        if (data_list[i]->useful && data_list[i]->percentage > prevalue[i])
-        {
-            valid = true;
-            break;
-        }
-    check_artifact_special(valid);
-    //Q充能考虑
-    if (config->condition->attack_way == "Q" && data_list[5]->percentage > prevalue[5]) valid = true;
-
-    if (!valid)
+    bool suit1_valid;
+    bool suit2_valid;
+    if (suit1 == suit2)
     {
-        if (suit1 == suit2) outfile_debug << (suit1->name + "_piece4_failure\n");
-        else outfile_debug << (suit1->name + "_piece2_failure\n");
-        return 2;
-    }
-    //update
-    for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
-
-    //若是四件套直接加两件套效果，如果不是还要检测另外一个两件套是否有效
-    //get
-    suit2->get_extra(this, false);
-    //check
-    if (suit1 != suit2)
-    {
-        valid = false;
+        suit1->get_extra(this, true);
+        //check
+        suit1_valid = suit2_valid = false;
         for (int i = 0; i < data_list.size(); i++)
             if (data_list[i]->useful && data_list[i]->percentage > prevalue[i])
             {
-                valid = true;
+                suit1_valid = suit2_valid = true;
                 break;
             }
-        check_artifact_special(valid);
-        //Q充能考虑
-        if (config->condition->attack_way == "Q" && data_list[5]->percentage > prevalue[5]) valid = true;
+        if (config->condition->attack_way == "Q" && data_list[5]->percentage > prevalue[5]) suit1_valid = suit2_valid = true;
 
-        if (!valid)
+        check_artifact_special(suit1_valid, suit2_valid, true);
+
+        if (!suit1_valid || !suit2_valid)
+        {
+            outfile_debug << (suit1->name + "_piece4_failure\n");
+            return 2;
+        }
+
+        suit2->get_extra(this, false);
+    }
+    else
+    {
+        suit1->get_extra(this, false);
+        //check
+        suit1_valid = false;
+        for (int i = 0; i < data_list.size(); i++)
+            if (data_list[i]->useful && data_list[i]->percentage > prevalue[i])
+            {
+                suit1_valid = true;
+                break;
+            }
+        if (config->condition->attack_way == "Q" && data_list[5]->percentage > prevalue[5]) suit1_valid = true;
+        //update
+        for (int i = 0; i < data_list.size(); i++) prevalue[i] = data_list[i]->percentage;
+
+        suit2->get_extra(this, false);
+        suit2_valid = false;
+        for (int i = 0; i < data_list.size(); i++)
+            if (data_list[i]->useful && data_list[i]->percentage > prevalue[i])
+            {
+                suit2_valid = true;
+                break;
+            }
+        if (config->condition->attack_way == "Q" && data_list[5]->percentage > prevalue[5]) suit2_valid = true;
+
+        check_artifact_special(suit1_valid, suit2_valid, false);
+
+        if (!suit1_valid)
+        {
+            outfile_debug << (suit1->name + "_piece2_failure\n");
+            return 2;
+        }
+        else if (!suit2_valid)
         {
             outfile_debug << (suit2->name + "_piece2_failure\n");
             return 2;

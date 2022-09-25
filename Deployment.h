@@ -123,7 +123,7 @@ public:
 
     bool add_percentage(string type_, double value_, string source);
 
-    void check_artifact_special(bool &valid);//在main中实现
+    void check_artifact_special(bool &suit1_valid, bool &suit2_valid, bool if_4_piece);//在main中实现
 
     void check_useful_attributes();//在main中实现
 
