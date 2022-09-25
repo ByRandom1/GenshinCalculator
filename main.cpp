@@ -1417,6 +1417,7 @@ void Deployment::check_useful_attributes()
         if ((data_list[0]->value_per_entry * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk) < data_list[1]->value_per_entry)
             data_list[0]->useful = config->useful_attributes[0];
     }
+        // TODO:NEW
     else if (w_point->name == "圣显之钥")
     {
         if ((data_list[0]->value_per_entry * 0.0056 * (0.75 + w_point->level * 0.25) * base_life) < data_list[4]->value_per_entry)
@@ -1722,7 +1723,7 @@ void Deployment::get_team_data()
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all) 有关充能的转化类属性要考虑
-bool Deployment::satisfy_recharge_requirement()
+void Deployment::satisfy_recharge_requirement()
 {
     string double_E_per_round = "神里绫华甘雨温迪";//TODO:recharge parameter
     //调整充能数值
@@ -1876,11 +1877,7 @@ bool Deployment::satisfy_recharge_requirement()
         else energy = Q_energy_modify;
 
         data_list[5]->entry_num = max(0, (int) round((Q_energy_modify / energy - data_list[5]->percentage - extra_recharge) / data_list[5]->value_per_entry));
-
-        if (data_list[5]->entry_num > 12) return false;
-        else return true;
     }
-    return true;
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
@@ -1901,6 +1898,7 @@ void Deployment::get_convert_value(double &life, double &atk, double &def, doubl
     //weapon
     if (w_point->name == "磐岩结绿")//生命->攻击
         atk_add += life * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk;//生命->攻击
+        // TODO:NEW
     else if (w_point->name == "圣显之钥")//生命->精通
     {
         if (c_point->args->E_hit_interval < 10 && c_point->args->E_hit_interval > 0)
@@ -2406,10 +2404,6 @@ void cal_deployment()
                                                 c_w_pair.push(temp);
                                             }
                                             else delete temp;
-                                        }
-                                        else if (check_num == 1)//error:recharge
-                                        {
-                                            delete temp;
                                         }
                                         else if (check_num == 2)//error:suit1 or suit2
                                         {
