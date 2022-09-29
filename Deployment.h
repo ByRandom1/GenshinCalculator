@@ -19,6 +19,9 @@ using namespace std;
 extern bool out_header;
 extern ofstream outfile_result;
 extern ofstream outfile_debug;
+
+extern Character *find_character_by_name(string c_name);
+
 #define max_up_num_per_base 4
 #define max_attribute_num_per_pos 3
 #define artifact_2_2_max_entry_bonus 2
@@ -30,15 +33,15 @@ struct Config
     string ele_attach_type;
     int max_entry_all;
     vector<bool> useful_attributes;
-    Character* teammate_1;
-    Character* teammate_2;
-    Character* teammate_3;
+    Character *teammate_1;
+    Character *teammate_2;
+    Character *teammate_3;
     string teammate_all;
     string team_weapon_artifact;
 
     Config(Condition *condition_, string react_type_, string ele_attach_type_, int max_entry_all_, bool if_life_useful, bool if_atk_useful, bool if_def_useful, bool if_mastery_useful,
-           bool if_recharge_useful, bool if_critrate_useful, bool if_critdam_useful, bool if_damplus_useful, bool if_heal_useful, bool if_shield_useful, Character* teammate_1_,
-           Character* teammate_2_, Character* teammate_3_, string team_weapon_artifact_)
+           bool if_recharge_useful, bool if_critrate_useful, bool if_critdam_useful, bool if_damplus_useful, bool if_heal_useful, bool if_shield_useful, string teammate_1_,
+           string teammate_2_, string teammate_3_, string team_weapon_artifact_)
     {
         condition = condition_;
         react_type = react_type_;
@@ -58,10 +61,10 @@ struct Config
         useful_attributes.push_back(true);//防御无视
         useful_attributes.push_back(if_heal_useful);
         useful_attributes.push_back(if_shield_useful);
-        teammate_1 = teammate_1_;
-        teammate_2 = teammate_2_;
-        teammate_3 = teammate_3_;
-        teammate_all = teammate_1_->name + teammate_2_->name + teammate_3_->name;
+        teammate_1 = find_character_by_name(teammate_1_);
+        teammate_2 = find_character_by_name(teammate_2_);
+        teammate_3 = find_character_by_name(teammate_3_);
+        teammate_all = teammate_1_ + teammate_2_ + teammate_3_;
         team_weapon_artifact = team_weapon_artifact_;
     }
 };
