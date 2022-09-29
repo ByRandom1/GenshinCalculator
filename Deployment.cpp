@@ -25,11 +25,31 @@ Deployment::Deployment(Character *c_point_,
     base_life = c_point->get_life();
     base_atk = c_point->get_atk() + w_point->get_atk();
     base_def = c_point->get_def();
-    if (config->condition->attack_way == "平A") base_skillrate = c_point->get_normal_A();
-    else if (config->condition->attack_way == "重A") base_skillrate = c_point->get_heavy_A();
-    else if (config->condition->attack_way == "下落A") base_skillrate = c_point->get_down_A();
-    else if (config->condition->attack_way == "E") base_skillrate = c_point->get_E();
-    else if (config->condition->attack_way == "Q") base_skillrate = c_point->get_Q();
+    if (config->condition->attack_way == "平A")
+    {
+        base_skillrate = c_point->get_normal_A();
+        config->lockface = false;
+    }
+    else if (config->condition->attack_way == "重A")
+    {
+        base_skillrate = c_point->get_heavy_A();
+        config->lockface = false;
+    }
+    else if (config->condition->attack_way == "下落A")
+    {
+        base_skillrate = c_point->get_down_A();
+        config->lockface = false;
+    }
+    else if (config->condition->attack_way == "E")
+    {
+        base_skillrate = c_point->get_E();
+        config->lockface = c_point->E_lockface;
+    }
+    else if (config->condition->attack_way == "Q")
+    {
+        base_skillrate = c_point->get_Q();
+        config->lockface = c_point->Q_lockface;
+    }
 
     data_list.push_back(new attribute("生命值", 1.0, 0, 0.05, config->useful_attributes[0]));
     data_list.push_back(new attribute("攻击力", 1.0, 0, 0.05, config->useful_attributes[1]));

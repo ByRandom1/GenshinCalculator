@@ -29,6 +29,8 @@ extern Character *find_character_by_name(string c_name);
 struct Config
 {
     Condition *condition;
+    bool background;
+    bool lockface;
     string react_type;//扩散（风+水火雷冰），结晶（岩+水火雷冰），绽放（草水+火雷），激化（草雷），燃烧（草火），蒸发（水火），融化（火冰），冻结（水冰），感电（雷水），超载（雷火），超导（雷冰）
     string ele_attach_type;
     int max_entry_all;
@@ -39,11 +41,13 @@ struct Config
     string teammate_all;
     string team_weapon_artifact;
 
-    Config(Condition *condition_, string react_type_, string ele_attach_type_, int max_entry_all_, bool if_life_useful, bool if_atk_useful, bool if_def_useful, bool if_mastery_useful,
+    Config(Condition *condition_, bool background_, bool lockface_, string react_type_, string ele_attach_type_, int max_entry_all_, bool if_life_useful, bool if_atk_useful, bool if_def_useful, bool if_mastery_useful,
            bool if_recharge_useful, bool if_critrate_useful, bool if_critdam_useful, bool if_damplus_useful, bool if_heal_useful, bool if_shield_useful, string teammate_1_,
            string teammate_2_, string teammate_3_, string team_weapon_artifact_)
     {
         condition = condition_;
+        background = background_;
+        lockface = lockface_;
         react_type = react_type_;
         ele_attach_type = ele_attach_type_;
         max_entry_all = max_entry_all_;
