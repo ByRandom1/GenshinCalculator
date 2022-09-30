@@ -22,16 +22,18 @@ Character::Character(string name_,
                      double down_A_10, double down_A_9,
                      int E_level_,
                      double E_energy_,
-                     double E_release_times_,
-                     double E_release_interval_,
-                     double E_hit_interval_,
+//                     double E_release_times_,
+//                     double E_release_interval_,
+//                     double E_hit_times_,
+//                     double E_hit_interval_,
                      bool E_lockface_,
                      double E_13, double E_12, double E_10, double E_9,
                      int Q_level_,
                      int Q_energy_,
-                     double Q_release_times_,
-                     double Q_release_interval_,
-                     double Q_hit_interval_,
+//                     double Q_release_times_,
+//                     double Q_release_interval_,
+//                     double Q_hit_times_,
+//                     double Q_hit_interval_,
                      bool Q_lockface_,
                      double Q_13, double Q_12, double Q_10, double Q_9,
                      int constellation_,
@@ -58,9 +60,10 @@ Character::Character(string name_,
     down_A.push_back(down_A_9);
     E_level = E_level_;
     E_energy = E_energy_;
-    E_release_times = E_release_times_;
-    E_release_interval = E_release_interval_;
-    E_hit_interval = E_hit_interval_;
+//    E_release_times = E_release_times_;
+//    E_release_interval = E_release_interval_;
+//    E_hit_times = E_hit_times_;
+//    E_hit_interval = E_hit_interval_;
     E_lockface = E_lockface_;
     E.push_back(E_13);
     E.push_back(E_12);
@@ -68,9 +71,10 @@ Character::Character(string name_,
     E.push_back(E_9);
     Q_level = Q_level_;
     Q_energy = Q_energy_;
-    Q_release_times = Q_release_times_;
-    Q_release_interval = Q_release_interval_;
-    Q_hit_interval = Q_hit_interval_;
+//    Q_release_times = Q_release_times_;
+//    Q_release_interval = Q_release_interval_;
+//    Q_hit_times = Q_hit_times_;
+//    Q_hit_interval = Q_hit_interval_;
     Q_lockface = Q_lockface_;
     Q.push_back(Q_13);
     Q.push_back(Q_12);

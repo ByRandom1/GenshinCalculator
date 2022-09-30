@@ -35,16 +35,18 @@ public:
     vector<double> down_A;
     int E_level;
     double E_energy;
-    double E_release_times;
-    double E_release_interval;
-    double E_hit_interval;
+//    double E_release_times;
+//    double E_release_interval;
+//    double E_hit_times;
+//    double E_hit_interval;
     bool E_lockface;
     vector<double> E;
     int Q_level;
     double Q_energy;
-    double Q_release_times;
-    double Q_release_interval;
-    double Q_hit_interval;
+//    double Q_release_times;
+//    double Q_release_interval;
+//    double Q_hit_times;
+//    double Q_hit_interval;
     bool Q_lockface;
     vector<double> Q;
     int constellation;
@@ -69,16 +71,18 @@ public:
               double down_A_10, double down_A_9,
               int E_level_,
               double E_energy_,
-              double E_release_times_,
-              double E_release_interval_,
-              double E_hit_interval_,
+//              double E_release_times_,
+//              double E_release_interval_,
+//              double E_hit_times_,
+//              double E_hit_interval_,
               bool E_lockface_,
               double E_13, double E_12, double E_10, double E_9,
               int Q_level_,
               int Q_energy_,
-              double Q_release_times_,
-              double Q_release_interval_,
-              double Q_hit_interval_,
+//              double Q_release_times_,
+//              double Q_release_interval_,
+//              double Q_hit_times_,
+//              double Q_hit_interval_,
               bool Q_lockface_,
               double Q_13, double Q_12, double Q_10, double Q_9,
               int constellation_,
