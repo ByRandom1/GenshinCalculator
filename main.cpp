@@ -1665,6 +1665,12 @@ void Deployment::get_team_data()
         add_percentage("攻击力", 0.32, "team_贯月矢");
     }
     //TODO:NEW
+    if (config->team_weapon_artifact.find("千夜浮梦") != string::npos)
+    {
+        add_percentage("元素精通", 40.0, "team_千夜浮梦");
+    }
+    //转化类
+    //TODO:NEW
     if (config->team_weapon_artifact.find("圣显之钥") != string::npos && w_point->name != "圣显之钥")
     {
         add_percentage("元素精通", 100.0, "team_圣显之钥");
@@ -1682,11 +1688,6 @@ void Deployment::get_team_data()
     if (config->team_weapon_artifact.find("玛海菈的水色") != string::npos)
     {
         add_percentage("攻击力", 36.0 / base_atk, "team_玛海菈的水色");
-    }
-    //TODO:NEW
-    if (config->team_weapon_artifact.find("千夜浮梦") != string::npos)
-    {
-        add_percentage("元素精通", 40.0, "team_千夜浮梦");
     }
 
     //artifact
@@ -2085,6 +2086,7 @@ void Deployment::get_convert_value(double &life, double &atk, double &def, doubl
     if (config->teammate_all.find("纳西妲") != string::npos || c_point->name == "纳西妲")
         if (!(config->background && !config->lockface))
             mastery_ -= 200.0;
+
     //按新面板计算转化，最后再执行加成
     double life_add = 0, atk_add = 0, def_add = 0, mastery_add = 0, recharge_add = 0, critrate_add = 0, critdam_add = 0, damplus_add = 0;
     //character
