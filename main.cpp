@@ -2301,7 +2301,8 @@ void Deployment::out()
                        << "lifenum" << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
         out_header = false;
     }
-    outfile_result << c_point->name << "," << (config->condition->attack_way + "_" + config->react_type + "_" + config->ele_attach_type + "_" + to_string(config->max_entry_all) + "_" + config->teammate_all + "_" + config->team_weapon_artifact) << ","
+    outfile_result << c_point->name << ","
+                   << (config->condition->attack_way + "_" + (config->background ? "后台" : "站场") + config->react_type + "_" + config->ele_attach_type + "_" + to_string(config->max_entry_all) + "_" + config->teammate_all + "_" + config->team_weapon_artifact) << ","
                    << w_point->name << "," << suit1->name << "," << suit2->name << "," << a_main3 << "," << a_main4 << "," << a_main5 << "," << damage << ",";
     outfile_result << base_life << "," << base_life * (data_list[0]->entry_num * data_list[0]->value_per_entry + data_list[0]->percentage - 1) << ",";
     outfile_result << base_atk << "," << base_atk * (data_list[1]->entry_num * data_list[1]->value_per_entry + data_list[1]->percentage - 1) << ",";
