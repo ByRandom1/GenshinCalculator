@@ -502,12 +502,12 @@ bool Character::get_extra_special(Deployment *data) const
 
         if (data->config->condition->attack_way == "E")
         {
-            if (pyro_num == 1) data->add_percentage("伤害加成", 0.189, (name + "_extra_special"));
-            else if (pyro_num >= 2) data->add_percentage("伤害加成", 0.284, (name + "_extra_special"));
+            if (pyro_num == 1) data->add_percentage("伤害加成", 0.268, (name + "_extra_special"));//lv10
+            else if (pyro_num >= 2) data->add_percentage("伤害加成", 0.402, (name + "_extra_special"));//lv10
         }
 
         if (!(data->config->background && !data->config->lockface))
-            data->add_percentage("元素精通", 200, (name + "_extra_special"));
+            data->add_percentage("元素精通", 250, (name + "_extra_special"));
 
         if (data->c_point->constellation >= 2 && data->config->react_type.find("激化") != string::npos)
             data->add_percentage("防御削弱", 0.3, (name + "_extra_special"));
@@ -1847,7 +1847,7 @@ void Deployment::get_team_data()
     {
         //talent Q后
         if (!(config->background && !config->lockface))
-            add_percentage("元素精通", 200, "team_纳西妲");
+            add_percentage("元素精通", 250, "team_纳西妲");
         //constellation>=2 激化后
 //        if (config->react_type.find("激化") != string::npos)
 //            add_percentage("防御削弱", 0.3, "team_纳西妲");
@@ -2085,7 +2085,7 @@ void Deployment::get_convert_value(double &life, double &atk, double &def, doubl
     //TODO:NEW
     if (config->teammate_all.find("纳西妲") != string::npos || c_point->name == "纳西妲")
         if (!(config->background && !config->lockface))
-            mastery_ -= 200.0;
+            mastery_ -= 250.0;
 
     //按新面板计算转化，最后再执行加成
     double life_add = 0, atk_add = 0, def_add = 0, mastery_add = 0, recharge_add = 0, critrate_add = 0, critdam_add = 0, damplus_add = 0;
