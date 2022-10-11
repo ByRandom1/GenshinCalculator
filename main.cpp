@@ -1854,13 +1854,27 @@ void Deployment::get_team_data()
         Dendro_num++;
     }
 
-    if (config->teammate_all.find("冰_test") != string::npos) Cryo_num++;
-    if (config->teammate_all.find("火_test") != string::npos) Pyro_num++;
-    if (config->teammate_all.find("水_test") != string::npos) Hydro_num++;
-    if (config->teammate_all.find("风_test") != string::npos) Anemo_num++;
-    if (config->teammate_all.find("雷_test") != string::npos) Electro_num++;
-    if (config->teammate_all.find("岩_test") != string::npos) Geo_num++;
-    if (config->teammate_all.find("草_test") != string::npos) Dendro_num++;
+    if (config->teammate_1->name == "冰_test") Cryo_num++;
+    else if (config->teammate_1->name == "火_test") Pyro_num++;
+    else if (config->teammate_1->name == "水_test") Hydro_num++;
+    else if (config->teammate_1->name == "风_test") Anemo_num++;
+    else if (config->teammate_1->name == "雷_test") Electro_num++;
+    else if (config->teammate_1->name == "岩_test") Geo_num++;
+    else if (config->teammate_1->name == "草_test") Dendro_num++;
+    if (config->teammate_2->name == "冰_test") Cryo_num++;
+    else if (config->teammate_2->name == "火_test") Pyro_num++;
+    else if (config->teammate_2->name == "水_test") Hydro_num++;
+    else if (config->teammate_2->name == "风_test") Anemo_num++;
+    else if (config->teammate_2->name == "雷_test") Electro_num++;
+    else if (config->teammate_2->name == "岩_test") Geo_num++;
+    else if (config->teammate_2->name == "草_test") Dendro_num++;
+    if (config->teammate_3->name == "冰_test") Cryo_num++;
+    else if (config->teammate_3->name == "火_test") Pyro_num++;
+    else if (config->teammate_3->name == "水_test") Hydro_num++;
+    else if (config->teammate_3->name == "风_test") Anemo_num++;
+    else if (config->teammate_3->name == "雷_test") Electro_num++;
+    else if (config->teammate_3->name == "岩_test") Geo_num++;
+    else if (config->teammate_3->name == "草_test") Dendro_num++;
 
     if (this->c_point->ele_type == "冰") Cryo_num++;
     else if (this->c_point->ele_type == "火") Pyro_num++;
@@ -2348,6 +2362,10 @@ public:
 };
 
 //TODO:配置编写
+bool cal_enable_recharge_check = true;
+double cal_min_critrate_valid = 0.5;
+double cal_max_critrate_valid = 0.9;
+
 void get_all_config(string c_name, vector<Config *> &config_list, vector<Combination *> &combination_list)
 {
     //"白辰之环" "苍古自由之誓" "松籁响起之时" "圣显之钥" "西福斯的月光" "流浪的晚星" "玛海菈的水色"
@@ -2373,68 +2391,68 @@ void get_all_config(string c_name, vector<Config *> &config_list, vector<Combina
     //"纳西妲" "草_test" "钟离" "雷电将军" "雷草" "昔日宗室之仪_千夜浮梦_深林的记忆"
     //"纳西妲" "草_test" "班尼特" "雷电将军" "雷草" "原木刀_昔日宗室之仪_千夜浮梦_深林的记忆"
 
-//    if (c_name == "胡桃")
-//    {
-//        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
-//                                         true, true, false, true, false, true, true, true,
-//                                         false, false, "行秋", "钟离", "莫娜", "讨龙_昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
-//                                         true, true, false, true, false, true, true, true,
-//                                         false, false, "行秋", "钟离", "夜兰", "终末嗟叹之诗_昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
-//                                         true, true, false, true, false, true, true, true,
-//                                         false, false, "莫娜", "钟离", "夜兰", "终末嗟叹之诗_讨龙_昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
-//                                         true, true, false, true, false, true, true, true,
-//                                         false, false, "行秋", "钟离", "夜兰", "昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
-//                                         true, true, false, true, false, true, true, true,
-//                                         false, false, "莫娜", "钟离", "夜兰", "讨龙_昔日宗室之仪"));
-//
-//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
-//    }
-//    if (c_name == "神里绫华")
-//    {
-//        config_list.push_back(new Config(new Condition("冰", "单手剑", "重A"), false, false, "冻结", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "甘雨", "温迪", "莫娜", "昔日宗室之仪_翠绿之影"));
-//        config_list.push_back(new Config(new Condition("冰", "单手剑", "重A"), false, false, "冻结", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "甘雨", "温迪", "莫娜", "终末嗟叹之诗_昔日宗室之仪_翠绿之影"));
-//        config_list.push_back(new Config(new Condition("冰", "单手剑", "重A"), false, false, "冻结", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "甘雨", "枫原万叶", "莫娜", "昔日宗室之仪_翠绿之影"));
-//
-//        config_list.push_back(new Config(new Condition("冰", "单手剑", "Q"), false, false, "冻结", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "甘雨", "温迪", "莫娜", "昔日宗室之仪_翠绿之影"));
-//        config_list.push_back(new Config(new Condition("冰", "单手剑", "Q"), false, false, "冻结", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "甘雨", "温迪", "莫娜", "终末嗟叹之诗_昔日宗室之仪_翠绿之影"));
-//        config_list.push_back(new Config(new Condition("冰", "单手剑", "Q"), false, false, "冻结", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "甘雨", "枫原万叶", "莫娜", "昔日宗室之仪_翠绿之影"));
-//
-//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
-//    }
+    if (c_name == "胡桃")
+    {
+        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
+                                         true, true, false, true, false, true, true, true,
+                                         false, false, "行秋", "钟离", "莫娜", "讨龙_昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
+                                         true, true, false, true, false, true, true, true,
+                                         false, false, "行秋", "钟离", "夜兰", "终末嗟叹之诗_昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
+                                         true, true, false, true, false, true, true, true,
+                                         false, false, "莫娜", "钟离", "夜兰", "终末嗟叹之诗_讨龙_昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
+                                         true, true, false, true, false, true, true, true,
+                                         false, false, "行秋", "钟离", "夜兰", "昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
+                                         true, true, false, true, false, true, true, true,
+                                         false, false, "莫娜", "钟离", "夜兰", "讨龙_昔日宗室之仪"));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+    }
+    if (c_name == "神里绫华")
+    {
+        config_list.push_back(new Config(new Condition("冰", "单手剑", "重A"), false, false, "冻结", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "甘雨", "温迪", "莫娜", "昔日宗室之仪_翠绿之影"));
+        config_list.push_back(new Config(new Condition("冰", "单手剑", "重A"), false, false, "冻结", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "甘雨", "温迪", "莫娜", "终末嗟叹之诗_昔日宗室之仪_翠绿之影"));
+        config_list.push_back(new Config(new Condition("冰", "单手剑", "重A"), false, false, "冻结", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "甘雨", "枫原万叶", "莫娜", "昔日宗室之仪_翠绿之影"));
+
+        config_list.push_back(new Config(new Condition("冰", "单手剑", "Q"), false, false, "冻结", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "甘雨", "温迪", "莫娜", "昔日宗室之仪_翠绿之影"));
+        config_list.push_back(new Config(new Condition("冰", "单手剑", "Q"), false, false, "冻结", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "甘雨", "温迪", "莫娜", "终末嗟叹之诗_昔日宗室之仪_翠绿之影"));
+        config_list.push_back(new Config(new Condition("冰", "单手剑", "Q"), false, false, "冻结", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "甘雨", "枫原万叶", "莫娜", "昔日宗室之仪_翠绿之影"));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+    }
     if (c_name == "雷电将军")
     {
-//        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "感电", "水雷", 30,
-//                                         false, true, false, false, true, true, true, true,
-//                                         false, false, "行秋", "香菱", "班尼特", "昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "感电", "水雷", 30,
-//                                         false, true, false, false, true, true, true, true,
-//                                         false, false, "夜兰", "香菱", "班尼特", "终末嗟叹之诗_昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "感电", "水雷", 30,
-//                                         false, true, false, false, true, true, true, true,
-//                                         false, false, "夜兰", "香菱", "班尼特", "昔日宗室之仪"));
-//
-//        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "超载", "雷火", 30,
-//                                         false, true, false, false, true, true, true, true,
-//                                         false, false, "八重神子", "香菱", "班尼特", "昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "超载", "雷火", 30,
-//                                         false, true, false, false, true, true, true, true,
-//                                         false, false, "枫原万叶", "香菱", "班尼特", "昔日宗室之仪_翠绿之影"));
+        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "感电", "水雷", 30,
+                                         false, true, false, false, true, true, true, true,
+                                         false, false, "行秋", "香菱", "班尼特", "昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "感电", "水雷", 30,
+                                         false, true, false, false, true, true, true, true,
+                                         false, false, "夜兰", "香菱", "班尼特", "终末嗟叹之诗_昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "感电", "水雷", 30,
+                                         false, true, false, false, true, true, true, true,
+                                         false, false, "夜兰", "香菱", "班尼特", "昔日宗室之仪"));
+
+        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "超载", "雷火", 30,
+                                         false, true, false, false, true, true, true, true,
+                                         false, false, "八重神子", "香菱", "班尼特", "昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "超载", "雷火", 30,
+                                         false, true, false, false, true, true, true, true,
+                                         false, false, "枫原万叶", "香菱", "班尼特", "昔日宗室之仪_翠绿之影"));
         //TODO:NEW
         config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "超激化", "雷草", 30,
                                          false, true, false, true, true, true, true, true,
@@ -2449,92 +2467,92 @@ void get_all_config(string c_name, vector<Config *> &config_list, vector<Combina
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
     }
-//    if (c_name == "甘雨")
-//    {
-//        config_list.push_back(new Config(new Condition("冰", "弓", "重A"), false, false, "冻结", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "神里绫华", "温迪", "莫娜", "昔日宗室之仪_翠绿之影"));
-//        config_list.push_back(new Config(new Condition("冰", "弓", "重A"), false, false, "冻结", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "神里绫华", "温迪", "莫娜", "终末嗟叹之诗_昔日宗室之仪_翠绿之影"));
-//        config_list.push_back(new Config(new Condition("冰", "弓", "重A"), false, false, "冻结", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "神里绫华", "枫原万叶", "莫娜", "昔日宗室之仪_翠绿之影"));
-//
-//        config_list.push_back(new Config(new Condition("冰", "弓", "Q"), true, true, "冻结", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "神里绫华", "温迪", "莫娜", "昔日宗室之仪_翠绿之影"));
-//        config_list.push_back(new Config(new Condition("冰", "弓", "Q"), true, true, "冻结", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "神里绫华", "温迪", "莫娜", "终末嗟叹之诗_昔日宗室之仪_翠绿之影"));
-//        config_list.push_back(new Config(new Condition("冰", "弓", "Q"), true, true, "冻结", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "神里绫华", "枫原万叶", "莫娜", "昔日宗室之仪_翠绿之影"));
-//
-//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
-//    }
-//    if (c_name == "夜兰")
-//    {
-//        config_list.push_back(new Config(new Condition("水", "弓", "Q"), true, false, "NONE", "水", 30,
-//                                         true, false, false, false, false, true, true, true,
-//                                         false, false, "胡桃", "行秋", "钟离", "昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("水", "弓", "Q"), true, false, "NONE", "水", 30,
-//                                         true, false, false, false, false, true, true, true,
-//                                         false, false, "胡桃", "莫娜", "钟离", "昔日宗室之仪"));
-//
-//        config_list.push_back(new Config(new Condition("水", "弓", "Q"), true, false, "感电", "水雷", 30,
-//                                         true, false, false, false, false, true, true, true,
-//                                         false, false, "雷电将军", "香菱", "班尼特", "昔日宗室之仪"));
-//
-//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
-//    }
-//    if (c_name == "行秋")
-//    {
-//        config_list.push_back(new Config(new Condition("水", "单手剑", "Q"), true, false, "感电", "水雷", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "雷电将军", "香菱", "班尼特", "昔日宗室之仪"));
-//
-//        config_list.push_back(new Config(new Condition("水", "单手剑", "Q"), true, false, "NONE", "水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "胡桃", "钟离", "莫娜", "昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("水", "单手剑", "Q"), true, false, "NONE", "水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "胡桃", "钟离", "夜兰", "终末嗟叹之诗_昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("水", "单手剑", "Q"), true, false, "NONE", "水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "胡桃", "钟离", "夜兰", "昔日宗室之仪"));
-//
-//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
-//    }
-//    if (c_name == "香菱")
-//    {
-//        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载", "水雷", 30,
-//                                         false, true, false, true, false, true, true, true,
-//                                         false, false, "雷电将军", "行秋", "班尼特", "昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载", "水雷", 30,
-//                                         false, true, false, true, false, true, true, true,
-//                                         false, false, "雷电将军", "夜兰", "班尼特", "终末嗟叹之诗_昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载", "水雷", 30,
-//                                         false, true, false, true, false, true, true, true,
-//                                         false, false, "雷电将军", "夜兰", "班尼特", "昔日宗室之仪"));
-//
-//        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "超载", "雷火", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "雷电将军", "八重神子", "班尼特", "昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "超载", "雷火", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "雷电将军", "枫原万叶", "班尼特", "昔日宗室之仪_翠绿之影"));
-//
-//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
-//    }
+    if (c_name == "甘雨")
+    {
+        config_list.push_back(new Config(new Condition("冰", "弓", "重A"), false, false, "冻结", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "神里绫华", "温迪", "莫娜", "昔日宗室之仪_翠绿之影"));
+        config_list.push_back(new Config(new Condition("冰", "弓", "重A"), false, false, "冻结", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "神里绫华", "温迪", "莫娜", "终末嗟叹之诗_昔日宗室之仪_翠绿之影"));
+        config_list.push_back(new Config(new Condition("冰", "弓", "重A"), false, false, "冻结", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "神里绫华", "枫原万叶", "莫娜", "昔日宗室之仪_翠绿之影"));
+
+        config_list.push_back(new Config(new Condition("冰", "弓", "Q"), true, true, "冻结", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "神里绫华", "温迪", "莫娜", "昔日宗室之仪_翠绿之影"));
+        config_list.push_back(new Config(new Condition("冰", "弓", "Q"), true, true, "冻结", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "神里绫华", "温迪", "莫娜", "终末嗟叹之诗_昔日宗室之仪_翠绿之影"));
+        config_list.push_back(new Config(new Condition("冰", "弓", "Q"), true, true, "冻结", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "神里绫华", "枫原万叶", "莫娜", "昔日宗室之仪_翠绿之影"));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+    }
+    if (c_name == "夜兰")
+    {
+        config_list.push_back(new Config(new Condition("水", "弓", "Q"), true, false, "NONE", "水", 30,
+                                         true, false, false, false, false, true, true, true,
+                                         false, false, "胡桃", "行秋", "钟离", "昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("水", "弓", "Q"), true, false, "NONE", "水", 30,
+                                         true, false, false, false, false, true, true, true,
+                                         false, false, "胡桃", "莫娜", "钟离", "昔日宗室之仪"));
+
+        config_list.push_back(new Config(new Condition("水", "弓", "Q"), true, false, "感电", "水雷", 30,
+                                         true, false, false, false, false, true, true, true,
+                                         false, false, "雷电将军", "香菱", "班尼特", "昔日宗室之仪"));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+    }
+    if (c_name == "行秋")
+    {
+        config_list.push_back(new Config(new Condition("水", "单手剑", "Q"), true, false, "感电", "水雷", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "雷电将军", "香菱", "班尼特", "昔日宗室之仪"));
+
+        config_list.push_back(new Config(new Condition("水", "单手剑", "Q"), true, false, "NONE", "水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "胡桃", "钟离", "莫娜", "昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("水", "单手剑", "Q"), true, false, "NONE", "水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "胡桃", "钟离", "夜兰", "终末嗟叹之诗_昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("水", "单手剑", "Q"), true, false, "NONE", "水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "胡桃", "钟离", "夜兰", "昔日宗室之仪"));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+    }
+    if (c_name == "香菱")
+    {
+        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载", "水雷", 30,
+                                         false, true, false, true, false, true, true, true,
+                                         false, false, "雷电将军", "行秋", "班尼特", "昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载", "水雷", 30,
+                                         false, true, false, true, false, true, true, true,
+                                         false, false, "雷电将军", "夜兰", "班尼特", "终末嗟叹之诗_昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载", "水雷", 30,
+                                         false, true, false, true, false, true, true, true,
+                                         false, false, "雷电将军", "夜兰", "班尼特", "昔日宗室之仪"));
+
+        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "超载", "雷火", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "雷电将军", "八重神子", "班尼特", "昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "超载", "雷火", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "雷电将军", "枫原万叶", "班尼特", "昔日宗室之仪_翠绿之影"));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+    }
     if (c_name == "八重神子")
     {
-//        config_list.push_back(new Config(new Condition("雷", "法器", "E"), true, false, "超载", "雷火", 30,
-//                                         false, true, false, true, false, true, true, true,
-//                                         false, false, "雷电将军", "香菱", "班尼特", "昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("雷", "法器", "Q"), false, true, "超载", "雷火", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "雷电将军", "香菱", "班尼特", "昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("雷", "法器", "E"), true, false, "超载", "雷火", 30,
+                                         false, true, false, true, false, true, true, true,
+                                         false, false, "雷电将军", "香菱", "班尼特", "昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("雷", "法器", "Q"), false, true, "超载", "雷火", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "雷电将军", "香菱", "班尼特", "昔日宗室之仪"));
         //TODO:NEW
         config_list.push_back(new Config(new Condition("雷", "法器", "E"), true, false, "超激化", "雷草", 30,
                                          false, true, false, true, false, true, true, true,
@@ -2558,46 +2576,46 @@ void get_all_config(string c_name, vector<Config *> &config_list, vector<Combina
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
     }
-//    if (c_name == "温迪")
-//    {
-//        config_list.push_back(new Config(new Condition("风", "弓", "Q"), true, true, "扩散", "冰水", 30,
-//                                         false, true, false, false, false, true, true, true,
-//                                         false, false, "风_test", "风_test", "风_test", ""));
-//
-//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"), "", "", ""));
-//    }
-//    if (c_name == "莫娜")
-//    {
-//        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "NONE", "水", 30,
-//                                         false, true, false, false, true, true, true, true,
-//                                         false, false, "胡桃", "行秋", "钟离", "昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "NONE", "水", 30,
-//                                         false, true, false, false, true, true, true, true,
-//                                         false, false, "胡桃", "夜兰", "钟离", "终末嗟叹之诗_昔日宗室之仪"));
-//        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "NONE", "水", 30,
-//                                         false, true, false, false, true, true, true, true,
-//                                         false, false, "胡桃", "夜兰", "钟离", "昔日宗室之仪"));
-//
-//        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "冻结", "冰水", 30,
-//                                         false, true, false, false, true, true, true, true,
-//                                         false, false, "神里绫华", "甘雨", "温迪", "翠绿之影"));
-//        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "冻结", "冰水", 30,
-//                                         false, true, false, false, true, true, true, true,
-//                                         false, false, "神里绫华", "甘雨", "温迪", "终末嗟叹之诗_翠绿之影"));
-//        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "冻结", "冰水", 30,
-//                                         false, true, false, false, true, true, true, true,
-//                                         false, false, "神里绫华", "甘雨", "枫原万叶", "翠绿之影"));
-//
-//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "元素充能效率", "", ""));
-//    }
-//    if (c_name == "钟离")
-//    {
-//        config_list.push_back(new Config(new Condition("岩", "长柄武器", "Q"), false, false, "结晶", "水", 30,
-//                                         true, true, false, false, false, true, true, true,
-//                                         false, false, "风_test", "风_test", "风_test", ""));
-//
-//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "生命值", "", ""));
-//    }
+    if (c_name == "温迪")
+    {
+        config_list.push_back(new Config(new Condition("风", "弓", "Q"), true, true, "扩散", "冰水", 30,
+                                         false, true, false, false, false, true, true, true,
+                                         false, false, "风_test", "风_test", "风_test", ""));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"), "", "", ""));
+    }
+    if (c_name == "莫娜")
+    {
+        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "NONE", "水", 30,
+                                         false, true, false, false, true, true, true, true,
+                                         false, false, "胡桃", "行秋", "钟离", "昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "NONE", "水", 30,
+                                         false, true, false, false, true, true, true, true,
+                                         false, false, "胡桃", "夜兰", "钟离", "终末嗟叹之诗_昔日宗室之仪"));
+        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "NONE", "水", 30,
+                                         false, true, false, false, true, true, true, true,
+                                         false, false, "胡桃", "夜兰", "钟离", "昔日宗室之仪"));
+
+        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "冻结", "冰水", 30,
+                                         false, true, false, false, true, true, true, true,
+                                         false, false, "神里绫华", "甘雨", "温迪", "翠绿之影"));
+        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "冻结", "冰水", 30,
+                                         false, true, false, false, true, true, true, true,
+                                         false, false, "神里绫华", "甘雨", "温迪", "终末嗟叹之诗_翠绿之影"));
+        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "冻结", "冰水", 30,
+                                         false, true, false, false, true, true, true, true,
+                                         false, false, "神里绫华", "甘雨", "枫原万叶", "翠绿之影"));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "元素充能效率", "", ""));
+    }
+    if (c_name == "钟离")
+    {
+        config_list.push_back(new Config(new Condition("岩", "长柄武器", "Q"), false, false, "结晶", "水", 30,
+                                         true, true, false, false, false, true, true, true,
+                                         false, false, "风_test", "风_test", "风_test", ""));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "生命值", "", ""));
+    }
     //TODO:NEW
     if (c_name == "纳西妲")
     {
@@ -2617,7 +2635,7 @@ void get_all_config(string c_name, vector<Config *> &config_list, vector<Combina
                                          false, true, false, true, false, true, true, true,
                                          false, false, "草_test", "雷电将军", "班尼特", "昔日宗室之仪_深林的记忆"));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"), "", "", ""));
     }
 }
 

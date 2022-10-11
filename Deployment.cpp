@@ -190,7 +190,7 @@ int Deployment::init_check_data()
 
     get_team_data();
 
-    satisfy_recharge_requirement();
+    if (cal_enable_recharge_check) satisfy_recharge_requirement();
 
     outfile_debug << "\n";
 
@@ -346,8 +346,8 @@ void Deployment::cal_damage_entry_num()
                                                             double growrate = 1.0;
                                                             get_react_value(mastery, extrarate, growrate);
 
-                                                            if (critrate > 1.0) critrate = 1.0;
-                                                            if (critrate < 0.0) critrate = 0.0;
+                                                            if (critrate > cal_max_critrate_valid) critrate = 1.0;
+                                                            if (critrate < cal_min_critrate_valid) critrate = 0.0;
 
                                                             double temp = ((double) base_atk * atk * base_skillrate + extrarate) * damplus * (1.0 + critrate * critdam) * growrate;
 

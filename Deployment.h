@@ -22,6 +22,10 @@ extern ofstream outfile_debug;
 
 extern Character *find_character_by_name(string c_name);
 
+extern bool cal_enable_recharge_check;
+extern double cal_min_critrate_valid;
+extern double cal_max_critrate_valid;
+
 #define max_up_num_per_base 4
 #define max_attribute_num_per_pos 3
 #define artifact_2_2_max_entry_bonus 2
