@@ -116,7 +116,7 @@ void Deployment::init_check_data(bool &suit1_valid, bool &suit2_valid, bool &mai
 
         Artifact::check_artifact_special(this, suit1_valid, suit2_valid, true);
 
-        if (!suit1_valid || !suit2_valid) outfile_debug << (suit1->name + "_piece4_failure\n");
+        if (!suit1_valid || !suit2_valid) outfile_debug << (suit1->name + "_piece4_failure,");
 
         suit2->get_extra(this, false);
     }
@@ -147,8 +147,8 @@ void Deployment::init_check_data(bool &suit1_valid, bool &suit2_valid, bool &mai
 
         Artifact::check_artifact_special(this, suit1_valid, suit2_valid, false);
 
-        if (!suit1_valid) outfile_debug << (suit1->name + "_piece2_failure\n");
-        if (!suit2_valid) outfile_debug << (suit2->name + "_piece2_failure\n");
+        if (!suit1_valid) outfile_debug << (suit1->name + "_piece2_failure,");
+        if (!suit2_valid) outfile_debug << (suit2->name + "_piece2_failure,");
     }
 
     check_useful_attribute();
@@ -159,17 +159,17 @@ void Deployment::init_check_data(bool &suit1_valid, bool &suit2_valid, bool &mai
     //check
     if (!data_list[a_main3]->useful && !(a_main3 == "元素充能效率" && attack_config->condition->attack_way == "Q"))
     {
-        outfile_debug << (a_main3 + "_main3_failure\n");
+        outfile_debug << (a_main3 + "_main3_failure,");
         main3_valid = false;
     }
     if (!data_list[a_main4]->useful)
     {
-        outfile_debug << (a_main4 + "_main4_failure\n");
+        outfile_debug << (a_main4 + "_main4_failure,");
         main4_valid = false;
     }
     if (!data_list[a_main5]->useful)
     {
-        outfile_debug << (a_main5 + "_main5_failure\n");
+        outfile_debug << (a_main5 + "_main5_failure,");
         main5_valid = false;
     }
 
@@ -338,7 +338,16 @@ int Group::init_check_data()
         main5_valid = main5_valid || main5_valid_;
     }
 
-    if (!suit1_valid || !suit2_valid) return 2;
+    if (!suit1_valid || !suit2_valid)
+    {
+        if (!suit1_valid && !suit2_valid)
+        {
+            if (suit1 == suit2) return 2;
+            else return 1;
+        }
+        else if (!suit1_valid) return 1;
+        else return 2;
+    }
     else if (!main3_valid) return 3;
     else if (!main4_valid) return 4;
     else if (!main5_valid) return 5;
@@ -474,7 +483,8 @@ void Group::cal_damage_entry_num()
                                                             double temp_total_damage = 0;
                                                             for (auto &i: combination)
                                                             {
-                                                                double temp = i->cal_damage(lifeup + lifebase, atkup + atkbase, defup + defbase, masteryup + masterybase, rechargeup + rechargebase, critrateup + critratebase, critdamup + critdambase);
+                                                                double temp =
+                                                                        i->attack_config->attack_time * i->cal_damage(lifeup + lifebase, atkup + atkbase, defup + defbase, masteryup + masterybase, rechargeup + rechargebase, critrateup + critratebase, critdamup + critdambase);
                                                                 temp_damage.push_back(temp);
                                                                 temp_total_damage += temp;
                                                             }

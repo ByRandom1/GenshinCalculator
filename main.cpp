@@ -2885,10 +2885,15 @@ void cal_deployment()
                                         }
                                         else delete temp;
                                     }
-                                    else if (check_num == 2)//error:suit1 or suit2
+                                    else if (check_num == 1)//error:suit1
                                     {
                                         delete temp;
-                                        goto NEXTARTIFACT;
+                                        goto NEXTARTIFACT1;
+                                    }
+                                    else if (check_num == 2)//error:suit2
+                                    {
+                                        delete temp;
+                                        goto NEXTARTIFACT2;
                                     }
                                     else if (check_num == 3)//error:main3
                                     {
@@ -2911,8 +2916,9 @@ void cal_deployment()
                             }
                             NEXTMAIN3:;
                         }
-                        NEXTARTIFACT:;
+                        NEXTARTIFACT2:;
                     }
+                    NEXTARTIFACT1:;
                 }
 
                 clock_t end = clock();
