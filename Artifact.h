@@ -31,6 +31,8 @@ public:
     bool get_extra_special(Deployment *data, bool if_4_piece) const;//在main中实现
 
     static void modify_useful_attribute(Deployment *data);//在main中实现
+
+    static void check_artifact_special(Deployment* data, bool &suit1_valid, bool &suit2_valid, bool if_4_piece);//在main中实现
 };
 
 #endif //GENSHINCALCULATOR_ARTIFACT_H

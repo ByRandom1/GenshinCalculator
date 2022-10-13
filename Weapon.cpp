@@ -3,7 +3,7 @@
 //
 
 #include "Weapon.h"
-#include "Deployment.h"
+#include "Group.h"
 
 Weapon::Weapon(string name_,
                string weapon_type_,
@@ -27,7 +27,7 @@ int Weapon::get_atk()
 
 bool Weapon::get_vice(Deployment *data)
 {
-    if (!(vice_type == "伤害加成" && data->config->condition->ele_type != "物理"))
+    if (!(vice_type == "伤害加成" && data->attack_config->condition->ele_type != "物理"))
         data->add_percentage(vice_type, vice_value, (name+"_vice"));
     return true;
 }
@@ -35,7 +35,7 @@ bool Weapon::get_vice(Deployment *data)
 bool Weapon::get_extra(Deployment *data)
 {
     for (auto &i: extra_value)
-        if (*data->config->condition <= *i->condition)
+        if (*data->attack_config->condition <= *i->condition)
             data->add_percentage(i->type, i->value * (0.75 + level * 0.25), (name+"_extra"));
 
     get_extra_special(data);

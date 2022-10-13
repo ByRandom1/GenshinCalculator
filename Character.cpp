@@ -3,7 +3,7 @@
 //
 
 #include "Character.h"
-#include "Deployment.h"
+#include "Group.h"
 
 Character::Character(string name_,
                      string ele_type_,
@@ -146,17 +146,17 @@ double Character::get_Q(int Q_level_)
 
 bool Character::get_extra(Deployment *data)
 {
-    if (extra_value[0] != nullptr && *data->config->condition <= *extra_value[0]->condition)
+    if (extra_value[0] != nullptr && *data->attack_config->condition <= *extra_value[0]->condition)
         data->add_percentage(extra_value[0]->type, extra_value[0]->value, (name + "_talent1"));
-    if (extra_value[1] != nullptr && *data->config->condition <= *extra_value[1]->condition)
+    if (extra_value[1] != nullptr && *data->attack_config->condition <= *extra_value[1]->condition)
         data->add_percentage(extra_value[1]->type, extra_value[1]->value, (name + "_talent2"));
-    if (extra_value[2] != nullptr && *data->config->condition <= *extra_value[2]->condition && constellation >= 1)
+    if (extra_value[2] != nullptr && *data->attack_config->condition <= *extra_value[2]->condition && constellation >= 1)
         data->add_percentage(extra_value[2]->type, extra_value[2]->value, (name + "_constellation1"));
-    if (extra_value[3] != nullptr && *data->config->condition <= *extra_value[3]->condition && constellation >= 2)
+    if (extra_value[3] != nullptr && *data->attack_config->condition <= *extra_value[3]->condition && constellation >= 2)
         data->add_percentage(extra_value[3]->type, extra_value[3]->value, (name + "_constellation2"));
-    if (extra_value[4] != nullptr && *data->config->condition <= *extra_value[4]->condition && constellation >= 4)
+    if (extra_value[4] != nullptr && *data->attack_config->condition <= *extra_value[4]->condition && constellation >= 4)
         data->add_percentage(extra_value[4]->type, extra_value[4]->value, (name + "_constellation4"));
-    if (extra_value[5] != nullptr && *data->config->condition <= *extra_value[5]->condition && constellation >= 6)
+    if (extra_value[5] != nullptr && *data->attack_config->condition <= *extra_value[5]->condition && constellation >= 6)
         data->add_percentage(extra_value[5]->type, extra_value[5]->value, (name + "_constellation6"));
 
     get_extra_special(data);

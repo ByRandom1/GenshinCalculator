@@ -5,10 +5,9 @@
 #include "Character.h"
 #include "Weapon.h"
 #include "Artifact.h"
-#include "Deployment.h"
+#include "Group.h"
 
 using namespace std;
-//"生命值"-0 "攻击力"-1 "防御力"-2 "额外倍率"-3 "元素精通"-4 "元素充能效率"-5 "暴击率"-6 "暴击伤害"-7 "伤害加成"-8 "抗性削弱"-9 "防御削弱"-10 "防御无视"-11 "治疗加成"-12 "护盾强效"-13
 vector<Character *> character_list;
 
 Character *find_character_by_name(string c_name)
@@ -460,27 +459,27 @@ bool Character::get_extra_special(Deployment *data) const
 {
     if (data->c_point->name == "雷电将军")
     {
-        if (data->config->condition->attack_way == "Q")
+        if (data->attack_config->condition->attack_way == "Q")
             data->add_percentage("伤害加成", 0.27, (name + "_extra_special"));
     }
     else if (data->c_point->name == "甘雨")
     {
-        if (!(data->config->background && !data->config->lockface) && data->config->condition->attack_way != "Q")
+        if (!(data->attack_config->background && !data->attack_config->lockface) && data->attack_config->condition->attack_way != "Q")
             data->add_percentage("伤害加成", 0.2, (name + "_extra_special"));
     }
     else if (data->c_point->name == "夜兰")
     {
-        if (!data->config->background)
+        if (!data->attack_config->background)
             data->add_percentage("伤害加成", 0.25, (name + "_extra_special"));
     }
     else if (data->c_point->name == "行秋")
     {
-        if (data->config->condition->attack_way == "E" && data->c_point->constellation >= 4)
+        if (data->attack_config->condition->attack_way == "E" && data->c_point->constellation >= 4)
             data->base_skillrate *= 1.5;
     }
     else if (data->c_point->name == "八重神子")
     {
-        if (data->config->condition->attack_way == "E" && data->c_point->constellation >= 2)
+        if (data->attack_config->condition->attack_way == "E" && data->c_point->constellation >= 2)
             data->base_skillrate *= 1.25;
     }
     else if (data->c_point->name == "莫娜")
@@ -495,21 +494,21 @@ bool Character::get_extra_special(Deployment *data) const
     else if (data->c_point->name == "纳西妲")
     {
         int pyro_num = 0;
-        if (data->config->teammate_1->ele_type == "火") pyro_num++;
-        if (data->config->teammate_2->ele_type == "火") pyro_num++;
-        if (data->config->teammate_3->ele_type == "火") pyro_num++;
+        if (data->team_config->teammate_1->ele_type == "火") pyro_num++;
+        if (data->team_config->teammate_2->ele_type == "火") pyro_num++;
+        if (data->team_config->teammate_3->ele_type == "火") pyro_num++;
         if (data->c_point->constellation >= 1) pyro_num++;
 
-        if (data->config->condition->attack_way == "E")
+        if (data->attack_config->condition->attack_way == "E")
         {
             if (pyro_num == 1) data->add_percentage("伤害加成", 0.268, (name + "_extra_special"));//lv10
             else if (pyro_num >= 2) data->add_percentage("伤害加成", 0.402, (name + "_extra_special"));//lv10
         }
 
-        if (!(data->config->background && !data->config->lockface))
+        if (!(data->attack_config->background && !data->attack_config->lockface))
             data->add_percentage("元素精通", 250, (name + "_extra_special"));
 
-        if (data->c_point->constellation >= 2 && data->config->react_type.find("激化") != string::npos)
+        if (data->c_point->constellation >= 2 && data->attack_config->react_type.find("激化") != string::npos)
             data->add_percentage("防御削弱", 0.3, (name + "_extra_special"));
     }
     return true;
@@ -979,7 +978,7 @@ bool Weapon::get_extra_special(Deployment *data) const
 {
     if (name == "雾切之回光")
     {
-        if (data->config->condition->ele_type != "物理")
+        if (data->attack_config->condition->ele_type != "物理")
         {
             if (data->c_point->args->sword_wuqie_level == 1) data->add_percentage("伤害加成", (0.08 * (0.75 + level * 0.25)), (name + "_extra_special"));
             else if (data->c_point->args->sword_wuqie_level == 2) data->add_percentage("伤害加成", (0.16 * (0.75 + level * 0.25)), (name + "_extra_special"));
@@ -989,19 +988,18 @@ bool Weapon::get_extra_special(Deployment *data) const
     else if (name == "斫峰之刃")
     {
 //        if (data->c_point->args->accumulate_attacks)
-        if (!data->config->background)
+        if (!data->attack_config->background)
         {
             data->add_percentage("攻击力", (0.04 * 5 * (0.75 + level * 0.25)), (name + "_extra_special"));
-            if (data->c_point->args->shield_sustain || data->config->teammate_1->args->shield_sustain || data->config->teammate_2->args->shield_sustain ||
-                data->config->teammate_3->args->shield_sustain)
+            if (data->c_point->args->shield_sustain || data->team_config->teammate_1->args->shield_sustain || data->team_config->teammate_2->args->shield_sustain || data->team_config->teammate_3->args->shield_sustain)
                 data->add_percentage("攻击力", (0.04 * 5 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
     else if (name == "苍古自由之誓")
     {
-        if (data->config->react_type != "NONE")
+        if (data->attack_config->react_type != "NONE")
         {
-            if (data->config->condition->attack_way == "平A" || data->config->condition->attack_way == "重A" || data->config->condition->attack_way == "下落A")
+            if (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "重A" || data->attack_config->condition->attack_way == "下落A")
                 data->add_percentage("伤害加成", (0.16 * (0.75 + level * 0.25)), (name + "_extra_special"));
             data->add_percentage("攻击力", (0.2 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
@@ -1009,7 +1007,7 @@ bool Weapon::get_extra_special(Deployment *data) const
     else if (name == "试作斩岩")
     {
 //        if (data->c_point->args->accumulate_attacks)
-        if (!data->config->background)
+        if (!data->attack_config->background)
         {
             data->add_percentage("攻击力", (0.04 * 4 * (0.75 + level * 0.25)), (name + "_extra_special"));
             data->add_percentage("防御力", (0.04 * 4 * (0.75 + level * 0.25)), (name + "_extra_special"));
@@ -1017,49 +1015,48 @@ bool Weapon::get_extra_special(Deployment *data) const
     }
     else if (name == "原木刀")
     {
-        if (data->config->react_type.find("燃烧") != string::npos || data->config->react_type.find("激化") != string::npos || data->config->react_type.find("绽放") != string::npos)
+        if (data->attack_config->react_type.find("燃烧") != string::npos || data->attack_config->react_type.find("激化") != string::npos || data->attack_config->react_type.find("绽放") != string::npos)
             data->add_percentage("元素精通", (60.0 * (0.75 + level * 0.25)), (name + "_extra_special"));
     }
     else if (name == "匣里龙吟")
     {
-        if (data->config->ele_attach_type.find("火") != string::npos || data->config->ele_attach_type.find("雷") != string::npos)
+        if (data->team_config->ele_attach_type.find("火") != string::npos || data->team_config->ele_attach_type.find("雷") != string::npos)
             data->add_percentage("伤害加成", (0.16 + level * 0.04), (name + "_extra_special"));
     }
 
     else if (name == "四风原典")
     {
-        if (!data->config->background)
-            if (data->config->condition->ele_type != "物理")
+        if (!data->attack_config->background)
+            if (data->attack_config->condition->ele_type != "物理")
                 data->add_percentage("伤害加成", (0.16 * (0.75 + level * 0.25)), (name + "_extra_special"));
     }
     else if (name == "神乐之真意")
     {
         if (data->c_point->args->catalyst_shenle_level == 3)
         {
-            if (data->config->condition->attack_way == "E")
+            if (data->attack_config->condition->attack_way == "E")
                 data->add_percentage("伤害加成", (0.12 * 3 * (0.75 + level * 0.25)), (name + "_extra_special"));
-            if (data->config->condition->ele_type != "物理")
+            if (data->attack_config->condition->ele_type != "物理")
                 data->add_percentage("伤害加成", (0.12 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
         else if (data->c_point->args->catalyst_shenle_level == 2)
         {
-            if (data->config->condition->attack_way == "E")
+            if (data->attack_config->condition->attack_way == "E")
                 data->add_percentage("伤害加成", (0.12 * 2 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
         else if (data->c_point->args->catalyst_shenle_level == 1)
         {
-            if (data->config->condition->attack_way == "E")
+            if (data->attack_config->condition->attack_way == "E")
                 data->add_percentage("伤害加成", (0.12 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
     else if (name == "尘世之锁")
     {
 //        if (data->c_point->args->accumulate_attacks)
-        if (!data->config->background)
+        if (!data->attack_config->background)
         {
             data->add_percentage("攻击力", (0.04 * 5 * (0.75 + level * 0.25)), (name + "_extra_special"));
-            if (data->c_point->args->shield_sustain || data->config->teammate_1->args->shield_sustain || data->config->teammate_2->args->shield_sustain ||
-                data->config->teammate_3->args->shield_sustain)
+            if (data->c_point->args->shield_sustain || data->team_config->teammate_1->args->shield_sustain || data->team_config->teammate_2->args->shield_sustain || data->team_config->teammate_3->args->shield_sustain)
                 data->add_percentage("攻击力", (0.04 * 5 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
@@ -1068,34 +1065,34 @@ bool Weapon::get_extra_special(Deployment *data) const
     {
         int same = 0;
         int diff = 0;
-        if (data->config->teammate_1->ele_type == data->c_point->ele_type) same += 1;
+        if (data->team_config->teammate_1->ele_type == data->c_point->ele_type) same += 1;
         else diff += 1;
-        if (data->config->teammate_2->ele_type == data->c_point->ele_type) same += 1;
+        if (data->team_config->teammate_2->ele_type == data->c_point->ele_type) same += 1;
         else diff += 1;
-        if (data->config->teammate_3->ele_type == data->c_point->ele_type) same += 1;
+        if (data->team_config->teammate_3->ele_type == data->c_point->ele_type) same += 1;
         else diff += 1;
         data->add_percentage("元素精通", 32.0 * (0.75 + level * 0.25) * same, (name + "_extra_special"));
         data->add_percentage("伤害加成", (0.06 + level * 0.04) * diff, (name + "_extra_special"));
     }
     else if (name == "白辰之环")
     {
-        if ((data->config->react_type.find("超载") != string::npos && (data->config->condition->ele_type == "雷" || data->config->condition->ele_type == "火")) ||
-            (data->config->react_type.find("感电") != string::npos && (data->config->condition->ele_type == "雷" || data->config->condition->ele_type == "水")) ||
-            (data->config->react_type.find("激化") != string::npos && (data->config->condition->ele_type == "雷" || data->config->condition->ele_type == "草")) ||
-            (data->config->react_type.find("超导") != string::npos && (data->config->condition->ele_type == "雷" || data->config->condition->ele_type == "冰")))
+        if ((data->attack_config->react_type.find("超载") != string::npos && (data->attack_config->condition->ele_type == "雷" || data->attack_config->condition->ele_type == "火")) ||
+            (data->attack_config->react_type.find("感电") != string::npos && (data->attack_config->condition->ele_type == "雷" || data->attack_config->condition->ele_type == "水")) ||
+            (data->attack_config->react_type.find("激化") != string::npos && (data->attack_config->condition->ele_type == "雷" || data->attack_config->condition->ele_type == "草")) ||
+            (data->attack_config->react_type.find("超导") != string::npos && (data->attack_config->condition->ele_type == "雷" || data->attack_config->condition->ele_type == "冰")))
             data->add_percentage("伤害加成", (0.1 * (0.75 + level * 0.25)), (name + "_extra_special"));
     }
     else if (name == "万国诸海图谱")
     {
-        if (data->config->react_type != "NONE")
-            if (data->config->condition->ele_type != "物理")
+        if (data->attack_config->react_type != "NONE")
+            if (data->attack_config->condition->ele_type != "物理")
                 data->add_percentage("伤害加成", (0.16 * (0.75 + level * 0.25)), (name + "_extra_special"));
     }
     else if (name == "匣里日月")
     {
-        if (!data->config->background)
+        if (!data->attack_config->background)
         {
-            if (data->config->condition->attack_way == "平A" || data->config->condition->attack_way == "E" || data->config->condition->attack_way == "Q")
+            if (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "E" || data->attack_config->condition->attack_way == "Q")
                 data->add_percentage("伤害加成", (0.2 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
@@ -1108,7 +1105,7 @@ bool Weapon::get_extra_special(Deployment *data) const
     }
     else if (name == "盈满之实")
     {
-        if (data->config->react_type != "NONE")
+        if (data->attack_config->react_type != "NONE")
         {
             data->add_percentage("元素精通", (5 * (21.0 + level * 3.0)), (name + "_extra_special"));//元素反应，5层
             data->add_percentage("攻击力", -0.25, (name + "_extra_special"));//元素反应，5层
@@ -1116,9 +1113,9 @@ bool Weapon::get_extra_special(Deployment *data) const
     }
     else if (name == "嘟嘟可故事集")
     {
-        if (!data->config->background)
+        if (!data->attack_config->background)
         {
-            if (data->config->condition->attack_way == "重A")
+            if (data->attack_config->condition->attack_way == "重A")
                 data->add_percentage("伤害加成", (0.16 * (0.75 + level * 0.25)), (name + "_extra_special"));
             data->add_percentage("攻击力", (0.08 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
@@ -1133,7 +1130,7 @@ bool Weapon::get_extra_special(Deployment *data) const
     }
     else if (name == "飞雷之弦振")
     {
-        if (data->config->condition->attack_way == "平A")
+        if (data->attack_config->condition->attack_way == "平A")
         {
             if (data->c_point->args->bow_feilei_level == 1) data->add_percentage("伤害加成", (0.12 * (0.75 + level * 0.25)), (name + "_extra_special"));
             else if (data->c_point->args->bow_feilei_level == 2) data->add_percentage("伤害加成", (0.24 * (0.75 + level * 0.25)), (name + "_extra_special"));
@@ -1142,62 +1139,61 @@ bool Weapon::get_extra_special(Deployment *data) const
     }
     else if (name == "暗巷猎手")
     {
-        if (data->config->background)
+        if (data->attack_config->background)
             data->add_percentage("伤害加成", 0.2 * (0.75 + level * 0.25), (name + "_extra_special"));
     }
     else if (name == "曚云之月")
     {
-        if (data->config->condition->attack_way == "Q")
+        if (data->attack_config->condition->attack_way == "Q")
             data->add_percentage("伤害加成",
-                                 min(334.0, data->c_point->Q_energy + data->config->teammate_1->Q_energy + data->config->teammate_2->Q_energy + data->config->teammate_3->Q_energy)
+                                 min(334.0, data->c_point->Q_energy + data->team_config->teammate_1->Q_energy + data->team_config->teammate_2->Q_energy + data->team_config->teammate_3->Q_energy)
                                  * 0.0012 * (0.75 + level * 0.25), (name + "_extra_special"));
     }
     else if (name == "弓藏")
     {
-        if (data->config->condition->attack_way == "重A")
+        if (data->attack_config->condition->attack_way == "重A")
             data->add_percentage("伤害加成", -0.1, (name + "_extra_special"));
     }
     else if (name == "幽夜华尔兹")
     {
-        if (!data->config->background)
+        if (!data->attack_config->background)
         {
-            if (data->config->condition->attack_way == "平A" || data->config->condition->attack_way == "E")
+            if (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "E")
                 data->add_percentage("伤害加成", (0.2 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
     else if (name == "破魔之弓")
     {
-        if (data->config->condition->attack_way == "平A")
+        if (data->attack_config->condition->attack_way == "平A")
             data->add_percentage("伤害加成", ((data->c_point->args->bow_pomo_fullenergy ? 2 : 1) * 0.16 * (0.75 + level * 0.25)), (name + "_extra_special"));
-        if (data->config->condition->attack_way == "重A")
+        if (data->attack_config->condition->attack_way == "重A")
             data->add_percentage("伤害加成", ((data->c_point->args->bow_pomo_fullenergy ? 2 : 1) * 0.12 * (0.75 + level * 0.25)), (name + "_extra_special"));
     }
     else if (name == "王下近侍")
     {
-        if (!data->config->background)
+        if (!data->attack_config->background)
             data->add_percentage("元素精通", (40.0 + level * 20.0), (name + "_extra_special"));//EQ后
     }
     else if (name == "钢轮弓")
     {
 //        if (data->c_point->args->accumulate_attacks)
-        if (!data->config->background)
+        if (!data->attack_config->background)
             data->add_percentage("攻击力", (0.04 * 4 * (0.75 + level * 0.25)), (name + "_extra_special"));
     }
 
     else if (name == "无工之剑")
     {
 //        if (data->c_point->args->accumulate_attacks)
-        if (!data->config->background)
+        if (!data->attack_config->background)
         {
             data->add_percentage("攻击力", (0.04 * 5 * (0.75 + level * 0.25)), (name + "_extra_special"));
-            if (data->c_point->args->shield_sustain || data->config->teammate_1->args->shield_sustain || data->config->teammate_2->args->shield_sustain ||
-                data->config->teammate_3->args->shield_sustain)
+            if (data->c_point->args->shield_sustain || data->team_config->teammate_1->args->shield_sustain || data->team_config->teammate_2->args->shield_sustain || data->team_config->teammate_3->args->shield_sustain)
                 data->add_percentage("攻击力", (0.04 * 5 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
     else if (name == "森林王器")
     {
-        if (data->config->react_type.find("燃烧") != string::npos || data->config->react_type.find("激化") != string::npos || data->config->react_type.find("绽放") != string::npos)
+        if (data->attack_config->react_type.find("燃烧") != string::npos || data->attack_config->react_type.find("激化") != string::npos || data->attack_config->react_type.find("绽放") != string::npos)
             data->add_percentage("元素精通", (60.0 * (0.75 + level * 0.25)), (name + "_extra_special"));
     }
     else if (name == "螭骨剑")
@@ -1207,7 +1203,7 @@ bool Weapon::get_extra_special(Deployment *data) const
     else if (name == "白影剑")
     {
 //        if (data->c_point->args->accumulate_attacks)
-        if (!data->config->background)
+        if (!data->attack_config->background)
         {
             data->add_percentage("攻击力", (0.06 * 4 * (0.75 + level * 0.25)), (name + "_extra_special"));
             data->add_percentage("防御力", (0.06 * 4 * (0.75 + level * 0.25)), (name + "_extra_special"));
@@ -1220,34 +1216,33 @@ bool Weapon::get_extra_special(Deployment *data) const
     }
     else if (name == "恶王丸")
     {
-        if (data->config->condition->attack_way == "Q")
+        if (data->attack_config->condition->attack_way == "Q")
             data->add_percentage("伤害加成",
-                                 min(334.0, data->c_point->Q_energy + data->config->teammate_1->Q_energy + data->config->teammate_2->Q_energy + data->config->teammate_3->Q_energy)
+                                 min(334.0, data->c_point->Q_energy + data->team_config->teammate_1->Q_energy + data->team_config->teammate_2->Q_energy + data->team_config->teammate_3->Q_energy)
                                  * 0.0012 * (0.75 + level * 0.25), (name + "_extra_special"));
     }
     else if (name == "钟剑")
     {
-        if (data->c_point->args->shield_sustain || data->config->teammate_1->args->shield_sustain || data->config->teammate_2->args->shield_sustain ||
-            data->config->teammate_3->args->shield_sustain)
+        if (data->c_point->args->shield_sustain || data->team_config->teammate_1->args->shield_sustain || data->team_config->teammate_2->args->shield_sustain || data->team_config->teammate_3->args->shield_sustain)
             data->add_percentage("伤害加成", (0.12 * (0.75 + level * 0.25)), (name + "_extra_special"));
 
     }
     else if (name == "雨裁")
     {
-        if (data->config->ele_attach_type.find("水") != string::npos || data->config->ele_attach_type.find("雷") != string::npos)
+        if (data->team_config->ele_attach_type.find("水") != string::npos || data->team_config->ele_attach_type.find("雷") != string::npos)
             data->add_percentage("伤害加成", (0.16 + level * 0.04), (name + "_extra_special"));
     }
 
     else if (name == "息灾")
     {
         data->add_percentage("攻击力", (0.192 * (0.75 + level * 0.25)), (name + "_extra_special"));
-        if (data->config->background && !data->config->lockface)
+        if (data->attack_config->background && !data->attack_config->lockface)
             data->add_percentage("攻击力", (0.192 * (0.75 + level * 0.25)), (name + "_extra_special"));
     }
     else if (name == "和璞鸢")
     {
 //        if (data->c_point->args->accumulate_attacks)
-        if (!data->config->background)
+        if (!data->attack_config->background)
         {
             data->add_percentage("攻击力", (0.025 + level * 0.007) * 7, (name + "_extra_special"));//默认满层
             data->add_percentage("伤害加成", (0.75 + level * 0.25) * 0.12, (name + "_extra_special"));//默认满层
@@ -1256,11 +1251,10 @@ bool Weapon::get_extra_special(Deployment *data) const
     else if (name == "贯虹之槊")
     {
 //        if (data->c_point->args->accumulate_attacks)
-        if (!data->config->background)
+        if (!data->attack_config->background)
         {
             data->add_percentage("攻击力", (0.04 * 5 * (0.75 + level * 0.25)), (name + "_extra_special"));
-            if (data->c_point->args->shield_sustain || data->config->teammate_1->args->shield_sustain || data->config->teammate_2->args->shield_sustain ||
-                data->config->teammate_3->args->shield_sustain)
+            if (data->c_point->args->shield_sustain || data->team_config->teammate_1->args->shield_sustain || data->team_config->teammate_2->args->shield_sustain || data->team_config->teammate_3->args->shield_sustain)
                 data->add_percentage("攻击力", (0.04 * 5 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
@@ -1270,9 +1264,9 @@ bool Weapon::get_extra_special(Deployment *data) const
     }
     else if (name == "断浪长鳍")
     {
-        if (data->config->condition->attack_way == "Q")
+        if (data->attack_config->condition->attack_way == "Q")
             data->add_percentage("伤害加成",
-                                 min(334.0, data->c_point->Q_energy + data->config->teammate_1->Q_energy + data->config->teammate_2->Q_energy + data->config->teammate_3->Q_energy)
+                                 min(334.0, data->c_point->Q_energy + data->team_config->teammate_1->Q_energy + data->team_config->teammate_2->Q_energy + data->team_config->teammate_3->Q_energy)
                                  * 0.0012 * (0.75 + level * 0.25), (name + "_extra_special"));
     }
     else if (name == "千岩长枪")
@@ -1282,26 +1276,26 @@ bool Weapon::get_extra_special(Deployment *data) const
     }
     else if (name == "贯月矢")
     {
-        if (data->config->react_type.find("燃烧") != string::npos || data->config->react_type.find("激化") != string::npos || data->config->react_type.find("绽放") != string::npos)
+        if (data->attack_config->react_type.find("燃烧") != string::npos || data->attack_config->react_type.find("激化") != string::npos || data->attack_config->react_type.find("绽放") != string::npos)
             data->add_percentage("攻击力", (0.16 * (0.75 + level * 0.25)), (name + "_extra_special"));
     }
     else if (name == "试作星镰")
     {
         if (data->c_point->args->polearm_shizuo_level == 2)
         {
-            if (data->config->condition->attack_way == "平A" || data->config->condition->attack_way == "重A")
+            if (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "重A")
                 data->add_percentage("伤害加成", (0.08 * 2 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
         else if (data->c_point->args->polearm_shizuo_level == 1)
         {
-            if (data->config->condition->attack_way == "平A" || data->config->condition->attack_way == "重A")
+            if (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "重A")
                 data->add_percentage("伤害加成", (0.08 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
         //TODO:NEW
     else if (name == "风信之锋")
     {
-        if (data->config->react_type != "NONE")
+        if (data->attack_config->react_type != "NONE")
         {
             data->add_percentage("攻击力", (0.12 * (0.75 + level * 0.25)), (name + "_extra_special"));
             data->add_percentage("元素精通", (48.0 * (0.75 + level * 0.25)), (name + "_extra_special"));
@@ -1309,7 +1303,7 @@ bool Weapon::get_extra_special(Deployment *data) const
     }
     else if (name == "匣里灭辰")
     {
-        if (data->config->ele_attach_type.find("水") != string::npos || data->config->ele_attach_type.find("火") != string::npos)
+        if (data->team_config->ele_attach_type.find("水") != string::npos || data->team_config->ele_attach_type.find("火") != string::npos)
             data->add_percentage("伤害加成", (0.16 + level * 0.04), (name + "_extra_special"));
     }
     return true;
@@ -1318,22 +1312,22 @@ bool Weapon::get_extra_special(Deployment *data) const
 //build new weapon(all) 被转化的属性有效
 void Weapon::modify_useful_attribute(Deployment *data)
 {
-    if (data->w_point->name == "磐岩结绿") data->data_list[0]->useful = true;
+    if (data->w_point->name == "磐岩结绿") data->change_useful_attribute("生命值", true, data->w_point->name);
         //TODO:NEW
-    else if (data->w_point->name == "圣显之钥") data->data_list[0]->useful = true;
-    else if (data->w_point->name == "辰砂之纺锤" && data->config->condition->attack_way == "E") data->data_list[2]->useful = true;
+    else if (data->w_point->name == "圣显之钥") data->change_useful_attribute("生命值", true, data->w_point->name);
+    else if (data->w_point->name == "辰砂之纺锤" && data->attack_config->condition->attack_way == "E") data->change_useful_attribute("防御力", true, data->w_point->name);
         //TODO:NEW
-    else if (data->w_point->name == "西福斯的月光") data->data_list[4]->useful = true;
-    else if (data->w_point->name == "不灭月华" && data->config->condition->attack_way == "平A") data->data_list[0]->useful = true;
+    else if (data->w_point->name == "西福斯的月光") data->change_useful_attribute("元素精通", true, data->w_point->name);
+    else if (data->w_point->name == "不灭月华" && data->attack_config->condition->attack_way == "平A") data->change_useful_attribute("生命值", true, data->w_point->name);
         //TODO:NEW
-    else if (data->w_point->name == "流浪的晚星") data->data_list[4]->useful = true;
-    else if (data->w_point->name == "猎人之径" && data->config->condition->attack_way == "重A") data->data_list[4]->useful = true;
-    else if (data->w_point->name == "赤角石溃杵" && (data->config->condition->attack_way == "平A" || data->config->condition->attack_way == "重A"))
-        data->data_list[2]->useful = true;
-    else if (data->w_point->name == "玛海菈的水色") data->data_list[4]->useful = true;
-    else if (data->w_point->name == "护摩之杖") data->data_list[0]->useful = true;
-    else if (data->w_point->name == "薙草之稻光") data->data_list[5]->useful = true;
-    else if (data->w_point->name == "赤沙之杖") data->data_list[4]->useful = true;
+    else if (data->w_point->name == "流浪的晚星") data->change_useful_attribute("元素精通", true, data->w_point->name);
+    else if (data->w_point->name == "猎人之径" && data->attack_config->condition->attack_way == "重A") data->change_useful_attribute("元素精通", true, data->w_point->name);
+    else if (data->w_point->name == "赤角石溃杵" && (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "重A"))
+        data->change_useful_attribute("防御力", true, data->w_point->name);
+    else if (data->w_point->name == "玛海菈的水色") data->change_useful_attribute("元素精通", true, data->w_point->name);
+    else if (data->w_point->name == "护摩之杖") data->change_useful_attribute("生命值", true, data->w_point->name);
+    else if (data->w_point->name == "薙草之稻光") data->change_useful_attribute("元素充能效率", true, data->w_point->name);
+    else if (data->w_point->name == "赤沙之杖") data->change_useful_attribute("元素精通", true, data->w_point->name);
 }
 
 //build new artifact(all)
@@ -1392,16 +1386,15 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
 {
     if (if_4_piece && name == "冰风迷途的勇士")
     {
-        if (data->config->ele_attach_type.find("冰") != string::npos)//冰附着
+        if (data->team_config->ele_attach_type.find("冰") != string::npos)//冰附着
             data->add_percentage("暴击率", 0.2, (name + "_extra_special"));
-        if (data->config->react_type.find("冻结") != string::npos)
+        if (data->attack_config->react_type.find("冻结") != string::npos)
             data->add_percentage("暴击率", 0.2, (name + "_extra_special"));//冻结
     }
     else if (if_4_piece && name == "逆飞的流星")
     {
-        if (data->c_point->args->shield_sustain || data->config->teammate_1->args->shield_sustain || data->config->teammate_2->args->shield_sustain ||
-            data->config->teammate_3->args->shield_sustain)
-            if (data->config->condition->attack_way == "平A" || data->config->condition->attack_way == "重A")
+        if (data->c_point->args->shield_sustain || data->team_config->teammate_1->args->shield_sustain || data->team_config->teammate_2->args->shield_sustain || data->team_config->teammate_3->args->shield_sustain)
+            if (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "重A")
                 data->add_percentage("伤害加成", 0.4, (name + "_extra_special"));
     }
     else if (if_4_piece && name == "苍白之火")
@@ -1409,7 +1402,7 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
         if (data->c_point->args->cangbai_level == 2)
         {
             data->add_percentage("攻击力", 0.18, name + "_extra_special");
-            if (data->config->condition->ele_type == "物理") data->add_percentage("伤害加成", 0.25, (name + "_extra_special"));
+            if (data->attack_config->condition->ele_type == "物理") data->add_percentage("伤害加成", 0.25, (name + "_extra_special"));
         }
         else if (data->c_point->args->cangbai_level == 1)
         {
@@ -1426,40 +1419,40 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
     }
     else if (if_4_piece && name == "炽烈的炎之魔女")
     {
-        if (data->config->condition->ele_type == "火")
+        if (data->attack_config->condition->ele_type == "火")
         {
             if (data->c_point->args->monv_level == 3)
             {
-                if (data->config->condition->attack_way != "E") data->add_percentage("伤害加成", 0.225, (name + "_extra_special"));
+                if (data->attack_config->condition->attack_way != "E") data->add_percentage("伤害加成", 0.225, (name + "_extra_special"));
                 else data->add_percentage("伤害加成", 0.075, (name + "_extra_special"));
             }
             else if (data->c_point->args->monv_level == 2)
             {
-                if (data->config->condition->attack_way != "E") data->add_percentage("伤害加成", 0.15, (name + "_extra_special"));
+                if (data->attack_config->condition->attack_way != "E") data->add_percentage("伤害加成", 0.15, (name + "_extra_special"));
                 else data->add_percentage("伤害加成", 0.075 / 2, (name + "_extra_special"));
             }
             else if (data->c_point->args->monv_level == 1)
             {
-                if (data->config->condition->attack_way != "E") data->add_percentage("伤害加成", 0.075, (name + "_extra_special"));
+                if (data->attack_config->condition->attack_way != "E") data->add_percentage("伤害加成", 0.075, (name + "_extra_special"));
             }
         }
     }
     else if (if_4_piece && name == "渡过烈火的贤人")
     {
-        if (data->config->ele_attach_type.find("火") != string::npos)//火附着
+        if (data->team_config->ele_attach_type.find("火") != string::npos)//火附着
             data->add_percentage("伤害加成", 0.35, (name + "_extra_special"));
     }
     else if (if_4_piece && name == "平息鸣雷的尊者")
     {
-        if (data->config->ele_attach_type.find("雷") != string::npos)//雷附着
+        if (data->team_config->ele_attach_type.find("雷") != string::npos)//雷附着
             data->add_percentage("伤害加成", 0.35, (name + "_extra_special"));
     }
     else if (if_4_piece && name == "华馆梦醒形骸记")
     {
-        if (data->config->background || (!data->config->background && data->c_point->ele_type == "岩"))
+        if (data->attack_config->background || (!data->attack_config->background && data->c_point->ele_type == "岩"))
         {
             data->add_percentage("防御力", 0.24, (name + "_extra_special"));
-            if (data->config->condition->ele_type == "岩") data->add_percentage("伤害加成", 0.24, (name + "_extra_special"));
+            if (data->attack_config->condition->ele_type == "岩") data->add_percentage("伤害加成", 0.24, (name + "_extra_special"));
         }
     }
     else if (if_4_piece && name == "辰砂往生录")
@@ -1470,20 +1463,20 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
     else if (if_4_piece && name == "深林的记忆")
     {
         if (data->c_point->args->shenlin_enable)
-            if (data->config->condition->ele_type == "草")
+            if (data->attack_config->condition->ele_type == "草")
                 data->add_percentage("抗性削弱", 0.3, (name + "_extra_special"));
     }
     else if (if_4_piece && name == "饰金之梦")
     {
-        if (data->config->react_type != "NONE")
+        if (data->attack_config->react_type != "NONE")
         {
             int same = 0;
             int diff = 0;
-            if (data->config->teammate_1->ele_type == data->c_point->ele_type) same += 1;
+            if (data->team_config->teammate_1->ele_type == data->c_point->ele_type) same += 1;
             else diff += 1;
-            if (data->config->teammate_2->ele_type == data->c_point->ele_type) same += 1;
+            if (data->team_config->teammate_2->ele_type == data->c_point->ele_type) same += 1;
             else diff += 1;
-            if (data->config->teammate_3->ele_type == data->c_point->ele_type) same += 1;
+            if (data->team_config->teammate_3->ele_type == data->c_point->ele_type) same += 1;
             else diff += 1;
             data->add_percentage("攻击力", 0.14 * same, (name + "_extra_special"));
             data->add_percentage("元素精通", 50.0 * diff, (name + "_extra_special"));
@@ -1495,54 +1488,55 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
 //build new artifact(all) 被转化的属性有效
 void Artifact::modify_useful_attribute(Deployment *data)
 {
-    if (data->suit1->name == "绝缘之旗印" && data->suit2->name == "绝缘之旗印" && data->config->condition->attack_way == "Q") data->data_list[5]->useful = true;
+    if (data->suit1->name == "绝缘之旗印" && data->suit2->name == "绝缘之旗印" && data->attack_config->condition->attack_way == "Q")
+        data->change_useful_attribute("元素充能效率", true, data->suit1->name);
 }
 
 //build new artifact(all) 提供充能、队友加成的有效
-void Deployment::check_artifact_special(bool &suit1_valid, bool &suit2_valid, bool if_4_piece)
+void Artifact::check_artifact_special(Deployment *data, bool &suit1_valid, bool &suit2_valid, bool if_4_piece)
 {
     //特殊判断圣遗物套装，原来肯定-现在肯定；原来否定-现在肯定；原来肯定-现在否定；原来否定-现在否定
     if (if_4_piece)
     {
-        if (suit1->name == "悠古的磐岩")
+        if (data->suit1->name == "悠古的磐岩")
         {
-            if (c_point->ele_type == "岩")
+            if (data->c_point->ele_type == "岩")
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (suit1->name == "翠绿之影")
+        else if (data->suit1->name == "翠绿之影")
         {
-            if (c_point->ele_type == "风")
+            if (data->c_point->ele_type == "风")
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (suit1->name == "如雷的盛怒")
+        else if (data->suit1->name == "如雷的盛怒")
         {
-            if (c_point->ele_type == "雷")
+            if (data->c_point->ele_type == "雷")
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (suit1->name == "绝缘之旗印")
+        else if (data->suit1->name == "绝缘之旗印")
         {
-            if (config->condition->attack_way == "Q")
+            if (data->attack_config->condition->attack_way == "Q")
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (suit1->name == "海染砗磲" || suit1->name == "被怜爱的少女")
+        else if (data->suit1->name == "海染砗磲" || data->suit1->name == "被怜爱的少女")
         {
-            if (c_point->args->heal_sustain)
+            if (data->c_point->args->heal_sustain)
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
 
         //team
-        if (suit1->name == "昔日宗室之仪")
+        if (data->suit1->name == "昔日宗室之仪")
         {
             suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (suit1->name == "千岩牢固")
+        else if (data->suit1->name == "千岩牢固")
         {
-            if (c_point->args->sustain_E_hit)
+            if (data->c_point->args->sustain_E_hit)
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (suit1->name == "深林的记忆")
+        else if (data->suit1->name == "深林的记忆")
         {
-            if (c_point->args->shenlin_enable)
+            if (data->c_point->args->shenlin_enable)
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
 
@@ -1553,75 +1547,77 @@ void Deployment::check_artifact_special(bool &suit1_valid, bool &suit2_valid, bo
         //2+2
         //只允许 角斗+其他/追忆 染血+其他/苍白 少女+其他/海染 乐团+其他/饰金
         //suit1
-        if ((suit1->name == "追忆之注连" && suit2->name != "角斗士的终幕礼") || suit1->name == "辰砂往生录" || suit1->name == "来歆余响") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (suit1->name == "苍白之火" && suit2->name != "染血的骑士道") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (suit1->name == "海染砗磲" && suit2->name != "被怜爱的少女") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (suit1->name == "饰金之梦" && suit2->name != "流浪大地的乐团") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if ((data->suit1->name == "追忆之注连" && data->suit2->name != "角斗士的终幕礼") || data->suit1->name == "辰砂往生录" || data->suit1->name == "来歆余响") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (data->suit1->name == "苍白之火" && data->suit2->name != "染血的骑士道") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (data->suit1->name == "海染砗磲" && data->suit2->name != "被怜爱的少女") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (data->suit1->name == "饰金之梦" && data->suit2->name != "流浪大地的乐团") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         //suit2
-        if ((suit2->name == "追忆之注连" && suit1->name != "角斗士的终幕礼") || suit2->name == "辰砂往生录" || suit2->name == "来歆余响") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (suit2->name == "苍白之火" && suit1->name != "染血的骑士道") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (suit2->name == "海染砗磲" && suit1->name != "被怜爱的少女") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (suit2->name == "饰金之梦" && suit1->name != "流浪大地的乐团") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if ((data->suit2->name == "追忆之注连" && data->suit1->name != "角斗士的终幕礼") || data->suit2->name == "辰砂往生录" || data->suit2->name == "来歆余响") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (data->suit2->name == "苍白之火" && data->suit1->name != "染血的骑士道") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (data->suit2->name == "海染砗磲" && data->suit1->name != "被怜爱的少女") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (data->suit2->name == "饰金之梦" && data->suit1->name != "流浪大地的乐团") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
     }
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all) 所有转化类属性的有效百分比决定开关
-void Deployment::check_useful_attributes()
+void Deployment::check_useful_attribute()
 {
     //实际上应该采用（武器-圣遗物）对的形式考虑还原useful
     //convert:如果useful相对于config没有改变，那不影响；如果useful相对与config改变了，一定是转化类的属性新增了有效词条，那要检查是否值得新增
     if (w_point->name == "磐岩结绿")
     {
-        if ((data_list[0]->value_per_entry * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk) < data_list[1]->value_per_entry)
-            data_list[0]->useful = config->useful_attributes[0];
+        if ((data_list["生命值"]->value_per_entry * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk) < data_list["攻击力"]->value_per_entry)
+            change_useful_attribute("生命值", attack_config->useful_attributes["生命值"], w_point->name);
     }
         // TODO:NEW
     else if (w_point->name == "圣显之钥")
     {
-        if ((data_list[0]->value_per_entry * 0.0056 * (0.75 + w_point->level * 0.25) * base_life) < data_list[4]->value_per_entry)
-            data_list[0]->useful = config->useful_attributes[0];
+        if ((data_list["生命值"]->value_per_entry * 0.0056 * (0.75 + w_point->level * 0.25) * base_life) < data_list["元素精通"]->value_per_entry)
+            change_useful_attribute("生命值", attack_config->useful_attributes["生命值"], w_point->name);
     }
         // TODO:NEW
     else if (w_point->name == "西福斯的月光")
     {
-        if ((data_list[4]->value_per_entry * 0.00036 * (0.75 + w_point->level * 0.25)) < data_list[5]->value_per_entry)
-            data_list[4]->useful = config->useful_attributes[4];
+        if ((data_list["元素精通"]->value_per_entry * 0.00036 * (0.75 + w_point->level * 0.25)) < data_list["元素充能效率"]->value_per_entry)
+            change_useful_attribute("元素精通", attack_config->useful_attributes["元素精通"], w_point->name);
     }
         // TODO:NEW
     else if (w_point->name == "流浪的晚星")
     {
-        if ((data_list[4]->value_per_entry * 0.24 * (0.75 + w_point->level * 0.25) / base_atk) < data_list[1]->value_per_entry)
-            data_list[4]->useful = config->useful_attributes[4];
+        if ((data_list["元素精通"]->value_per_entry * 0.24 * (0.75 + w_point->level * 0.25) / base_atk) < data_list["攻击力"]->value_per_entry)
+            change_useful_attribute("元素精通", attack_config->useful_attributes["元素精通"], w_point->name);
     }
     else if (w_point->name == "玛海菈的水色")
     {
-        if ((data_list[4]->value_per_entry * 0.24 * (0.75 + w_point->level * 0.25) / base_atk) < data_list[1]->value_per_entry)
-            data_list[4]->useful = config->useful_attributes[4];
+        if ((data_list["元素精通"]->value_per_entry * 0.24 * (0.75 + w_point->level * 0.25) / base_atk) < data_list["攻击力"]->value_per_entry)
+            change_useful_attribute("元素精通", attack_config->useful_attributes["元素精通"], w_point->name);
     }
     else if (w_point->name == "护摩之杖")
     {
-        if ((data_list[0]->value_per_entry * (0.008 * (0.75 + w_point->level * 0.25) + (0.008 + w_point->level * 0.002)) * base_life / base_atk) < data_list[1]->value_per_entry)
-            data_list[0]->useful = config->useful_attributes[0];
+        if ((data_list["生命值"]->value_per_entry * (0.008 * (0.75 + w_point->level * 0.25) + (0.008 + w_point->level * 0.002)) * base_life / base_atk) < data_list["攻击力"]->value_per_entry)
+            change_useful_attribute("生命值", attack_config->useful_attributes["生命值"], w_point->name);
     }
     else if (w_point->name == "薙草之稻光")
     {
-        if ((data_list[5]->value_per_entry * 0.28 * (0.75 + w_point->level * 0.25)) < data_list[1]->value_per_entry)
-            data_list[5]->useful = config->useful_attributes[5];
+        if ((data_list["元素充能效率"]->value_per_entry * 0.28 * (0.75 + w_point->level * 0.25)) < data_list["攻击力"]->value_per_entry)
+            change_useful_attribute("元素充能效率", attack_config->useful_attributes["元素充能效率"], w_point->name);
     }
     else if (w_point->name == "赤沙之杖")
     {
-        if ((data_list[4]->value_per_entry * 1.36 * (0.75 + w_point->level * 0.25) / base_atk) < data_list[1]->value_per_entry)
-            data_list[4]->useful = config->useful_attributes[4];
+        if ((data_list["元素精通"]->value_per_entry * 1.36 * (0.75 + w_point->level * 0.25) / base_atk) < data_list["攻击力"]->value_per_entry)
+            change_useful_attribute("元素精通", attack_config->useful_attributes["元素精通"], w_point->name);
     }
 
     //artifact
     //绝缘肯定有效（增伤效益认为无穷）
-    if (suit1->name == "绝缘之旗印" && suit2->name == "绝缘之旗印" && config->condition->attack_way == "Q")
-        data_list[5]->useful = true;
+    if (suit1->name == "绝缘之旗印" && suit2->name == "绝缘之旗印" && attack_config->condition->attack_way == "Q")
+        change_useful_attribute("元素充能效率", true, suit1->name);
 
     //character
-    if (c_point->name == "胡桃") data_list[1]->useful = false;//生命>攻击，除非有攻击转什么
-    if (c_point->name == "钟离") data_list[1]->useful = false;//要考虑盾
+    if (c_point->name == "胡桃")
+        change_useful_attribute("攻击力", false, c_point->name);//生命>攻击，除非有攻击转什么
+    if (c_point->name == "钟离")
+        change_useful_attribute("攻击力", false, c_point->name);//要考虑盾
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
@@ -1630,90 +1626,90 @@ void Deployment::get_team_data()
     //默认队友5星0命，技能均为9级，4星6命，技能均为12级
 
     //weapon
-    if ((config->team_weapon_artifact.find("终末嗟叹之诗") != string::npos || config->team_weapon_artifact.find("苍古自由之誓") != string::npos || config->team_weapon_artifact.find("松籁响起之时") != string::npos)
+    if ((team_config->team_weapon_artifact.find("终末嗟叹之诗") != string::npos || team_config->team_weapon_artifact.find("苍古自由之誓") != string::npos || team_config->team_weapon_artifact.find("松籁响起之时") != string::npos)
         && (w_point->name != "终末嗟叹之诗" && w_point->name != "苍古自由之誓" && w_point->name != "松籁响起之时"))
     {
         add_percentage("攻击力", 0.2, "team_大乐章");
     }
-    if (config->team_weapon_artifact.find("终末嗟叹之诗") != string::npos && w_point->name != "终末嗟叹之诗")
+    if (team_config->team_weapon_artifact.find("终末嗟叹之诗") != string::npos && w_point->name != "终末嗟叹之诗")
     {
         add_percentage("元素精通", 100.0, "team_终末嗟叹之诗");
     }
-    if (config->team_weapon_artifact.find("苍古自由之誓") != string::npos && w_point->name != "苍古自由之誓")
+    if (team_config->team_weapon_artifact.find("苍古自由之誓") != string::npos && w_point->name != "苍古自由之誓")
     {
-        if (config->condition->attack_way == "平A" || config->condition->attack_way == "重A" || config->condition->attack_way == "下落A")
+        if (attack_config->condition->attack_way == "平A" || attack_config->condition->attack_way == "重A" || attack_config->condition->attack_way == "下落A")
             add_percentage("伤害加成", 0.16, "team_苍古自由之誓");
     }
-    if (config->team_weapon_artifact.find("白辰之环") != string::npos && w_point->name != "白辰之环")
+    if (team_config->team_weapon_artifact.find("白辰之环") != string::npos && w_point->name != "白辰之环")
     {
-        if ((config->react_type.find("超载") != string::npos && (config->condition->ele_type == "雷" || config->condition->ele_type == "火")) ||
-            (config->react_type.find("感电") != string::npos && (config->condition->ele_type == "雷" || config->condition->ele_type == "水")) ||
-            (config->react_type.find("激化") != string::npos && (config->condition->ele_type == "雷" || config->condition->ele_type == "草")) ||
-            (config->react_type.find("超导") != string::npos && (config->condition->ele_type == "雷" || config->condition->ele_type == "冰")))
+        if ((attack_config->react_type.find("超载") != string::npos && (attack_config->condition->ele_type == "雷" || attack_config->condition->ele_type == "火")) ||
+            (attack_config->react_type.find("感电") != string::npos && (attack_config->condition->ele_type == "雷" || attack_config->condition->ele_type == "水")) ||
+            (attack_config->react_type.find("激化") != string::npos && (attack_config->condition->ele_type == "雷" || attack_config->condition->ele_type == "草")) ||
+            (attack_config->react_type.find("超导") != string::npos && (attack_config->condition->ele_type == "雷" || attack_config->condition->ele_type == "冰")))
             add_percentage("伤害加成", 0.2, "team_白辰之环");
     }
-    if (config->team_weapon_artifact.find("讨龙") != string::npos)
+    if (team_config->team_weapon_artifact.find("讨龙") != string::npos)
     {
         add_percentage("攻击力", 0.48, "team_讨龙");
     }
-    if ((config->team_weapon_artifact.find("原木刀") != string::npos || config->team_weapon_artifact.find("森林王器") != string::npos) && (w_point->name != "原木刀" && w_point->name != "森林王器"))
+    if ((team_config->team_weapon_artifact.find("原木刀") != string::npos || team_config->team_weapon_artifact.find("森林王器") != string::npos) && (w_point->name != "原木刀" && w_point->name != "森林王器"))
     {
         add_percentage("元素精通", 120, "team_原木刀/森林王器");
     }
-    if (config->team_weapon_artifact.find("贯月矢") != string::npos && w_point->name != "贯月矢")
+    if (team_config->team_weapon_artifact.find("贯月矢") != string::npos && w_point->name != "贯月矢")
     {
         add_percentage("攻击力", 0.32, "team_贯月矢");
     }
     //TODO:NEW
-    if (config->team_weapon_artifact.find("千夜浮梦") != string::npos)
+    if (team_config->team_weapon_artifact.find("千夜浮梦") != string::npos)
     {
         add_percentage("元素精通", 40.0, "team_千夜浮梦");
     }
     //转化类
     //TODO:NEW
-    if (config->team_weapon_artifact.find("圣显之钥") != string::npos && w_point->name != "圣显之钥")
+    if (team_config->team_weapon_artifact.find("圣显之钥") != string::npos && w_point->name != "圣显之钥")
     {
-        add_percentage("元素精通", 100.0, "team_圣显之钥");
+        add_converted_percentage("元素精通", 100.0, "team_圣显之钥");
     }
     //TODO:NEW
-    if (config->team_weapon_artifact.find("西福斯的月光") != string::npos)
+    if (team_config->team_weapon_artifact.find("西福斯的月光") != string::npos)
     {
-        add_percentage("元素充能效率", 0.054, "team_西福斯的月光");
+        add_converted_percentage("元素充能效率", 0.054, "team_西福斯的月光");
     }
     //TODO:NEW
-    if (config->team_weapon_artifact.find("流浪的晚星") != string::npos)
+    if (team_config->team_weapon_artifact.find("流浪的晚星") != string::npos)
     {
-        add_percentage("攻击力", 36.0 / base_atk, "team_流浪的晚星");
+        add_converted_percentage("攻击力", 36.0 / base_atk, "team_流浪的晚星");
     }
-    if (config->team_weapon_artifact.find("玛海菈的水色") != string::npos)
+    if (team_config->team_weapon_artifact.find("玛海菈的水色") != string::npos)
     {
-        add_percentage("攻击力", 36.0 / base_atk, "team_玛海菈的水色");
+        add_converted_percentage("攻击力", 36.0 / base_atk, "team_玛海菈的水色");
     }
 
     //artifact
-    if (config->team_weapon_artifact.find("悠古的磐岩") != string::npos && (suit1->name != "悠古的磐岩" || suit2->name != "悠古的磐岩"))
+    if (team_config->team_weapon_artifact.find("悠古的磐岩") != string::npos && (suit1->name != "悠古的磐岩" || suit2->name != "悠古的磐岩"))
     {
-        //TODO:扩散与元素附着
-        add_percentage("伤害加成", 0.35, "team_悠古的磐岩");
+        if (team_config->ele_allow_spread.find(attack_config->condition->ele_type) != string::npos)//扩散与元素附着
+            add_percentage("伤害加成", 0.35, "team_悠古的磐岩");
     }
-    if (config->team_weapon_artifact.find("昔日宗室之仪") != string::npos && (suit1->name != "昔日宗室之仪" || suit2->name != "昔日宗室之仪"))
+    if (team_config->team_weapon_artifact.find("昔日宗室之仪") != string::npos && (suit1->name != "昔日宗室之仪" || suit2->name != "昔日宗室之仪"))
     {
         add_percentage("攻击力", 0.2, "team_昔日宗室之仪");
     }
-    if (config->team_weapon_artifact.find("翠绿之影") != string::npos && (suit1->name != "翠绿之影" || suit2->name != "翠绿之影"))
+    if (team_config->team_weapon_artifact.find("翠绿之影") != string::npos && (suit1->name != "翠绿之影" || suit2->name != "翠绿之影"))
     {
-        if (config->condition->ele_type == "水" || config->condition->ele_type == "火" || config->condition->ele_type == "雷" || config->condition->ele_type == "冰")
-            //if (config->ele_attach_type.find(config->condition->ele_type) != string::npos)//TODO:扩散与元素附着
-            add_percentage("抗性削弱", 0.4, "team_翠绿之影");
+        if (attack_config->condition->ele_type == "水" || attack_config->condition->ele_type == "火" || attack_config->condition->ele_type == "雷" || attack_config->condition->ele_type == "冰")
+            if (team_config->ele_allow_spread.find(attack_config->condition->ele_type) != string::npos)//扩散与元素附着
+                add_percentage("抗性削弱", 0.4, "team_翠绿之影");
     }
-    if (config->team_weapon_artifact.find("千岩牢固") != string::npos && (suit1->name != "千岩牢固" || suit2->name != "千岩牢固"))
+    if (team_config->team_weapon_artifact.find("千岩牢固") != string::npos && (suit1->name != "千岩牢固" || suit2->name != "千岩牢固"))
     {
         add_percentage("攻击力", 0.2, "team_千岩牢固");
         add_percentage("护盾强效", 0.3, "team_千岩牢固");
     }
-    if (config->team_weapon_artifact.find("深林的记忆") != string::npos && (suit1->name != "深林的记忆" || suit2->name != "深林的记忆"))
+    if (team_config->team_weapon_artifact.find("深林的记忆") != string::npos && (suit1->name != "深林的记忆" || suit2->name != "深林的记忆"))
     {
-        if (config->condition->ele_type == "草")
+        if (attack_config->condition->ele_type == "草")
             add_percentage("抗性削弱", 0.3, "team_深林的记忆");
     }
 
@@ -1725,7 +1721,7 @@ void Deployment::get_team_data()
     int Geo_num = 0;//15% shield 15%DAM 20%Geo RIS
     int Dendro_num = 0;//50EM 绽放激化燃烧30EM 二层绽放激化20EM
 
-    if (config->teammate_all.find("胡桃") != string::npos)
+    if (team_config->teammate_all.find("胡桃") != string::npos)
     {
         //talent E后
 //        add_percentage("暴击率", 0.12, "team_胡桃");
@@ -1733,25 +1729,25 @@ void Deployment::get_team_data()
 //        add_percentage("暴击率", 0.12, "team_胡桃");
         Pyro_num++;
     }
-    if (config->teammate_all.find("神里绫华") != string::npos)
+    if (team_config->teammate_all.find("神里绫华") != string::npos)
     {
         //constellation>=4 Q
 //        add_percentage("防御削弱", 0.3, "team_神里绫华");
         Cryo_num++;
     }
-    if (config->teammate_all.find("雷电将军") != string::npos)
+    if (team_config->teammate_all.find("雷电将军") != string::npos)
     {
         //E
-        if (config->condition->attack_way == "Q")
+        if (attack_config->condition->attack_way == "Q")
             add_percentage("伤害加成", 0.003 * c_point->Q_energy, "team_雷电将军");
         //constellation>=4 Q后
 //        add_percentage("攻击力", 0.3, "team_雷电将军");
         Electro_num++;
     }
-    if (config->teammate_all.find("甘雨") != string::npos)
+    if (team_config->teammate_all.find("甘雨") != string::npos)
     {
         //talent Q内
-        if (config->condition->ele_type == "冰" && (!(config->background && !config->lockface)))
+        if (attack_config->condition->ele_type == "冰" && (!(attack_config->background && !attack_config->lockface)))
             add_percentage("伤害加成", 0.2, "team_甘雨");
         //constellation>=1 重A后
 //        if (config->condition->ele_type == "冰")
@@ -1760,61 +1756,62 @@ void Deployment::get_team_data()
 //        add_percentage("伤害加成", 0.15, "team_甘雨");
         Cryo_num++;
     }
-    if (config->teammate_all.find("夜兰") != string::npos)
+    if (team_config->teammate_all.find("夜兰") != string::npos)
     {
         //talent Q后
-        if (!config->background)
+        if (!attack_config->background)
             add_percentage("伤害加成", 0.3, "team_夜兰");
         //constellation>=4 E后
 //        add_percentage("生命值", 0.4, "team_夜兰");
         Hydro_num++;
     }
-    if (config->teammate_all.find("行秋") != string::npos)
+    if (team_config->teammate_all.find("行秋") != string::npos)
     {
         //constellation>=2
-        if (config->condition->ele_type == "水")
+        if (attack_config->condition->ele_type == "水")
             add_percentage("抗性削弱", 0.15, "team_行秋");
         Hydro_num++;
     }
-    if (config->teammate_all.find("香菱") != string::npos)
+    if (team_config->teammate_all.find("香菱") != string::npos)
     {
         //constellation>=1 E命中
-        if (config->condition->ele_type == "火")
+        if (attack_config->condition->ele_type == "火")
             add_percentage("抗性削弱", 0.15, "team_香菱");
         //constellation>=6 Q内
-        if (config->condition->ele_type == "火")
+        if (attack_config->condition->ele_type == "火")
             add_percentage("伤害加成", 0.15, "team_香菱");
         Pyro_num++;
     }
-    if (config->teammate_all.find("八重神子") != string::npos)
+    if (team_config->teammate_all.find("八重神子") != string::npos)
     {
         //constellation>=4 E命中
 //        if (config->condition->ele_type == "雷")
 //            add_percentage("伤害加成", 0.2, "team_八重神子");
         Electro_num++;
     }
-    if (config->teammate_all.find("枫原万叶") != string::npos)
+    if (team_config->teammate_all.find("枫原万叶") != string::npos)
     {
         //talent 扩散
-        if (config->condition->ele_type == "水" || config->condition->ele_type == "火" || config->condition->ele_type == "雷" || config->condition->ele_type == "冰")
-            //if (config->ele_attach_type.find(config->condition->ele_type) != string::npos)//TODO:扩散与元素附着
-            add_percentage("伤害加成", 0.36, "team_枫原万叶");
+        //转化类
+        if (attack_config->condition->ele_type == "水" || attack_config->condition->ele_type == "火" || attack_config->condition->ele_type == "雷" || attack_config->condition->ele_type == "冰")
+            if (team_config->ele_allow_spread.find(attack_config->condition->ele_type) != string::npos)//扩散与元素附着
+                add_converted_percentage("伤害加成", 0.36, "team_枫原万叶");
         //constellation>=2 Q后
 //        if (!(config->background && !config->lockface))
 //            add_percentage("元素精通", 200.0, "team_枫原万叶");
         Anemo_num++;
     }
-    if (config->teammate_all.find("班尼特") != string::npos)
+    if (team_config->teammate_all.find("班尼特") != string::npos)
     {
         //Q
-        if (!(config->background && !config->lockface))
+        if (!(attack_config->background && !attack_config->lockface))
             add_percentage("攻击力", (191 + 608) * (1.12 + 0.2) / base_atk, "team_班尼特");
         //constellation>=6 Q内
 //        if (config->condition->ele_type == "火" && if (!(c_point->args->background && !c_point->args->lockface)))
 //            add_percentage("伤害加成", 0.15, "team_班尼特");
         Pyro_num++;
     }
-    if (config->teammate_all.find("温迪") != string::npos)
+    if (team_config->teammate_all.find("温迪") != string::npos)
     {
         //constellation>=2 E命中
 //        if (config->condition->ele_type == "风" || config->condition->ele_type == "物理")
@@ -1822,11 +1819,11 @@ void Deployment::get_team_data()
         //constellation>=6 Q
 //        if (config->condition->ele_type == "风") add_percentage("抗性削弱", 0.2, "team_温迪");
 //        if (config->condition->ele_type == "水" || config->condition->ele_type == "火" || config->condition->ele_type == "雷" || config->condition->ele_type == "冰")
-//          //if (config->ele_attach_type.find(config->condition->ele_type) != string::npos)//TODO:扩散与元素附着
-//            add_percentage("抗性削弱", 0.2, "team_温迪");
+//            if (team_config->ele_allow_spread.find(attack_config->condition->ele_type) != string::npos)//扩散与元素附着
+//                add_percentage("抗性削弱", 0.2, "team_温迪");
         Anemo_num++;
     }
-    if (config->teammate_all.find("莫娜") != string::npos)
+    if (team_config->teammate_all.find("莫娜") != string::npos)
     {
         //Q
         add_percentage("伤害加成", 0.58, "team_莫娜");
@@ -1834,7 +1831,7 @@ void Deployment::get_team_data()
 //        add_percentage("暴击率", 0.15, "team_莫娜");
         Hydro_num++;
     }
-    if (config->teammate_all.find("钟离") != string::npos)
+    if (team_config->teammate_all.find("钟离") != string::npos)
     {
         //E
         add_percentage("抗性削弱", 0.2, "team_钟离");
@@ -1843,38 +1840,39 @@ void Deployment::get_team_data()
         Geo_num++;
     }
     //TODO:NEW
-    if (config->teammate_all.find("纳西妲") != string::npos)
+    if (team_config->teammate_all.find("纳西妲") != string::npos)
     {
         //talent Q后
-        if (!(config->background && !config->lockface))
-            add_percentage("元素精通", 250, "team_纳西妲");
+        //转化类
+        if (!(attack_config->background && !attack_config->lockface))
+            add_converted_percentage("元素精通", 250, "team_纳西妲");
         //constellation>=2 激化后
 //        if (config->react_type.find("激化") != string::npos)
 //            add_percentage("防御削弱", 0.3, "team_纳西妲");
         Dendro_num++;
     }
 
-    if (config->teammate_1->name == "冰_test") Cryo_num++;
-    else if (config->teammate_1->name == "火_test") Pyro_num++;
-    else if (config->teammate_1->name == "水_test") Hydro_num++;
-    else if (config->teammate_1->name == "风_test") Anemo_num++;
-    else if (config->teammate_1->name == "雷_test") Electro_num++;
-    else if (config->teammate_1->name == "岩_test") Geo_num++;
-    else if (config->teammate_1->name == "草_test") Dendro_num++;
-    if (config->teammate_2->name == "冰_test") Cryo_num++;
-    else if (config->teammate_2->name == "火_test") Pyro_num++;
-    else if (config->teammate_2->name == "水_test") Hydro_num++;
-    else if (config->teammate_2->name == "风_test") Anemo_num++;
-    else if (config->teammate_2->name == "雷_test") Electro_num++;
-    else if (config->teammate_2->name == "岩_test") Geo_num++;
-    else if (config->teammate_2->name == "草_test") Dendro_num++;
-    if (config->teammate_3->name == "冰_test") Cryo_num++;
-    else if (config->teammate_3->name == "火_test") Pyro_num++;
-    else if (config->teammate_3->name == "水_test") Hydro_num++;
-    else if (config->teammate_3->name == "风_test") Anemo_num++;
-    else if (config->teammate_3->name == "雷_test") Electro_num++;
-    else if (config->teammate_3->name == "岩_test") Geo_num++;
-    else if (config->teammate_3->name == "草_test") Dendro_num++;
+    if (team_config->teammate_1->name == "冰_test") Cryo_num++;
+    else if (team_config->teammate_1->name == "火_test") Pyro_num++;
+    else if (team_config->teammate_1->name == "水_test") Hydro_num++;
+    else if (team_config->teammate_1->name == "风_test") Anemo_num++;
+    else if (team_config->teammate_1->name == "雷_test") Electro_num++;
+    else if (team_config->teammate_1->name == "岩_test") Geo_num++;
+    else if (team_config->teammate_1->name == "草_test") Dendro_num++;
+    if (team_config->teammate_2->name == "冰_test") Cryo_num++;
+    else if (team_config->teammate_2->name == "火_test") Pyro_num++;
+    else if (team_config->teammate_2->name == "水_test") Hydro_num++;
+    else if (team_config->teammate_2->name == "风_test") Anemo_num++;
+    else if (team_config->teammate_2->name == "雷_test") Electro_num++;
+    else if (team_config->teammate_2->name == "岩_test") Geo_num++;
+    else if (team_config->teammate_2->name == "草_test") Dendro_num++;
+    if (team_config->teammate_3->name == "冰_test") Cryo_num++;
+    else if (team_config->teammate_3->name == "火_test") Pyro_num++;
+    else if (team_config->teammate_3->name == "水_test") Hydro_num++;
+    else if (team_config->teammate_3->name == "风_test") Anemo_num++;
+    else if (team_config->teammate_3->name == "雷_test") Electro_num++;
+    else if (team_config->teammate_3->name == "岩_test") Geo_num++;
+    else if (team_config->teammate_3->name == "草_test") Dendro_num++;
 
     if (this->c_point->ele_type == "冰") Cryo_num++;
     else if (this->c_point->ele_type == "火") Pyro_num++;
@@ -1886,7 +1884,7 @@ void Deployment::get_team_data()
 
     if (Cryo_num >= 2)
     {
-        if (config->ele_attach_type.find("冰") != string::npos)//冰附着
+        if (team_config->ele_attach_type.find("冰") != string::npos)//冰附着
             add_percentage("暴击率", 0.15, "team_Cryo");
     }
     if (Pyro_num >= 2) add_percentage("攻击力", 0.25, "team_Pyro");
@@ -1894,7 +1892,7 @@ void Deployment::get_team_data()
     if (Geo_num >= 2)
     {
         add_percentage("护盾强效", 0.15, "team_Geo");
-        if (c_point->args->shield_sustain || config->teammate_1->args->shield_sustain || config->teammate_2->args->shield_sustain || config->teammate_3->args->shield_sustain)
+        if (c_point->args->shield_sustain || team_config->teammate_1->args->shield_sustain || team_config->teammate_2->args->shield_sustain || team_config->teammate_3->args->shield_sustain)
         {
             add_percentage("伤害加成", 0.15, "team_Geo");
             if (this->c_point->ele_type == "岩") add_percentage("抗性削弱", 0.2, "team_Geo");
@@ -1903,10 +1901,10 @@ void Deployment::get_team_data()
     if (Dendro_num >= 2)
     {
         add_percentage("元素精通", 50.0, "team_Dendro");
-        if (config->react_type.find("燃烧") != string::npos || config->react_type.find("绽放") != string::npos || config->react_type.find("激化") != string::npos)
+        if (attack_config->react_type.find("燃烧") != string::npos || attack_config->react_type.find("绽放") != string::npos || attack_config->react_type.find("激化") != string::npos)
             add_percentage("元素精通", 30.0, "team_Dendro");
-        if (config->react_type.find("超绽放") != string::npos || config->react_type.find("烈绽放") != string::npos || config->react_type.find("蔓激化") != string::npos ||
-            config->react_type.find("超激化") != string::npos)
+        if (attack_config->react_type.find("超绽放") != string::npos || attack_config->react_type.find("烈绽放") != string::npos || attack_config->react_type.find("蔓激化") != string::npos ||
+            attack_config->react_type.find("超激化") != string::npos)
             add_percentage("元素精通", 20.0, "team_Dendro");
     }
 }
@@ -1916,7 +1914,7 @@ void Deployment::satisfy_recharge_requirement()
 {
     string double_E_per_round = "神里绫华甘雨温迪";//TODO:recharge parameter
     //调整充能数值
-    if (config->condition->attack_way == "Q")
+    if (attack_config->condition->attack_way == "Q")
     {
         //能量回复值 = 微粒数 * 系数 * 实时的元素充能效率
         double front = 1;
@@ -1927,14 +1925,14 @@ void Deployment::satisfy_recharge_requirement()
         double monster_drop = 10;
 
         double Q_energy_modify = c_point->Q_energy;
-        if (config->teammate_all.find("雷电将军") != string::npos) Q_energy_modify -= 24;
-        //TODO:扩散与元素附着
-        if (config->teammate_all.find("温迪") != string::npos) Q_energy_modify -= 15;
+        if (team_config->teammate_all.find("雷电将军") != string::npos) Q_energy_modify -= 24;
+        //扩散与元素附着
+        if (team_config->teammate_all.find("温迪") != string::npos && team_config->ele_allow_spread.find(attack_config->condition->ele_type) != string::npos) Q_energy_modify -= 15;
 
         double energy = monster_drop;
-        energy += config->teammate_1->E_energy * back * ((config->teammate_1->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(config->teammate_1->name) != string::npos) ? 2 : 1);
-        energy += config->teammate_2->E_energy * back * ((config->teammate_2->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(config->teammate_2->name) != string::npos) ? 2 : 1);
-        energy += config->teammate_3->E_energy * back * ((config->teammate_3->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(config->teammate_3->name) != string::npos) ? 2 : 1);
+        energy += team_config->teammate_1->E_energy * back * ((team_config->teammate_1->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_1->name) != string::npos) ? 2 : 1);
+        energy += team_config->teammate_2->E_energy * back * ((team_config->teammate_2->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_2->name) != string::npos) ? 2 : 1);
+        energy += team_config->teammate_3->E_energy * back * ((team_config->teammate_3->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_3->name) != string::npos) ? 2 : 1);
 
         double extra_recharge = 0;//转化提供元素充能效率
 
@@ -1972,7 +1970,7 @@ void Deployment::satisfy_recharge_requirement()
             if (w_point->name == "西风剑") energy += 3 * front * white;
             else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
             else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
-            else if (w_point->name == "西福斯的月光") extra_recharge += data_list[4]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
+            else if (w_point->name == "西福斯的月光") extra_recharge += data_list["元素精通"]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
         }
         else if (c_point->name == "雷电将军")
         {
@@ -2013,7 +2011,7 @@ void Deployment::satisfy_recharge_requirement()
             if (w_point->name == "西风剑") energy += 3 * front * white;
             else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
             else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
-            else if (w_point->name == "西福斯的月光") extra_recharge += data_list[4]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
+            else if (w_point->name == "西福斯的月光") extra_recharge += data_list["元素精通"]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
         }
         else if (c_point->name == "香菱")
         {
@@ -2077,104 +2075,87 @@ void Deployment::satisfy_recharge_requirement()
         }
         else energy = Q_energy_modify;
 
-        data_list[5]->entry_num = max(0, (int) round((Q_energy_modify / energy - data_list[5]->percentage - extra_recharge) / data_list[5]->value_per_entry));
+        data_list["元素充能效率"]->entry_num = max(0, (int) ((Q_energy_modify / energy - data_list["元素充能效率"]->percentage - data_list["元素充能效率"]->converted_percentage - extra_recharge) / data_list["元素充能效率"]->value_per_entry) + 1);
     }
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
 void Deployment::get_convert_value(double &life, double &atk, double &def, double &mastery, double &recharge, double &critrate, double &critdam, double &damplus)
 {
-    //传入面板减去转化类加成
-    double life_ = life, atk_ = atk, def_ = def, mastery_ = mastery, recharge_ = recharge, critrate_ = critrate, critdam_ = critdam, damplus_ = damplus;
-    //TODO:NEW
-    if (config->team_weapon_artifact.find("圣显之钥") != string::npos && w_point->name != "圣显之钥") mastery_ -= 100.0;
-    //TODO:NEW
-    if (config->team_weapon_artifact.find("西福斯的月光") != string::npos) recharge_ -= 0.054;
-    //TODO:NEW
-    if (config->team_weapon_artifact.find("流浪的晚星") != string::npos) atk_ -= 36.0 / base_atk;
-    if (config->team_weapon_artifact.find("玛海菈的水色") != string::npos) atk_ -= 36.0 / base_atk;
-    if (config->teammate_all.find("枫原万叶") != string::npos)
-        if (config->condition->ele_type == "水" || config->condition->ele_type == "火" || config->condition->ele_type == "雷" || config->condition->ele_type == "冰")
-            damplus_ -= 0.36;
-    //TODO:NEW
-    if (config->teammate_all.find("纳西妲") != string::npos || c_point->name == "纳西妲")
-        if (!(config->background && !config->lockface))
-            mastery_ -= 250.0;
-
-    //按新面板计算转化，最后再执行加成
+    //先计算转化，最后再执行加成
     double life_add = 0, atk_add = 0, def_add = 0, mastery_add = 0, recharge_add = 0, critrate_add = 0, critdam_add = 0, damplus_add = 0;
     //character
     if (c_point->name == "胡桃")//生命->攻击
-        atk_add += min(life_ * 0.0626 * base_life / base_atk, 4.0);
-    else if (c_point->name == "雷电将军" && config->condition->ele_type == "雷")//充能->增伤
-        damplus_add += (recharge_ - 1) * 0.4;
-    else if (c_point->name == "八重神子" && config->condition->attack_way == "E")//精通->E增伤
-        damplus_add += mastery_ * 0.0015;
-    else if (c_point->name == "莫娜" && config->condition->ele_type == "水")//充能->增伤
-        damplus_add += recharge_ * 0.2;
+        atk_add += min(life * 0.0626 * base_life / base_atk, 4.0);
+    else if (c_point->name == "雷电将军" && attack_config->condition->ele_type == "雷")//充能->增伤
+        damplus_add += (recharge - 1) * 0.4;
+    else if (c_point->name == "八重神子" && attack_config->condition->attack_way == "E")//精通->E增伤
+        damplus_add += mastery * 0.0015;
+    else if (c_point->name == "莫娜" && attack_config->condition->ele_type == "水")//充能->增伤
+        damplus_add += recharge * 0.2;
         //TODO:NEW
-    else if (c_point->name == "纳西妲" && config->condition->attack_way == "E")//精通->E暴击增伤
+    else if (c_point->name == "纳西妲" && attack_config->condition->attack_way == "E")//精通->E暴击增伤
     {
-        damplus_add += min((mastery_ - 200.0), 800.0) * 0.001;
-        critrate_add += min((mastery_ - 200.0), 800.0) * 0.0003;
+        damplus_add += min((mastery - 200.0), 800.0) * 0.001;
+        critrate_add += min((mastery - 200.0), 800.0) * 0.0003;
     }
 
     //weapon
     if (w_point->name == "磐岩结绿")//生命->攻击
-        atk_add += life_ * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk;//生命->攻击
+        atk_add += life * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk;//生命->攻击
         // TODO:NEW
     else if (w_point->name == "圣显之钥")//生命->精通
     {
         if (c_point->args->sword_shengxian_level == 3)
         {
-            mastery_add += life_ * 0.0012 * 3 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
-            mastery_add += life_ * 0.002 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
+            mastery_add += life * 0.0012 * 3 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
+            mastery_add += life * 0.002 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
         }
         else if (c_point->args->sword_shengxian_level == 2)
         {
-            mastery_add += life_ * 0.0012 * 2 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
+            mastery_add += life * 0.0012 * 2 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
         }
         else if (c_point->args->sword_shengxian_level == 1)
         {
-            mastery_add += life_ * 0.0012 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
+            mastery_add += life * 0.0012 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
         }
     }
         // TODO:NEW
     else if (w_point->name == "西福斯的月光")//精通->充能
-        recharge_add += mastery_ * 0.00036 * (0.75 + w_point->level * 0.25);//精通->充能
+        recharge_add += mastery * 0.00036 * (0.75 + w_point->level * 0.25);//精通->充能
         // TODO:NEW
     else if (w_point->name == "流浪的晚星")//精通->攻击
-        atk_add += mastery_ * 0.24 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
+        atk_add += mastery * 0.24 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
     else if (w_point->name == "玛海菈的水色")//精通->攻击
-        atk_add += mastery_ * 0.24 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
+        atk_add += mastery * 0.24 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
     else if (w_point->name == "护摩之杖")//生命->攻击
     {
-        atk_add += life_ * 0.008 * (0.75 + w_point->level * 0.25) * base_life / base_atk;//生命->攻击
+        atk_add += life * 0.008 * (0.75 + w_point->level * 0.25) * base_life / base_atk;//生命->攻击
         if (c_point->args->polearm_humo_halflife)
-            atk_add += life_ * (0.008 + w_point->level * 0.002) * base_life / base_atk;//生命->攻击
+            atk_add += life * (0.008 + w_point->level * 0.002) * base_life / base_atk;//生命->攻击
     }
     else if (w_point->name == "薙草之稻光")//充能->攻击
-        atk_add += min((recharge_ - 1) * (0.75 + w_point->level * 0.25) * 0.28, (0.7 + w_point->level * 0.1));
+        atk_add += min((recharge - 1) * (0.75 + w_point->level * 0.25) * 0.28, (0.7 + w_point->level * 0.1));
     else if (w_point->name == "赤沙之杖")//精通->攻击
     {
-        atk_add += mastery_ * 0.52 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
+        atk_add += mastery * 0.52 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
         if (c_point->args->polearm_chisha_level == 3)
         {
-            atk_add += mastery_ * 0.28 * 3 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
+            atk_add += mastery * 0.28 * 3 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
         }
         else if (c_point->args->polearm_chisha_level == 2)
         {
-            atk_add += mastery_ * 0.28 * 2 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
+            atk_add += mastery * 0.28 * 2 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
         }
         else if (c_point->args->polearm_chisha_level == 1)
         {
-            atk_add += mastery_ * 0.28 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
+            atk_add += mastery * 0.28 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
         }
     }
 
     //artifact
-    if (suit1->name == "绝缘之旗印" && suit2->name == "绝缘之旗印" && config->condition->attack_way == "Q")//充能->增伤
-        damplus_add += min(recharge_ * 0.25, 0.75);
+    if (suit1->name == "绝缘之旗印" && suit2->name == "绝缘之旗印" && attack_config->condition->attack_way == "Q")//充能->增伤
+        damplus_add += min(recharge * 0.25, 0.75);
 
     life += life_add;
     atk += atk_add;
@@ -2191,27 +2172,27 @@ void Deployment::get_extra_rate_value(double life, double atk, double def, doubl
 {
     //artifact
     //weapon
-    if (w_point->name == "辰砂之纺锤" && config->condition->attack_way == "E")
+    if (w_point->name == "辰砂之纺锤" && attack_config->condition->attack_way == "E")
         extrarate += 0.4 * (0.75 + w_point->level * 0.25) * def * base_def;
-    else if (w_point->name == "不灭月华" && config->condition->attack_way == "平A")
+    else if (w_point->name == "不灭月华" && attack_config->condition->attack_way == "平A")
         extrarate += (0.005 + w_point->level * 0.005) * life * base_life;
-    else if (w_point->name == "赤角石溃杵" && (config->condition->attack_way == "平A" || config->condition->attack_way == "重A"))
+    else if (w_point->name == "赤角石溃杵" && (attack_config->condition->attack_way == "平A" || attack_config->condition->attack_way == "重A"))
         extrarate += 0.4 * (0.75 + w_point->level * 0.25) * def * base_def;
-    else if (w_point->name == "猎人之径" && config->condition->attack_way == "重A")
+    else if (w_point->name == "猎人之径" && attack_config->condition->attack_way == "重A")
         extrarate += 1.6 * (0.75 + w_point->level * 0.25) * mastery;
     //character
     if (c_point->name == "胡桃")
     {
-        if (c_point->constellation >= 2 && config->condition->attack_way == "E")
+        if (c_point->constellation >= 2 && attack_config->condition->attack_way == "E")
             extrarate += 0.1 * life * base_life;
     }
     else if (c_point->name == "夜兰")
     {
-        if (config->condition->attack_way == "重A")//LV9
+        if (attack_config->condition->attack_way == "重A")//LV9
             extrarate += 0.1968 * life * base_life;
-        else if (config->condition->attack_way == "E")//LV9
+        else if (attack_config->condition->attack_way == "E")//LV9
             extrarate += 0.384 * life * base_life;
-        else if (config->condition->attack_way == "Q")//LV9
+        else if (attack_config->condition->attack_way == "Q")//LV9
         {
             if (c_point->constellation >= 2)
                 extrarate += ((0.1242 + 0.0828 * 3 * 15 + 0.14 * 7) / 53) * life * base_life;
@@ -2221,136 +2202,145 @@ void Deployment::get_extra_rate_value(double life, double atk, double def, doubl
     }
     else if (c_point->name == "钟离")
     {
-        if (config->condition->attack_way == "平A" || config->condition->attack_way == "重A" || config->condition->attack_way == "下落A")
+        if (attack_config->condition->attack_way == "平A" || attack_config->condition->attack_way == "重A" || attack_config->condition->attack_way == "下落A")
             extrarate += 0.0139 * life * base_life;
-        else if (config->condition->attack_way == "E")
+        else if (attack_config->condition->attack_way == "E")
             extrarate += 0.019 * life * base_life;
-        else if (config->condition->attack_way == "Q")
+        else if (attack_config->condition->attack_way == "Q")
             extrarate += 0.33 * life * base_life;
     }
         //TODO:NEW
     else if (c_point->name == "纳西妲")
     {
-        if (config->condition->attack_way == "E")
+        if (attack_config->condition->attack_way == "E")
             extrarate += 3.509 * mastery;
     }
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
-void Deployment::get_react_value(double mastery, double &extrarate, double &growrate)
+double Deployment::get_react_value(double mastery, double &extrarate, double &growrate)
 {
     //扩散（风+水火雷冰），结晶（岩+水火雷冰），绽放（草水+火雷），激化（草雷），燃烧（草火），蒸发（水火），融化（火冰），冻结（水冰），感电（雷水），超载（雷火），超导（雷冰）
-    if (config->react_type.find("扩散") != string::npos)
+    //默认抗性固定为0.1
+    double extra_damage = 0;
+    if (attack_config->react_type.find("扩散") != string::npos)
     {
-        //1.2 * 723.0 * (1 + (16 * mastery) / (mastery + 2000) + 如雷/魔女等) * defence * resistance;
+        double extra_damplus = 0;
+        if ((suit1->name == suit2->name) && (suit1->name == "翠绿之影")) extra_damplus += 0.6;
+//        if (team_config->teammate_all.find("莫娜") != string::npos) extra_damplus += 0.15;//TODO:只有水元素扩散
+        extra_damage += 1.2 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
+        //1.2 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
         //元素伤，吃各元素抗
     }
-    if (config->react_type.find("结晶") != string::npos)
+    if (attack_config->react_type.find("结晶") != string::npos)
     {}
-    if (config->react_type.find("绽放") != string::npos)
+    if (attack_config->react_type.find("绽放") != string::npos)
     {
-        //4.0 * 723.0 * (1 + (16 * mastery) / (mastery + 2000) + 如雷/魔女等) * defence * resistance;
-        //草伤，吃草抗
-        //6.0 * 723.0 * (1 + (16 * mastery) / (mastery + 2000) + 如雷/魔女等) * defence * resistance;
-        //烈绽放、超绽放
+        //TODO:绽放
+//        if (attack_config->react_type.find("烈绽放") != string::npos)
+//        {
+//            double extra_damplus = 0;
+//            if ((suit1->name == suit2->name) && (suit1->name == "炽烈的炎之魔女")) extra_damplus += 0.4;
+//            extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
+//            //6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
+//            //草伤，吃草抗
+//        }
+//        else if (attack_config->react_type.find("超绽放") != string::npos)
+//        {
+//            double extra_damplus = 0;
+//            if ((suit1->name == suit2->name) && (suit1->name == "如雷的盛怒")) extra_damplus += 0.4;
+//            extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
+//            //6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
+//            //草伤，吃草抗
+//        }
+//        else
+//        {
+//            double extra_damplus = 0;
+//            extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
+//            //4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
+//            //草伤，吃草抗
+//        }
     }
-    if (config->react_type.find("激化") != string::npos)
+    if (attack_config->react_type.find("激化") != string::npos)
     {
-        if (this->config->condition->ele_type == "草") extrarate += 1447.0 * 1.25 * (1.0 + (5.0 * mastery) / (mastery + 1200.0));
-        else if (this->config->condition->ele_type == "雷") extrarate += 1447.0 * 1.15 * (1.0 + (5.0 * mastery) / (mastery + 1200.0));
+        if (this->attack_config->condition->ele_type == "草") extrarate += 1447.0 * 1.25 * (1.0 + (5.0 * mastery) / (mastery + 1200.0));
+        else if (this->attack_config->condition->ele_type == "雷") extrarate += 1447.0 * 1.15 * (1.0 + (5.0 * mastery) / (mastery + 1200.0));
     }
-    if (config->react_type.find("燃烧") != string::npos)
+    if (attack_config->react_type.find("燃烧") != string::npos)
     {
-        //0.5 * 723.0 * (1 + (16 * mastery) / (mastery + 2000) + 如雷/魔女等) * defence * resistance;
+        double extra_damplus = 0;
+        if ((suit1->name == suit2->name) && (suit1->name == "炽烈的炎之魔女")) extra_damplus += 0.4;
+        extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
+        //0.5 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
         //火伤，吃火抗，8段伤害
     }
-    if (config->react_type.find("蒸发") != string::npos)
+    if (attack_config->react_type.find("蒸发") != string::npos)
     {
         growrate = 1.0 + (25.0 * mastery) / (9.0 * (mastery + 1401.0));
         if ((suit1->name == suit2->name) && (suit1->name == "炽烈的炎之魔女")) growrate += 0.15;
-        if (config->teammate_all.find("莫娜") != string::npos) growrate += 0.15;
-        if (config->condition->ele_type == "火") growrate *= 1.5;
-        else if (config->condition->ele_type == "水") growrate *= 2.0;
+        if (team_config->teammate_all.find("莫娜") != string::npos) growrate += 0.15;
+        if (attack_config->condition->ele_type == "火") growrate *= 1.5;
+        else if (attack_config->condition->ele_type == "水") growrate *= 2.0;
     }
-    if (config->react_type.find("融化") != string::npos)
+    if (attack_config->react_type.find("融化") != string::npos)
     {
         growrate = 1.0 + (25.0 * mastery) / (9.0 * (mastery + 1401.0));
         if ((suit1->name == suit2->name) && (suit1->name == "炽烈的炎之魔女")) growrate += 0.15;
-        if (config->condition->ele_type == "火") growrate *= 2.0;
-        else if (config->condition->ele_type == "冰") growrate *= 1.5;
+        if (attack_config->condition->ele_type == "火") growrate *= 2.0;
+        else if (attack_config->condition->ele_type == "冰") growrate *= 1.5;
     }
-    if (config->react_type.find("冻结") != string::npos)
+    if (attack_config->react_type.find("冻结") != string::npos)
     {}
-    //碎冰 //3.0 * 723.0 * (1 + (16 * mastery) / (mastery + 2000) + 如雷/魔女等) * defence * resistance;
+    //碎冰 //3.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
     //物理伤，吃物理抗
-    if (config->react_type.find("感电") != string::npos)
+    if (attack_config->react_type.find("感电") != string::npos)
     {
-        //2.4 * 723.0 * (1 + (16 * mastery) / (mastery + 2000) + 如雷/魔女等) * defence * resistance;
+        double extra_damplus = 0;
+        if ((suit1->name == suit2->name) && (suit1->name == "如雷的盛怒")) extra_damplus += 0.4;
+        if (team_config->teammate_all.find("莫娜") != string::npos) extra_damplus += 0.15;
+        extra_damage += 2.4 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
+        //2.4 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
         //雷伤，吃雷抗
     }
-    if (config->react_type.find("超载") != string::npos)
+    if (attack_config->react_type.find("超载") != string::npos)
     {
-        //4.0 * 723.0 * (1 + (16 * mastery) / (mastery + 2000) + 如雷/魔女等) * defence * resistance;
+        double extra_damplus = 0;
+        if ((suit1->name == suit2->name) && (suit1->name == "炽烈的炎之魔女")) extra_damplus += 0.4;
+        if ((suit1->name == suit2->name) && (suit1->name == "如雷的盛怒")) extra_damplus += 0.4;
+        extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
+        //4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
         //火伤，吃火抗
     }
-    if (config->react_type.find("超导") != string::npos)
+    if (attack_config->react_type.find("超导") != string::npos)
     {
-        //1.0 * 723.0 * (1 + (16 * mastery) / (mastery + 2000) + 如雷/魔女等) * defence * resistance;
+        double extra_damplus = 0;
+        if ((suit1->name == suit2->name) && (suit1->name == "如雷的盛怒")) extra_damplus += 0.4;
+        extra_damage += 1.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
+        //1.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
         //冰伤，吃冰抗
     }
+    return extra_damage;
 }
 
-//parameters
-bool out_header = true;
-ofstream outfile_result;
-ofstream outfile_debug;
-
-void Deployment::out()
+struct Combination
 {
-    if (out_header)
-    {
-        outfile_result << "人物名称" << "," << "配置信息" << "," << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位" << "," << "4号位" << "," << "5号位" << "," << "期望伤害" << ","
-                       << "LIFE" << "," << "life" << "," << "ATK" << "," << "atk" << "," << "DEF" << "," << "def" << "," << "mastery" << "," << "recharge" << "," << "critrate" << "," << "critdam" << "," << "damplus" << "," << "resistdec" << ","
-                       << "defdec" << "," << "defign" << "," << "heal" << "," << "shield" << ","
-                       << "lifenum" << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
-        out_header = false;
-    }
-    outfile_result << c_point->name << ","
-                   << (config->condition->attack_way + "_" + (config->background ? "后台" : "站场") + config->react_type + "_" + config->ele_attach_type + "_" + to_string(config->max_entry_all) + "_" + config->teammate_all + "_" + config->team_weapon_artifact) << ","
-                   << w_point->name << "," << suit1->name << "," << suit2->name << "," << a_main3 << "," << a_main4 << "," << a_main5 << "," << damage << ",";
-    outfile_result << base_life << "," << base_life * (data_list[0]->entry_num * data_list[0]->value_per_entry + data_list[0]->percentage - 1) << ",";
-    outfile_result << base_atk << "," << base_atk * (data_list[1]->entry_num * data_list[1]->value_per_entry + data_list[1]->percentage - 1) << ",";
-    outfile_result << base_def << "," << base_def * (data_list[2]->entry_num * data_list[2]->value_per_entry + data_list[2]->percentage - 1) << ",";
-    outfile_result << data_list[4]->entry_num * data_list[4]->value_per_entry + data_list[4]->percentage << ",";
-    outfile_result << data_list[5]->entry_num * data_list[5]->value_per_entry + data_list[5]->percentage << ",";
-    outfile_result << data_list[6]->entry_num * data_list[6]->value_per_entry + data_list[6]->percentage << ",";
-    outfile_result << data_list[7]->entry_num * data_list[7]->value_per_entry + data_list[7]->percentage << ",";
-    outfile_result << data_list[8]->percentage << ",";
-    outfile_result << data_list[9]->percentage << ",";
-    outfile_result << data_list[10]->percentage << ",";
-    outfile_result << data_list[11]->percentage << ",";
-    outfile_result << data_list[12]->percentage << ",";
-    outfile_result << data_list[13]->percentage << ",";
-    outfile_result << data_list[0]->entry_num << ",";
-    outfile_result << data_list[1]->entry_num << ",";
-    outfile_result << data_list[2]->entry_num << ",";
-    outfile_result << data_list[4]->entry_num << ",";
-    outfile_result << data_list[5]->entry_num << ",";
-    outfile_result << data_list[6]->entry_num << ",";
-    outfile_result << data_list[7]->entry_num << "\n";
-}
-
-class Combination
-{
-public:
     Weapon *w_point;
     Artifact *suit1;
     Artifact *suit2;
     string a_main3;
     string a_main4;
     string a_main5;
+    Team_config *team_config;
+    vector<Attack_config *> attack_config_list;
 
-    Combination(Weapon *w_point_, Artifact *suit1_, Artifact *suit2_, string a_main3_, string a_main4_, string a_main5_)
+    Combination(Weapon *w_point_,
+                Artifact *suit1_,
+                Artifact *suit2_,
+                string a_main3_,
+                string a_main4_,
+                string a_main5_,
+                Team_config *team_config_,
+                vector<Attack_config *> attack_config_list_)
     {
         w_point = w_point_;
         suit1 = suit1_;
@@ -2358,292 +2348,485 @@ public:
         a_main3 = a_main3_;
         a_main4 = a_main4_;
         a_main5 = a_main5_;
+        team_config = team_config_;
+        attack_config_list = attack_config_list_;
     }
 };
 
+bool out_header = true;
 //TODO:配置编写
+int top_k = 3;
 bool cal_enable_recharge_check = true;
 double cal_min_critrate_valid = 0.5;
 double cal_max_critrate_valid = 0.9;
+int max_up_num_per_base = 4;
+int max_attribute_num_per_pos = 3;
+int max_entry_num = 30;
+int artifact_2_2_max_entry_bonus = 2;
 
-void get_all_config(string c_name, vector<Config *> &config_list, vector<Combination *> &combination_list)
+//不考虑感电
+void get_all_config(string c_name, vector<Combination *> &combination_list)
 {
     //"白辰之环" "苍古自由之誓" "松籁响起之时" "圣显之钥" "西福斯的月光" "流浪的晚星" "玛海菈的水色"
 
     //"终末嗟叹之诗" "讨龙" "原木刀" "森林王器" "贯月矢" "千夜浮梦"
     //"悠古的磐岩" "昔日宗室之仪" "翠绿之影" "千岩牢固" "深林的记忆"
 
-    //"胡桃" "行秋" "钟离" "夜兰" "水" "终末嗟叹之诗_昔日宗室之仪"/"昔日宗室之仪"
-    //"胡桃" "行秋" "钟离" "莫娜" "水" "讨龙_昔日宗室之仪"
-    //"胡桃" "夜兰" "钟离" "莫娜" "水" "终末嗟叹之诗_讨龙_昔日宗室之仪"/"讨龙_昔日宗室之仪"
+    //"胡桃" "行秋" "钟离" "夜兰" "终末嗟叹之诗_昔日宗室之仪"/"昔日宗室之仪" "水" "水"
+    //"胡桃" "行秋" "钟离" "莫娜" "讨龙_昔日宗室之仪" "水" "水"
+    //"胡桃" "夜兰" "钟离" "莫娜" "终末嗟叹之诗_讨龙_昔日宗室之仪"/"讨龙_昔日宗室之仪" "水" "水"
 
-    //"神里绫华" "甘雨" "温迪" "莫娜" "冰水" "终末嗟叹之诗_昔日宗室之仪_翠绿之影"/"昔日宗室之仪_翠绿之影"
-    //"神里绫华" "甘雨" "枫原万叶" "莫娜" "冰水" "昔日宗室之仪_翠绿之影"
+    //"神里绫华" "甘雨" "温迪" "莫娜" "终末嗟叹之诗_昔日宗室之仪_翠绿之影"/"昔日宗室之仪_翠绿之影" "冰水" "冰"
+    //"神里绫华" "甘雨" "枫原万叶" "莫娜" "昔日宗室之仪_翠绿之影" "冰水" "冰"
 
-    //"雷电将军" "行秋" "香菱" "水雷" "班尼特" "昔日宗室之仪"
-    //"雷电将军" "夜兰" "香菱" "水雷" "班尼特" "终末嗟叹之诗_昔日宗室之仪"/"昔日宗室之仪"
-    //"雷电将军" "八重神子" "香菱" "雷火" "班尼特" "昔日宗室之仪"
-    //"雷电将军" "枫原万叶" "香菱" "雷火" "班尼特" "昔日宗室之仪_翠绿之影"
+    //"雷电将军" "行秋" "香菱" "班尼特" "昔日宗室之仪" "水雷" "水雷火"
+    //"雷电将军" "夜兰" "香菱" "班尼特" "终末嗟叹之诗_昔日宗室之仪"/"昔日宗室之仪" "水雷" "水雷火"
+    //"雷电将军" "八重神子" "香菱" "班尼特" "昔日宗室之仪" "雷" "雷火"
+    //"雷电将军" "枫原万叶" "香菱" "班尼特" "昔日宗室之仪_翠绿之影" "火" "雷火"
 
-    //"纳西妲" "草_test" "八重神子" "钟离" "雷草" "昔日宗室之仪_千夜浮梦_深林的记忆"
-    //"纳西妲" "草_test" "八重神子" "班尼特" "雷草" "原木刀_昔日宗室之仪_千夜浮梦_深林的记忆"
-    //"纳西妲" "草_test" "八重神子" "雷电将军" "雷草" "千夜浮梦_深林的记忆"
-    //"纳西妲" "草_test" "钟离" "雷电将军" "雷草" "昔日宗室之仪_千夜浮梦_深林的记忆"
-    //"纳西妲" "草_test" "班尼特" "雷电将军" "雷草" "原木刀_昔日宗室之仪_千夜浮梦_深林的记忆"
+    //"纳西妲" "草_test" "八重神子" "钟离" "昔日宗室之仪_千夜浮梦_深林的记忆" "雷草" "雷"
+    //"纳西妲" "草_test" "八重神子" "班尼特" "原木刀_昔日宗室之仪_千夜浮梦_深林的记忆" "雷草" "雷"
+    //"纳西妲" "草_test" "八重神子" "雷电将军" "千夜浮梦_深林的记忆" "雷草" "雷"
+    //"纳西妲" "草_test" "钟离" "雷电将军" "昔日宗室之仪_千夜浮梦_深林的记忆" "雷草" "雷"
+    //"纳西妲" "草_test" "班尼特" "雷电将军" "原木刀_昔日宗室之仪_千夜浮梦_深林的记忆" "雷草" "雷火"
 
     if (c_name == "胡桃")
     {
-        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
-                                         true, true, false, true, false, true, true, true,
-                                         false, false, "行秋", "钟离", "莫娜", "讨龙_昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
-                                         true, true, false, true, false, true, true, true,
-                                         false, false, "行秋", "钟离", "夜兰", "终末嗟叹之诗_昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
-                                         true, true, false, true, false, true, true, true,
-                                         false, false, "莫娜", "钟离", "夜兰", "终末嗟叹之诗_讨龙_昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
-                                         true, true, false, true, false, true, true, true,
-                                         false, false, "行秋", "钟离", "夜兰", "昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发", "水", 30,
-                                         true, true, false, true, false, true, true, true,
-                                         false, false, "莫娜", "钟离", "夜兰", "讨龙_昔日宗室之仪"));
+        auto *tc1 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("莫娜"),
+                                    "讨龙_昔日宗室之仪", "水", "水");
+        auto *tc2 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("夜兰"),
+                                    "终末嗟叹之诗_昔日宗室之仪", "水", "水");
+        auto *tc3 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("夜兰"),
+                                    "昔日宗室之仪", "水", "水");
+        auto *tc4 = new Team_config(find_character_by_name("钟离"), find_character_by_name("夜兰"), find_character_by_name("莫娜"),
+                                    "终末嗟叹之诗_讨龙_昔日宗室之仪", "水", "水");
+        auto *tc5 = new Team_config(find_character_by_name("钟离"), find_character_by_name("夜兰"), find_character_by_name("莫娜"),
+                                    "讨龙_昔日宗室之仪", "水", "水");
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+        vector<Attack_config *> ac1;//9AZ
+        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "平A"), false, false, "NONE",
+                                        true, true, false, false, false,
+                                        true, true, true, false, false, 6));
+        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "平A"), false, false, "蒸发",
+                                        true, true, false, true, false,
+                                        true, true, true, false, false, 3));
+        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发",
+                                        true, true, false, true, false,
+                                        true, true, true, false, false, 9));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc2, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc3, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc4, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc5, ac1));
     }
     if (c_name == "神里绫华")
     {
-        config_list.push_back(new Config(new Condition("冰", "单手剑", "重A"), false, false, "冻结", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "甘雨", "温迪", "莫娜", "昔日宗室之仪_翠绿之影"));
-        config_list.push_back(new Config(new Condition("冰", "单手剑", "重A"), false, false, "冻结", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "甘雨", "温迪", "莫娜", "终末嗟叹之诗_昔日宗室之仪_翠绿之影"));
-        config_list.push_back(new Config(new Condition("冰", "单手剑", "重A"), false, false, "冻结", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "甘雨", "枫原万叶", "莫娜", "昔日宗室之仪_翠绿之影"));
+        auto *tc1 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
+                                    "昔日宗室之仪_翠绿之影", "冰水", "冰");
+        auto *tc2 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
+                                    "终末嗟叹之诗_昔日宗室之仪_翠绿之影", "冰水", "冰");
+        auto *tc3 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("枫原万叶"),
+                                    "昔日宗室之仪_翠绿之影", "冰水", "冰");
 
-        config_list.push_back(new Config(new Condition("冰", "单手剑", "Q"), false, false, "冻结", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "甘雨", "温迪", "莫娜", "昔日宗室之仪_翠绿之影"));
-        config_list.push_back(new Config(new Condition("冰", "单手剑", "Q"), false, false, "冻结", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "甘雨", "温迪", "莫娜", "终末嗟叹之诗_昔日宗室之仪_翠绿之影"));
-        config_list.push_back(new Config(new Condition("冰", "单手剑", "Q"), false, false, "冻结", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "甘雨", "枫原万叶", "莫娜", "昔日宗室之仪_翠绿之影"));
+        vector<Attack_config *> ac1;//EAQAZAZAZ EAZAZAZ
+        ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "平A"), false, false, "冻结",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 1 + 6));
+        ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "重A"), false, false, "冻结",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 3 * 6));
+        ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "E"), false, false, "冻结",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 2));
+        ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "Q"), false, false, "冻结",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 20));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc2, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc3, ac1));
     }
     if (c_name == "雷电将军")
     {
-        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "感电", "水雷", 30,
-                                         false, true, false, false, true, true, true, true,
-                                         false, false, "行秋", "香菱", "班尼特", "昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "感电", "水雷", 30,
-                                         false, true, false, false, true, true, true, true,
-                                         false, false, "夜兰", "香菱", "班尼特", "终末嗟叹之诗_昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "感电", "水雷", 30,
-                                         false, true, false, false, true, true, true, true,
-                                         false, false, "夜兰", "香菱", "班尼特", "昔日宗室之仪"));
+        auto *tc1 = new Team_config(find_character_by_name("香菱"), find_character_by_name("班尼特"), find_character_by_name("行秋"),
+                                    "昔日宗室之仪", "水雷", "水雷火");
+        auto *tc2 = new Team_config(find_character_by_name("香菱"), find_character_by_name("班尼特"), find_character_by_name("夜兰"),
+                                    "终末嗟叹之诗_昔日宗室之仪", "水雷", "水雷火");
+        auto *tc3 = new Team_config(find_character_by_name("香菱"), find_character_by_name("班尼特"), find_character_by_name("夜兰"),
+                                    "昔日宗室之仪", "水雷", "水雷火");
 
-        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "超载", "雷火", 30,
-                                         false, true, false, false, true, true, true, true,
-                                         false, false, "八重神子", "香菱", "班尼特", "昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "超载", "雷火", 30,
-                                         false, true, false, false, true, true, true, true,
-                                         false, false, "枫原万叶", "香菱", "班尼特", "昔日宗室之仪_翠绿之影"));
+        auto *tc4 = new Team_config(find_character_by_name("香菱"), find_character_by_name("班尼特"), find_character_by_name("八重神子"),
+                                    "昔日宗室之仪", "雷", "雷火");
+
+        auto *tc5 = new Team_config(find_character_by_name("香菱"), find_character_by_name("班尼特"), find_character_by_name("枫原万叶"),
+                                    "昔日宗室之仪_翠绿之影", "火", "雷火");
         //TODO:NEW
-        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "超激化", "雷草", 30,
-                                         false, true, false, true, true, true, true, true,
-                                         false, false, "纳西妲", "草_test", "八重神子", "千夜浮梦_深林的记忆"));
-        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "超激化", "雷草", 30,
-                                         false, true, false, true, true, true, true, true,
-                                         false, false, "纳西妲", "草_test", "钟离", "昔日宗室之仪_千夜浮梦_深林的记忆"));
-        config_list.push_back(new Config(new Condition("雷", "长柄武器", "Q"), false, false, "超激化", "雷草", 30,
-                                         false, true, false, true, true, true, true, true,
-                                         false, false, "纳西妲", "草_test", "班尼特", "原木刀_昔日宗室之仪_千夜浮梦_深林的记忆"));
+        auto *tc6 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("草_test"), find_character_by_name("八重神子"),
+                                    "千夜浮梦_深林的记忆", "雷草", "雷");
+        auto *tc7 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("草_test"), find_character_by_name("钟离"),
+                                    "昔日宗室之仪_千夜浮梦_深林的记忆", "雷草", "雷");
+        auto *tc8 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("草_test"), find_character_by_name("班尼特"),
+                                    "原木刀_昔日宗室之仪_千夜浮梦_深林的记忆", "雷草", "雷火");
 
+        vector<Attack_config *> ac1;
+        ac1.push_back(new Attack_config(new Condition("雷", "长柄武器", "Q"), false, false, "感电",
+                                        false, true, false, false, true,
+                                        true, true, true, false, false, 1));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+        vector<Attack_config *> ac2;
+        ac2.push_back(new Attack_config(new Condition("雷", "长柄武器", "Q"), false, false, "NONE",
+                                        false, true, false, false, true,
+                                        true, true, true, false, false, 1));
+
+        vector<Attack_config *> ac3;
+        ac2.push_back(new Attack_config(new Condition("雷", "长柄武器", "Q"), false, false, "超载",
+                                        false, true, false, true, true,
+                                        true, true, true, false, false, 1));
+        //TODO:NEW
+        vector<Attack_config *> ac4;
+        ac3.push_back(new Attack_config(new Condition("雷", "长柄武器", "Q"), false, false, "超激化",
+                                        false, true, false, true, true,
+                                        true, true, true, false, false, 1));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc2, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc3, ac1));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc4, ac2));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc5, ac3));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc6, ac4));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc7, ac4));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc8, ac4));
     }
     if (c_name == "甘雨")
     {
-        config_list.push_back(new Config(new Condition("冰", "弓", "重A"), false, false, "冻结", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "神里绫华", "温迪", "莫娜", "昔日宗室之仪_翠绿之影"));
-        config_list.push_back(new Config(new Condition("冰", "弓", "重A"), false, false, "冻结", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "神里绫华", "温迪", "莫娜", "终末嗟叹之诗_昔日宗室之仪_翠绿之影"));
-        config_list.push_back(new Config(new Condition("冰", "弓", "重A"), false, false, "冻结", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "神里绫华", "枫原万叶", "莫娜", "昔日宗室之仪_翠绿之影"));
+        auto *tc1 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
+                                    "昔日宗室之仪_翠绿之影", "冰水", "冰");
+        auto *tc2 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
+                                    "终末嗟叹之诗_昔日宗室之仪_翠绿之影", "冰水", "冰");
+        auto *tc3 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("莫娜"), find_character_by_name("枫原万叶"),
+                                    "昔日宗室之仪_翠绿之影", "冰水", "冰");
 
-        config_list.push_back(new Config(new Condition("冰", "弓", "Q"), true, true, "冻结", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "神里绫华", "温迪", "莫娜", "昔日宗室之仪_翠绿之影"));
-        config_list.push_back(new Config(new Condition("冰", "弓", "Q"), true, true, "冻结", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "神里绫华", "温迪", "莫娜", "终末嗟叹之诗_昔日宗室之仪_翠绿之影"));
-        config_list.push_back(new Config(new Condition("冰", "弓", "Q"), true, true, "冻结", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "神里绫华", "枫原万叶", "莫娜", "昔日宗室之仪_翠绿之影"));
+        vector<Attack_config *> ac1;//Q EZ EZ
+        ac1.push_back(new Attack_config(new Condition("冰", "弓", "重A"), false, false, "冻结",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 2 * 2));
+        ac1.push_back(new Attack_config(new Condition("冰", "弓", "E"), false, true, "冻结",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 2 * 2));
+        ac1.push_back(new Attack_config(new Condition("冰", "弓", "Q"), true, true, "冻结",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 25));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc2, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc3, ac1));
     }
     if (c_name == "夜兰")
     {
-        config_list.push_back(new Config(new Condition("水", "弓", "Q"), true, false, "NONE", "水", 30,
-                                         true, false, false, false, false, true, true, true,
-                                         false, false, "胡桃", "行秋", "钟离", "昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("水", "弓", "Q"), true, false, "NONE", "水", 30,
-                                         true, false, false, false, false, true, true, true,
-                                         false, false, "胡桃", "莫娜", "钟离", "昔日宗室之仪"));
+        auto *tc1 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("行秋"),
+                                    "昔日宗室之仪", "水", "水");
+        auto *tc2 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("莫娜"),
+                                    "昔日宗室之仪", "水", "水");
 
-        config_list.push_back(new Config(new Condition("水", "弓", "Q"), true, false, "感电", "水雷", 30,
-                                         true, false, false, false, false, true, true, true,
-                                         false, false, "雷电将军", "香菱", "班尼特", "昔日宗室之仪"));
+        auto *tc3 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("香菱"), find_character_by_name("班尼特"),
+                                    "昔日宗室之仪", "水雷", "水雷火");
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+        vector<Attack_config *> ac1;//EQ
+        ac1.push_back(new Attack_config(new Condition("水", "弓", "E"), false, false, "NONE",
+                                        true, false, false, false, false,
+                                        true, true, true, false, false, 1));
+        ac1.push_back(new Attack_config(new Condition("水", "弓", "Q"), true, false, "NONE",
+                                        true, false, false, false, false,
+                                        true, true, true, false, false, 46));
+
+        vector<Attack_config *> ac2;
+        ac2.push_back(new Attack_config(new Condition("水", "弓", "E"), false, false, "NONE",
+                                        true, false, false, false, false,
+                                        true, true, true, false, false, 1));
+        ac2.push_back(new Attack_config(new Condition("水", "弓", "Q"), true, false, "NONE",
+                                        true, false, false, false, false,
+                                        true, true, true, false, false, 31));
+        ac2.push_back(new Attack_config(new Condition("水", "弓", "Q"), true, false, "感电",
+                                        true, false, false, true, false,
+                                        true, true, true, false, false, 15));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc2, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc3, ac2));
     }
     if (c_name == "行秋")
     {
-        config_list.push_back(new Config(new Condition("水", "单手剑", "Q"), true, false, "感电", "水雷", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "雷电将军", "香菱", "班尼特", "昔日宗室之仪"));
+        auto *tc1 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("莫娜"),
+                                    "昔日宗室之仪", "水", "水");
+        auto *tc2 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("夜兰"),
+                                    "终末嗟叹之诗_昔日宗室之仪", "水", "水");
+        auto *tc3 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("夜兰"),
+                                    "昔日宗室之仪", "水", "水");
 
-        config_list.push_back(new Config(new Condition("水", "单手剑", "Q"), true, false, "NONE", "水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "胡桃", "钟离", "莫娜", "昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("水", "单手剑", "Q"), true, false, "NONE", "水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "胡桃", "钟离", "夜兰", "终末嗟叹之诗_昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("水", "单手剑", "Q"), true, false, "NONE", "水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "胡桃", "钟离", "夜兰", "昔日宗室之仪"));
+        auto *tc4 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("香菱"), find_character_by_name("班尼特"),
+                                    "昔日宗室之仪", "水雷", "水雷火");
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+        vector<Attack_config *> ac1;//EQ
+        ac1.push_back(new Attack_config(new Condition("水", "单手剑", "E"), false, false, "NONE",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 2 * 1));
+        ac1.push_back(new Attack_config(new Condition("水", "单手剑", "Q"), true, false, "NONE",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 45));
+
+        vector<Attack_config *> ac2;//EQ
+        ac2.push_back(new Attack_config(new Condition("水", "单手剑", "E"), false, false, "蒸发",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 2 * 1));
+        ac2.push_back(new Attack_config(new Condition("水", "单手剑", "Q"), true, false, "NONE",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 30));
+        ac2.push_back(new Attack_config(new Condition("水", "单手剑", "Q"), true, false, "感电",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 15));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc2, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc3, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc4, ac2));
     }
     if (c_name == "香菱")
     {
-        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载", "水雷", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "雷电将军", "行秋", "班尼特", "昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载", "水雷", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "雷电将军", "夜兰", "班尼特", "终末嗟叹之诗_昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载", "水雷", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "雷电将军", "夜兰", "班尼特", "昔日宗室之仪"));
+        auto *tc1 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("班尼特"), find_character_by_name("行秋"),
+                                    "昔日宗室之仪", "水雷", "水雷火");
+        auto *tc2 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("班尼特"), find_character_by_name("夜兰"),
+                                    "终末嗟叹之诗_昔日宗室之仪", "水雷", "水雷火");
+        auto *tc3 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("班尼特"), find_character_by_name("夜兰"),
+                                    "昔日宗室之仪", "水雷", "水雷火");
 
-        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "超载", "雷火", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "雷电将军", "八重神子", "班尼特", "昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("火", "长柄武器", "Q"), true, true, "超载", "雷火", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "雷电将军", "枫原万叶", "班尼特", "昔日宗室之仪_翠绿之影"));
+        auto *tc4 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("班尼特"), find_character_by_name("八重神子"),
+                                    "昔日宗室之仪", "雷", "雷火");
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+        auto *tc5 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("班尼特"), find_character_by_name("枫原万叶"),
+                                    "昔日宗室之仪_翠绿之影", "火", "雷火");
+
+        vector<Attack_config *> ac1;
+        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "E"), true, true, "蒸发_超载",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 4));
+        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 1));
+
+        vector<Attack_config *> ac2;
+        ac2.push_back(new Attack_config(new Condition("火", "长柄武器", "E"), true, true, "超载",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 4));
+        ac2.push_back(new Attack_config(new Condition("火", "长柄武器", "Q"), true, true, "超载",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 1));
+
+        vector<Attack_config *> ac3;
+        ac2.push_back(new Attack_config(new Condition("火", "长柄武器", "E"), true, true, "NONE",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 4));
+        ac2.push_back(new Attack_config(new Condition("火", "长柄武器", "Q"), true, true, "NONE",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 1));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc2, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc3, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc4, ac2));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc5, ac3));
     }
     if (c_name == "八重神子")
     {
-        config_list.push_back(new Config(new Condition("雷", "法器", "E"), true, false, "超载", "雷火", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "雷电将军", "香菱", "班尼特", "昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("雷", "法器", "Q"), false, true, "超载", "雷火", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "雷电将军", "香菱", "班尼特", "昔日宗室之仪"));
-        //TODO:NEW
-        config_list.push_back(new Config(new Condition("雷", "法器", "E"), true, false, "超激化", "雷草", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "纳西妲", "草_test", "钟离", "昔日宗室之仪_千夜浮梦_深林的记忆"));
-        config_list.push_back(new Config(new Condition("雷", "法器", "E"), true, false, "超激化", "雷草", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "纳西妲", "草_test", "雷电将军", "千夜浮梦_深林的记忆"));
-        config_list.push_back(new Config(new Condition("雷", "法器", "E"), true, false, "超激化", "雷草", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "纳西妲", "草_test", "班尼特", "昔日宗室之仪_千夜浮梦_深林的记忆"));
+        auto *tc1 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("香菱"), find_character_by_name("班尼特"),
+                                    "昔日宗室之仪", "雷", "雷火");
 
-        config_list.push_back(new Config(new Condition("雷", "法器", "Q"), false, true, "超激化", "雷草", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "纳西妲", "草_test", "钟离", "昔日宗室之仪_千夜浮梦_深林的记忆"));
-        config_list.push_back(new Config(new Condition("雷", "法器", "Q"), false, true, "超激化", "雷草", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "纳西妲", "草_test", "雷电将军", "千夜浮梦_深林的记忆"));
-        config_list.push_back(new Config(new Condition("雷", "法器", "Q"), false, true, "超激化", "雷草", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "纳西妲", "草_test", "班尼特", "昔日宗室之仪_千夜浮梦_深林的记忆"));
+        auto *tc2 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("草_test"), find_character_by_name("钟离"),
+                                    "昔日宗室之仪_千夜浮梦_深林的记忆", "雷草", "雷");
+        auto *tc3 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("草_test"), find_character_by_name("雷电将军"),
+                                    "千夜浮梦_深林的记忆", "雷草", "雷");
+        auto *tc4 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("草_test"), find_character_by_name("班尼特"),
+                                    "昔日宗室之仪_千夜浮梦_深林的记忆", "雷草", "雷");
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""), "", "", ""));
+        vector<Attack_config *> ac1;
+        ac1.push_back(new Attack_config(new Condition("雷", "法器", "E"), true, false, "NONE",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 21));
+        ac1.push_back(new Attack_config(new Condition("雷", "法器", "Q"), false, true, "NONE",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 4));
+
+        vector<Attack_config *> ac2;
+        ac2.push_back(new Attack_config(new Condition("雷", "法器", "E"), true, false, "超激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 7));
+        ac2.push_back(new Attack_config(new Condition("雷", "法器", "E"), true, false, "NONE",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 14));
+        ac2.push_back(new Attack_config(new Condition("雷", "法器", "Q"), false, true, "超激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 4));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc2, ac2));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc3, ac2));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc4, ac2));
     }
     if (c_name == "温迪")
     {
-        config_list.push_back(new Config(new Condition("风", "弓", "Q"), true, true, "扩散", "冰水", 30,
-                                         false, true, false, false, false, true, true, true,
-                                         false, false, "风_test", "风_test", "风_test", ""));
+        auto *tc1 = new Team_config(find_character_by_name("风_test"), find_character_by_name("风_test"), find_character_by_name("风_test"),
+                                    "", "冰水", "冰水");
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"), "", "", ""));
+        vector<Attack_config *> ac1;
+        ac1.push_back(new Attack_config(new Condition("风", "弓", "E"), false, false, "扩散",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 1));
+        ac1.push_back(new Attack_config(new Condition("风", "弓", "Q"), true, true, "扩散",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 20));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
+                                                   "", "", "", tc1, ac1));
     }
     if (c_name == "莫娜")
     {
-        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "NONE", "水", 30,
-                                         false, true, false, false, true, true, true, true,
-                                         false, false, "胡桃", "行秋", "钟离", "昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "NONE", "水", 30,
-                                         false, true, false, false, true, true, true, true,
-                                         false, false, "胡桃", "夜兰", "钟离", "终末嗟叹之诗_昔日宗室之仪"));
-        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "NONE", "水", 30,
-                                         false, true, false, false, true, true, true, true,
-                                         false, false, "胡桃", "夜兰", "钟离", "昔日宗室之仪"));
+        auto *tc1 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("行秋"),
+                                    "昔日宗室之仪", "水", "水");
+        auto *tc2 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("夜兰"),
+                                    "终末嗟叹之诗_昔日宗室之仪", "水", "水");
+        auto *tc3 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("夜兰"),
+                                    "昔日宗室之仪", "水", "水");
 
-        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "冻结", "冰水", 30,
-                                         false, true, false, false, true, true, true, true,
-                                         false, false, "神里绫华", "甘雨", "温迪", "翠绿之影"));
-        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "冻结", "冰水", 30,
-                                         false, true, false, false, true, true, true, true,
-                                         false, false, "神里绫华", "甘雨", "温迪", "终末嗟叹之诗_翠绿之影"));
-        config_list.push_back(new Config(new Condition("水", "法器", "Q"), true, false, "冻结", "冰水", 30,
-                                         false, true, false, false, true, true, true, true,
-                                         false, false, "神里绫华", "甘雨", "枫原万叶", "翠绿之影"));
+        auto *tc4 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("甘雨"), find_character_by_name("温迪"),
+                                    "翠绿之影", "冰水", "冰");
+        auto *tc5 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("甘雨"), find_character_by_name("温迪"),
+                                    "终末嗟叹之诗_翠绿之影", "冰水", "冰");
+        auto *tc6 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("甘雨"), find_character_by_name("枫原万叶"),
+                                    "翠绿之影", "冰水", "冰");
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "元素充能效率", "", ""));
+        vector<Attack_config *> ac1;
+        ac1.push_back(new Attack_config(new Condition("水", "法器", "E"), true, false, "NONE",
+                                        false, true, false, false, true,
+                                        true, true, true, false, false, 5));
+        ac1.push_back(new Attack_config(new Condition("水", "法器", "Q"), true, false, "NONE",
+                                        false, true, false, false, true,
+                                        true, true, true, false, false, 1));
+
+        vector<Attack_config *> ac2;
+        ac2.push_back(new Attack_config(new Condition("水", "法器", "E"), true, false, "冻结",
+                                        false, true, false, false, true,
+                                        true, true, true, false, false, 5));
+        ac2.push_back(new Attack_config(new Condition("水", "法器", "Q"), true, false, "冻结",
+                                        false, true, false, false, true,
+                                        true, true, true, false, false, 1));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+                                                   "元素充能效率", "", "", tc1, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+                                                   "元素充能效率", "", "", tc2, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+                                                   "元素充能效率", "", "", tc3, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+                                                   "元素充能效率", "", "", tc4, ac2));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+                                                   "元素充能效率", "", "", tc5, ac2));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+                                                   "元素充能效率", "", "", tc6, ac2));
     }
     if (c_name == "钟离")
     {
-        config_list.push_back(new Config(new Condition("岩", "长柄武器", "Q"), false, false, "结晶", "水", 30,
-                                         true, true, false, false, false, true, true, true,
-                                         false, false, "风_test", "风_test", "风_test", ""));
+        auto *tc1 = new Team_config(find_character_by_name("风_test"), find_character_by_name("风_test"), find_character_by_name("风_test"),
+                                    "", "", "");
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "生命值", "", ""));
+        vector<Attack_config *> ac1;
+        ac1.push_back(new Attack_config(new Condition("岩", "长柄武器", "Q"), false, false, "结晶",
+                                        true, true, false, false, false,
+                                        true, true, true, false, false, 1));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+                                                   "生命值", "", "", tc1, ac1));
     }
     //TODO:NEW
     if (c_name == "纳西妲")
     {
-        config_list.push_back(new Config(new Condition("草", "法器", "E"), false, false, "蔓激化", "雷草", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "草_test", "八重神子", "钟离", "昔日宗室之仪_深林的记忆"));
-        config_list.push_back(new Config(new Condition("草", "法器", "E"), false, false, "蔓激化", "雷草", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "草_test", "八重神子", "班尼特", "原木刀_昔日宗室之仪_深林的记忆"));
-        config_list.push_back(new Config(new Condition("草", "法器", "E"), true, false, "蔓激化", "雷草", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "草_test", "八重神子", "雷电将军", "深林的记忆"));
-        config_list.push_back(new Config(new Condition("草", "法器", "E"), true, false, "蔓激化", "雷草", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "草_test", "雷电将军", "钟离", "昔日宗室之仪_深林的记忆"));
-        config_list.push_back(new Config(new Condition("草", "法器", "E"), true, false, "蔓激化", "雷草", 30,
-                                         false, true, false, true, false, true, true, true,
-                                         false, false, "草_test", "雷电将军", "班尼特", "昔日宗室之仪_深林的记忆"));
+        auto *tc1 = new Team_config(find_character_by_name("草_test"), find_character_by_name("八重神子"), find_character_by_name("钟离"),
+                                    "昔日宗室之仪_深林的记忆", "雷草", "雷");
+        auto *tc2 = new Team_config(find_character_by_name("草_test"), find_character_by_name("八重神子"), find_character_by_name("班尼特"),
+                                    "原木刀_昔日宗室之仪_深林的记忆", "雷草", "雷");
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"), "", "", ""));
+        auto *tc3 = new Team_config(find_character_by_name("草_test"), find_character_by_name("八重神子"), find_character_by_name("雷电将军"),
+                                    "深林的记忆", "雷草", "雷");
+        auto *tc4 = new Team_config(find_character_by_name("草_test"), find_character_by_name("雷电将军"), find_character_by_name("钟离"),
+                                    "昔日宗室之仪_深林的记忆", "雷草", "雷");
+        auto *tc5 = new Team_config(find_character_by_name("草_test"), find_character_by_name("雷电将军"), find_character_by_name("班尼特"),
+                                    "昔日宗室之仪_深林的记忆", "雷草", "雷火");
+
+        vector<Attack_config *> ac1;
+        ac1.push_back(new Attack_config(new Condition("草", "法器", "E"), false, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 1));
+
+        vector<Attack_config *> ac2;
+        ac1.push_back(new Attack_config(new Condition("草", "法器", "E"), true, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 1));
+
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+                                                   "", "", "", tc1, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+                                                   "", "", "", tc2, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+                                                   "", "", "", tc3, ac2));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+                                                   "", "", "", tc4, ac2));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+                                                   "", "", "", tc5, ac2));
     }
 }
 
 struct cmp
 {
-    bool operator()(Deployment *a, Deployment *b)
+    bool operator()(Group *a, Group *b)
     {
-        if (a->damage > b->damage) return true;
+        if (a->total_damage > b->total_damage) return true;
         else return false;
     }
 };
@@ -2652,110 +2835,108 @@ void cal_deployment()
 {
     for (auto &c_index: character_list)
     {
-        vector<Config *> config_list;
         vector<Combination *> combination_list;
-        get_all_config(c_index->name, config_list, combination_list);
-        for (auto &conf_index: config_list)
+        get_all_config(c_index->name, combination_list);
+        for (auto &comb_index: combination_list)
         {
-            for (auto &comb_index: combination_list)
+            for (auto &w_index: weapon_list)
             {
-                for (auto &w_index: weapon_list)
+                if (c_index->weapon_type != w_index->weapon_type) continue;
+
+                if (comb_index->w_point != nullptr && comb_index->w_point != w_index) continue;
+
+                priority_queue<Group *, vector<Group *>, cmp> c_w_pair;
+
+                clock_t start = clock();
+
+                for (int a_index1 = 0; a_index1 < artifact_list.size(); a_index1++)
                 {
-                    if (c_index->weapon_type != w_index->weapon_type) continue;
+                    if (comb_index->suit1 != nullptr && comb_index->suit1 != artifact_list[a_index1]) continue;
 
-                    if (comb_index->w_point != nullptr && comb_index->w_point != w_index) continue;
-
-                    priority_queue<Deployment *, vector<Deployment *>, cmp> c_w_pair;
-
-                    clock_t start = clock();
-
-                    for (int a_index1 = 0; a_index1 < artifact_list.size(); a_index1++)
+                    for (int a_index2 = a_index1; a_index2 < artifact_list.size(); a_index2++)
                     {
-                        if (comb_index->suit1 != nullptr && comb_index->suit1 != artifact_list[a_index1]) continue;
+                        if (comb_index->suit2 != nullptr && comb_index->suit2 != artifact_list[a_index2]) continue;
 
-                        for (int a_index2 = a_index1; a_index2 < artifact_list.size(); a_index2++)
+                        for (int main3_index = 0; main3_index < 5; main3_index++)
                         {
-                            if (comb_index->suit2 != nullptr && comb_index->suit2 != artifact_list[a_index2]) continue;
+                            if (!comb_index->a_main3.empty() && comb_index->a_main3 != a_main3[main3_index]) continue;
 
-                            for (int main3_index = 0; main3_index < 5; main3_index++)
+                            for (int main4_index = (main3_index == 4) ? 0 : main3_index; main4_index < 5; main4_index++)
                             {
-                                if (comb_index->a_main3 != "" && comb_index->a_main3 != a_main3[main3_index]) continue;
+                                if (!comb_index->a_main4.empty() && comb_index->a_main4 != a_main4[main4_index]) continue;
 
-                                for (int main4_index = (main3_index == 4) ? 0 : main3_index; main4_index < 5; main4_index++)
+                                for (int main5_index = (main4_index == 4) ? ((main3_index == 4) ? 0 : main3_index) : main4_index; main5_index < 7; main5_index++)
                                 {
-                                    if (comb_index->a_main4 != "" && comb_index->a_main4 != a_main4[main4_index]) continue;
+                                    if (!comb_index->a_main5.empty() && comb_index->a_main5 != a_main5[main5_index]) continue;
 
-                                    for (int main5_index = (main4_index == 4) ? ((main3_index == 4) ? 0 : main3_index) : main4_index; main5_index < 7; main5_index++)
+                                    auto *temp = new Group(c_index, w_index, artifact_list[a_index1], artifact_list[a_index2], a_main3[main3_index],
+                                                           a_main4[main4_index], a_main5[main5_index], comb_index->team_config, comb_index->attack_config_list);
+                                    int check_num = temp->init_check_data();
+                                    if (check_num == 0)//pass
                                     {
-                                        if (comb_index->a_main5 != "" && comb_index->a_main5 != a_main5[main5_index]) continue;
-
-                                        auto *temp = new Deployment(c_index, w_index, artifact_list[a_index1], artifact_list[a_index2],
-                                                                    a_main3[main3_index], a_main4[main4_index], a_main5[main5_index], conf_index);
-                                        int check_num = temp->init_check_data();
-                                        if (check_num == 0)//pass
+                                        temp->cal_damage_entry_num();
+                                        if (c_w_pair.size() < top_k) c_w_pair.push(temp);
+                                        else if (temp->damage > c_w_pair.top()->damage)
                                         {
-                                            temp->cal_damage_entry_num();
-                                            if (c_w_pair.size() < 3) c_w_pair.push(temp);
-                                            else if (temp->damage > c_w_pair.top()->damage)
-                                            {
-                                                Deployment *smallest = c_w_pair.top();
-                                                c_w_pair.pop();
-                                                delete smallest;
-                                                c_w_pair.push(temp);
-                                            }
-                                            else delete temp;
+                                            Group *smallest = c_w_pair.top();
+                                            c_w_pair.pop();
+                                            delete smallest;
+                                            c_w_pair.push(temp);
                                         }
-                                        else if (check_num == 2)//error:suit1 or suit2
-                                        {
-                                            delete temp;
-                                            goto NEXTARTIFACT;
-                                        }
-                                        else if (check_num == 3)//error:main3
-                                        {
-                                            delete temp;
-                                            goto NEXTMAIN3;
-                                        }
-                                        else if (check_num == 4)//error:main4
-                                        {
-                                            delete temp;
-                                            goto NEXTMAIN4;
-                                        }
-                                        else if (check_num == 5)//error:main5
-                                        {
-                                            delete temp;
-                                            goto NEXTMAIN5;
-                                        }
-                                        NEXTMAIN5:;
+                                        else delete temp;
                                     }
-                                    NEXTMAIN4:;
+                                    else if (check_num == 2)//error:suit1 or suit2
+                                    {
+                                        delete temp;
+                                        goto NEXTARTIFACT;
+                                    }
+                                    else if (check_num == 3)//error:main3
+                                    {
+                                        delete temp;
+                                        goto NEXTMAIN3;
+                                    }
+                                    else if (check_num == 4)//error:main4
+                                    {
+                                        delete temp;
+                                        goto NEXTMAIN4;
+                                    }
+                                    else if (check_num == 5)//error:main5
+                                    {
+                                        delete temp;
+                                        goto NEXTMAIN5;
+                                    }
+                                    NEXTMAIN5:;
                                 }
-                                NEXTMAIN3:;
+                                NEXTMAIN4:;
                             }
-                            NEXTARTIFACT:;
+                            NEXTMAIN3:;
                         }
+                        NEXTARTIFACT:;
                     }
-
-                    clock_t end = clock();
-                    double time = (double) (end - start) / CLOCKS_PER_SEC;
-
-                    while (!c_w_pair.empty())
-                    {
-                        Deployment *c_w = c_w_pair.top();
-                        c_w_pair.pop();
-                        c_w->out();
-                        delete c_w;
-                    }
-                    cout << c_index->name << " "
-                         << (conf_index->condition->attack_way + "_" + conf_index->react_type + "_" + conf_index->ele_attach_type + "_" + to_string(conf_index->max_entry_all) + "_" + conf_index->teammate_all + "_" + conf_index->team_weapon_artifact)
-                         << " " << w_index->name
-                         << " time=" << time << "s" << ((time > 30) ? "!!!" : "") << "\n";
                 }
+
+                clock_t end = clock();
+                double time = (double) (end - start) / CLOCKS_PER_SEC;
+
+                while (!c_w_pair.empty())
+                {
+                    Group *c_w = c_w_pair.top();
+                    c_w_pair.pop();
+                    c_w->out();
+                    delete c_w;
+                }
+                cout << c_index->name << " " << w_index->name << " " << " time=" << time << "s" << ((time > 30) ? "!!!" : "") << " ";
+                for (auto &i: comb_index->attack_config_list)
+                    cout << to_string(i->attack_time) + "*" + i->condition->attack_way + "_" + (i->background ? "后台" : "前台") + "_" + i->react_type + "/";
+                cout << " " << comb_index->team_config->teammate_all + "_" + comb_index->team_config->team_weapon_artifact << "\n";
             }
         }
         combination_list.clear();
-        config_list.clear();
     }
 }
+
+ofstream outfile_result;
+ofstream outfile_debug;
 
 int main()
 {
