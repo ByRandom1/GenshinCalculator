@@ -475,12 +475,14 @@ bool Character::get_extra_special(Deployment *data) const
     else if (data->c_point->name == "行秋")
     {
         if (data->attack_config->condition->attack_way == "E" && data->c_point->constellation >= 4)
-            data->base_skillrate *= 1.5;
+            data->add_percentage("额外倍率", data->base_skillrate * 0.5, (name + "_extra_special"));
+//            data->base_skillrate *= 1.5;
     }
     else if (data->c_point->name == "八重神子")
     {
         if (data->attack_config->condition->attack_way == "E" && data->c_point->constellation >= 2)
-            data->base_skillrate *= 1.25;
+            data->add_percentage("额外倍率", data->base_skillrate * 0.25, (name + "_extra_special"));
+//            data->base_skillrate *= 1.25;
     }
     else if (data->c_point->name == "莫娜")
     {
@@ -1312,22 +1314,22 @@ bool Weapon::get_extra_special(Deployment *data) const
 //build new weapon(all) 被转化的属性有效
 void Weapon::modify_useful_attribute(Deployment *data)
 {
-    if (data->w_point->name == "磐岩结绿") data->change_useful_attribute("生命值", true, data->w_point->name);
+    if (data->w_point->name == "磐岩结绿") data->data_list[0]->useful = true;
         //TODO:NEW
-    else if (data->w_point->name == "圣显之钥") data->change_useful_attribute("生命值", true, data->w_point->name);
-    else if (data->w_point->name == "辰砂之纺锤" && data->attack_config->condition->attack_way == "E") data->change_useful_attribute("防御力", true, data->w_point->name);
+    else if (data->w_point->name == "圣显之钥") data->data_list[0]->useful = true;
+    else if (data->w_point->name == "辰砂之纺锤" && data->attack_config->condition->attack_way == "E") data->data_list[2]->useful = true;
         //TODO:NEW
-    else if (data->w_point->name == "西福斯的月光") data->change_useful_attribute("元素精通", true, data->w_point->name);
-    else if (data->w_point->name == "不灭月华" && data->attack_config->condition->attack_way == "平A") data->change_useful_attribute("生命值", true, data->w_point->name);
+    else if (data->w_point->name == "西福斯的月光") data->data_list[4]->useful = true;
+    else if (data->w_point->name == "不灭月华" && data->attack_config->condition->attack_way == "平A") data->data_list[0]->useful = true;
         //TODO:NEW
-    else if (data->w_point->name == "流浪的晚星") data->change_useful_attribute("元素精通", true, data->w_point->name);
-    else if (data->w_point->name == "猎人之径" && data->attack_config->condition->attack_way == "重A") data->change_useful_attribute("元素精通", true, data->w_point->name);
+    else if (data->w_point->name == "流浪的晚星") data->data_list[4]->useful = true;
+    else if (data->w_point->name == "猎人之径" && data->attack_config->condition->attack_way == "重A") data->data_list[4]->useful = true;
     else if (data->w_point->name == "赤角石溃杵" && (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "重A"))
-        data->change_useful_attribute("防御力", true, data->w_point->name);
-    else if (data->w_point->name == "玛海菈的水色") data->change_useful_attribute("元素精通", true, data->w_point->name);
-    else if (data->w_point->name == "护摩之杖") data->change_useful_attribute("生命值", true, data->w_point->name);
-    else if (data->w_point->name == "薙草之稻光") data->change_useful_attribute("元素充能效率", true, data->w_point->name);
-    else if (data->w_point->name == "赤沙之杖") data->change_useful_attribute("元素精通", true, data->w_point->name);
+        data->data_list[2]->useful = true;
+    else if (data->w_point->name == "玛海菈的水色") data->data_list[4]->useful = true;
+    else if (data->w_point->name == "护摩之杖") data->data_list[0]->useful = true;
+    else if (data->w_point->name == "薙草之稻光") data->data_list[5]->useful = true;
+    else if (data->w_point->name == "赤沙之杖") data->data_list[4]->useful = true;
 }
 
 //build new artifact(all)
@@ -1489,7 +1491,7 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
 void Artifact::modify_useful_attribute(Deployment *data)
 {
     if (data->suit1->name == "绝缘之旗印" && data->suit2->name == "绝缘之旗印" && data->attack_config->condition->attack_way == "Q")
-        data->change_useful_attribute("元素充能效率", true, data->suit1->name);
+        data->data_list[5]->useful = true;
 }
 
 //build new artifact(all) 提供充能、队友加成的有效
@@ -1566,58 +1568,58 @@ void Deployment::check_useful_attribute()
     //convert:如果useful相对于config没有改变，那不影响；如果useful相对与config改变了，一定是转化类的属性新增了有效词条，那要检查是否值得新增
     if (w_point->name == "磐岩结绿")
     {
-        if ((data_list["生命值"]->value_per_entry * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk) < data_list["攻击力"]->value_per_entry)
-            change_useful_attribute("生命值", attack_config->useful_attributes["生命值"], w_point->name);
+        if ((data_list[0]->value_per_entry * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk) < data_list[1]->value_per_entry)
+            data_list[0]->useful = attack_config->useful_attributes[0];
     }
         // TODO:NEW
     else if (w_point->name == "圣显之钥")
     {
-        if ((data_list["生命值"]->value_per_entry * 0.0056 * (0.75 + w_point->level * 0.25) * base_life) < data_list["元素精通"]->value_per_entry)
-            change_useful_attribute("生命值", attack_config->useful_attributes["生命值"], w_point->name);
+        if ((data_list[0]->value_per_entry * 0.0056 * (0.75 + w_point->level * 0.25) * base_life) < data_list[4]->value_per_entry)
+            data_list[0]->useful = attack_config->useful_attributes[0];
     }
         // TODO:NEW
     else if (w_point->name == "西福斯的月光")
     {
-        if ((data_list["元素精通"]->value_per_entry * 0.00036 * (0.75 + w_point->level * 0.25)) < data_list["元素充能效率"]->value_per_entry)
-            change_useful_attribute("元素精通", attack_config->useful_attributes["元素精通"], w_point->name);
+        if ((data_list[4]->value_per_entry * 0.00036 * (0.75 + w_point->level * 0.25)) < data_list[5]->value_per_entry)
+            data_list[4]->useful = attack_config->useful_attributes[4];
     }
         // TODO:NEW
     else if (w_point->name == "流浪的晚星")
     {
-        if ((data_list["元素精通"]->value_per_entry * 0.24 * (0.75 + w_point->level * 0.25) / base_atk) < data_list["攻击力"]->value_per_entry)
-            change_useful_attribute("元素精通", attack_config->useful_attributes["元素精通"], w_point->name);
+        if ((data_list[4]->value_per_entry * 0.24 * (0.75 + w_point->level * 0.25) / base_atk) < data_list[1]->value_per_entry)
+            data_list[4]->useful = attack_config->useful_attributes[4];
     }
     else if (w_point->name == "玛海菈的水色")
     {
-        if ((data_list["元素精通"]->value_per_entry * 0.24 * (0.75 + w_point->level * 0.25) / base_atk) < data_list["攻击力"]->value_per_entry)
-            change_useful_attribute("元素精通", attack_config->useful_attributes["元素精通"], w_point->name);
+        if ((data_list[4]->value_per_entry * 0.24 * (0.75 + w_point->level * 0.25) / base_atk) < data_list[1]->value_per_entry)
+            data_list[4]->useful = attack_config->useful_attributes[4];
     }
     else if (w_point->name == "护摩之杖")
     {
-        if ((data_list["生命值"]->value_per_entry * (0.008 * (0.75 + w_point->level * 0.25) + (0.008 + w_point->level * 0.002)) * base_life / base_atk) < data_list["攻击力"]->value_per_entry)
-            change_useful_attribute("生命值", attack_config->useful_attributes["生命值"], w_point->name);
+        if ((data_list[0]->value_per_entry * (0.008 * (0.75 + w_point->level * 0.25) + (0.008 + w_point->level * 0.002)) * base_life / base_atk) < data_list[1]->value_per_entry)
+            data_list[0]->useful = attack_config->useful_attributes[0];
     }
     else if (w_point->name == "薙草之稻光")
     {
-        if ((data_list["元素充能效率"]->value_per_entry * 0.28 * (0.75 + w_point->level * 0.25)) < data_list["攻击力"]->value_per_entry)
-            change_useful_attribute("元素充能效率", attack_config->useful_attributes["元素充能效率"], w_point->name);
+        if ((data_list[5]->value_per_entry * 0.28 * (0.75 + w_point->level * 0.25)) < data_list[1]->value_per_entry)
+            data_list[5]->useful = attack_config->useful_attributes[5];
     }
     else if (w_point->name == "赤沙之杖")
     {
-        if ((data_list["元素精通"]->value_per_entry * 1.36 * (0.75 + w_point->level * 0.25) / base_atk) < data_list["攻击力"]->value_per_entry)
-            change_useful_attribute("元素精通", attack_config->useful_attributes["元素精通"], w_point->name);
+        if ((data_list[4]->value_per_entry * 1.36 * (0.75 + w_point->level * 0.25) / base_atk) < data_list[1]->value_per_entry)
+            data_list[4]->useful = attack_config->useful_attributes[4];
     }
 
     //artifact
     //绝缘肯定有效（增伤效益认为无穷）
     if (suit1->name == "绝缘之旗印" && suit2->name == "绝缘之旗印" && attack_config->condition->attack_way == "Q")
-        change_useful_attribute("元素充能效率", true, suit1->name);
+        data_list[5]->useful = true;
 
     //character
     if (c_point->name == "胡桃")
-        change_useful_attribute("攻击力", false, c_point->name);//生命>攻击，除非有攻击转什么
+        data_list[1]->useful = false;//生命>攻击，除非有攻击转什么
     if (c_point->name == "钟离")
-        change_useful_attribute("攻击力", false, c_point->name);//要考虑盾
+        data_list[1]->useful = false;//要考虑盾
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
@@ -1910,7 +1912,7 @@ void Deployment::get_team_data()
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all) 有关充能的转化类属性要考虑
-void Deployment::satisfy_recharge_requirement()
+void Deployment::satisfy_recharge_requirement(double &min_recharge)
 {
     string double_E_per_round = "神里绫华甘雨温迪";//TODO:recharge parameter
     //调整充能数值
@@ -1970,7 +1972,6 @@ void Deployment::satisfy_recharge_requirement()
             if (w_point->name == "西风剑") energy += 3 * front * white;
             else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
             else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
-            else if (w_point->name == "西福斯的月光") extra_recharge += data_list["元素精通"]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
         }
         else if (c_point->name == "雷电将军")
         {
@@ -2011,7 +2012,6 @@ void Deployment::satisfy_recharge_requirement()
             if (w_point->name == "西风剑") energy += 3 * front * white;
             else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
             else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
-            else if (w_point->name == "西福斯的月光") extra_recharge += data_list["元素精通"]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
         }
         else if (c_point->name == "香菱")
         {
@@ -2075,7 +2075,7 @@ void Deployment::satisfy_recharge_requirement()
         }
         else energy = Q_energy_modify;
 
-        data_list["元素充能效率"]->entry_num = max(0, (int) ((Q_energy_modify / energy - data_list["元素充能效率"]->percentage - data_list["元素充能效率"]->converted_percentage - extra_recharge) / data_list["元素充能效率"]->value_per_entry) + 1);
+        min_recharge = Q_energy_modify / energy;
     }
 }
 
@@ -2218,11 +2218,10 @@ void Deployment::get_extra_rate_value(double life, double atk, double def, doubl
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
-double Deployment::get_react_value(double mastery, double &extrarate, double &growrate)
+void Deployment::get_react_value(double mastery, double &extrarate, double &growrate, double &extra_damage)
 {
     //扩散（风+水火雷冰），结晶（岩+水火雷冰），绽放（草水+火雷），激化（草雷），燃烧（草火），蒸发（水火），融化（火冰），冻结（水冰），感电（雷水），超载（雷火），超导（雷冰）
     //默认抗性固定为0.1
-    double extra_damage = 0;
     if (attack_config->react_type.find("扩散") != string::npos)
     {
         double extra_damplus = 0;
@@ -2319,7 +2318,6 @@ double Deployment::get_react_value(double mastery, double &extrarate, double &gr
         //1.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
         //冰伤，吃冰抗
     }
-    return extra_damage;
 }
 
 struct Combination
