@@ -566,11 +566,10 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("磐岩结绿", "单手剑", 542, "暴击率", 0.441, 1, temp));
     temp.clear();
 
-    //TODO:NEW
     //(convert)
     //(get_team)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2));
-    weapon_list.push_back(new Weapon("圣显之钥", "单手剑", 542, "生命值", 0.661, 1, temp));
+    weapon_list.push_back(new Weapon("圣显之钥", "单手剑", 542, "生命值", 0.662, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.12));
@@ -609,7 +608,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("铁蜂刺", "单手剑", 510, "元素精通", 165.0, 5, temp));
     temp.clear();
 
-    //TODO:NEW
     //(convert)
     //(get_team)
     weapon_list.push_back(new Weapon("西福斯的月光", "单手剑", 510, "元素精通", 165.0, 1, temp));
@@ -695,7 +693,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("西风秘典", "法器", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
 
-    //TODO:NEW
     //(convert)
     //(get_team)
     weapon_list.push_back(new Weapon("流浪的晚星", "法器", 510, "元素精通", 165.0, 1, temp));
@@ -952,7 +949,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("试作星镰", "长柄武器", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
 
-    //TODO:NEW
     //(special)
     weapon_list.push_back(new Weapon("风信之锋", "长柄武器", 510, "攻击力", 0.413, 5, temp));
     temp.clear();
@@ -1294,7 +1290,6 @@ bool Weapon::get_extra_special(Deployment *data) const
                 data->add_percentage("伤害加成", (0.08 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
-        //TODO:NEW
     else if (name == "风信之锋")
     {
         if (data->attack_config->react_type != "NONE")
@@ -1315,13 +1310,10 @@ bool Weapon::get_extra_special(Deployment *data) const
 void Weapon::modify_useful_attribute(Deployment *data)
 {
     if (data->w_point->name == "磐岩结绿") data->data_list[0]->useful = true;
-        //TODO:NEW
     else if (data->w_point->name == "圣显之钥") data->data_list[0]->useful = true;
     else if (data->w_point->name == "辰砂之纺锤" && data->attack_config->condition->attack_way == "E") data->data_list[2]->useful = true;
-        //TODO:NEW
     else if (data->w_point->name == "西福斯的月光") data->data_list[4]->useful = true;
     else if (data->w_point->name == "不灭月华" && data->attack_config->condition->attack_way == "平A") data->data_list[0]->useful = true;
-        //TODO:NEW
     else if (data->w_point->name == "流浪的晚星") data->data_list[4]->useful = true;
     else if (data->w_point->name == "猎人之径" && data->attack_config->condition->attack_way == "重A") data->data_list[4]->useful = true;
     else if (data->w_point->name == "赤角石溃杵" && (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "重A"))
@@ -1527,7 +1519,7 @@ void Artifact::check_artifact_special(Deployment *data, bool &suit1_valid, bool 
         }
 
         //team
-        if (data->suit1->name == "昔日宗室之仪")
+        else if (data->suit1->name == "昔日宗室之仪")
         {
             suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
@@ -1571,19 +1563,16 @@ void Deployment::check_useful_attribute()
         if ((data_list[0]->value_per_entry * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk) < data_list[1]->value_per_entry)
             data_list[0]->useful = attack_config->useful_attributes[0];
     }
-        // TODO:NEW
     else if (w_point->name == "圣显之钥")
     {
         if ((data_list[0]->value_per_entry * 0.0056 * (0.75 + w_point->level * 0.25) * base_life) < data_list[4]->value_per_entry)
             data_list[0]->useful = attack_config->useful_attributes[0];
     }
-        // TODO:NEW
     else if (w_point->name == "西福斯的月光")
     {
         if ((data_list[4]->value_per_entry * 0.00036 * (0.75 + w_point->level * 0.25)) < data_list[5]->value_per_entry)
             data_list[4]->useful = attack_config->useful_attributes[4];
     }
-        // TODO:NEW
     else if (w_point->name == "流浪的晚星")
     {
         if ((data_list[4]->value_per_entry * 0.24 * (0.75 + w_point->level * 0.25) / base_atk) < data_list[1]->value_per_entry)
@@ -1618,7 +1607,7 @@ void Deployment::check_useful_attribute()
     //character
     if (c_point->name == "胡桃")
         data_list[1]->useful = false;//生命>攻击，除非有攻击转什么
-    if (c_point->name == "钟离")
+    else if (c_point->name == "钟离")
         data_list[1]->useful = false;//要考虑盾
 }
 
@@ -1668,17 +1657,14 @@ void Deployment::get_team_data()
         add_percentage("元素精通", 40.0, "team_千夜浮梦");
     }
     //转化类
-    //TODO:NEW
     if (team_config->team_weapon_artifact.find("圣显之钥") != string::npos && w_point->name != "圣显之钥")
     {
         add_converted_percentage("元素精通", 100.0, "team_圣显之钥");
     }
-    //TODO:NEW
     if (team_config->team_weapon_artifact.find("西福斯的月光") != string::npos)
     {
         add_converted_percentage("元素充能效率", 0.054, "team_西福斯的月光");
     }
-    //TODO:NEW
     if (team_config->team_weapon_artifact.find("流浪的晚星") != string::npos)
     {
         add_converted_percentage("攻击力", 36.0 / base_atk, "team_流浪的晚星");
@@ -1912,7 +1898,7 @@ void Deployment::get_team_data()
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all) 有关充能的转化类属性要考虑
-void Deployment::satisfy_recharge_requirement(double &min_recharge)
+void Deployment::satisfy_recharge_requirement()
 {
     string double_E_per_round = "神里绫华甘雨温迪";//TODO:recharge parameter
     //调整充能数值
@@ -1935,8 +1921,6 @@ void Deployment::satisfy_recharge_requirement(double &min_recharge)
         energy += team_config->teammate_1->E_energy * back * ((team_config->teammate_1->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_1->name) != string::npos) ? 2 : 1);
         energy += team_config->teammate_2->E_energy * back * ((team_config->teammate_2->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_2->name) != string::npos) ? 2 : 1);
         energy += team_config->teammate_3->E_energy * back * ((team_config->teammate_3->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_3->name) != string::npos) ? 2 : 1);
-
-        double extra_recharge = 0;//转化提供元素充能效率
 
         //"天目影打刀" 12/E 不吃充能
         //"西风剑" 3*2/6s
@@ -2103,7 +2087,6 @@ void Deployment::get_convert_value(double &life, double &atk, double &def, doubl
     //weapon
     if (w_point->name == "磐岩结绿")//生命->攻击
         atk_add += life * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk;//生命->攻击
-        // TODO:NEW
     else if (w_point->name == "圣显之钥")//生命->精通
     {
         if (c_point->args->sword_shengxian_level == 3)
@@ -2120,10 +2103,8 @@ void Deployment::get_convert_value(double &life, double &atk, double &def, doubl
             mastery_add += life * 0.0012 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
         }
     }
-        // TODO:NEW
     else if (w_point->name == "西福斯的月光")//精通->充能
         recharge_add += mastery * 0.00036 * (0.75 + w_point->level * 0.25);//精通->充能
-        // TODO:NEW
     else if (w_point->name == "流浪的晚星")//精通->攻击
         atk_add += mastery * 0.24 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
     else if (w_point->name == "玛海菈的水色")//精通->攻击
@@ -2354,7 +2335,7 @@ struct Combination
 bool out_header = true;
 //TODO:配置编写
 int top_k = 3;
-bool cal_enable_recharge_check = true;
+bool cal_enable_recharge_discount = true;
 double cal_min_critrate_valid = 0.5;
 double cal_max_critrate_valid = 0.9;
 int max_up_num_per_base = 4;
@@ -2486,12 +2467,12 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 1));
 
         vector<Attack_config *> ac3;
-        ac2.push_back(new Attack_config(new Condition("雷", "长柄武器", "Q"), false, false, "超载",
+        ac3.push_back(new Attack_config(new Condition("雷", "长柄武器", "Q"), false, false, "超载",
                                         false, true, false, true, true,
                                         true, true, true, false, false, 1));
         //TODO:NEW
         vector<Attack_config *> ac4;
-        ac3.push_back(new Attack_config(new Condition("雷", "长柄武器", "Q"), false, false, "超激化",
+        ac4.push_back(new Attack_config(new Condition("雷", "长柄武器", "Q"), false, false, "超激化",
                                         false, true, false, true, true,
                                         true, true, true, false, false, 1));
 
@@ -2650,10 +2631,10 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 1));
 
         vector<Attack_config *> ac3;
-        ac2.push_back(new Attack_config(new Condition("火", "长柄武器", "E"), true, true, "NONE",
+        ac3.push_back(new Attack_config(new Condition("火", "长柄武器", "E"), true, true, "NONE",
                                         false, true, false, false, false,
                                         true, true, true, false, false, 4));
-        ac2.push_back(new Attack_config(new Condition("火", "长柄武器", "Q"), true, true, "NONE",
+        ac3.push_back(new Attack_config(new Condition("火", "长柄武器", "Q"), true, true, "NONE",
                                         false, true, false, false, false,
                                         true, true, true, false, false, 1));
 
@@ -2803,7 +2784,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 1));
 
         vector<Attack_config *> ac2;
-        ac1.push_back(new Attack_config(new Condition("草", "法器", "E"), true, false, "蔓激化",
+        ac2.push_back(new Attack_config(new Condition("草", "法器", "E"), true, false, "蔓激化",
                                         false, true, false, true, false,
                                         true, true, true, false, false, 1));
 
@@ -2874,7 +2855,7 @@ void cal_deployment()
                                     {
                                         temp->cal_damage_entry_num();
                                         if (c_w_pair.size() < top_k) c_w_pair.push(temp);
-                                        else if (temp->damage > c_w_pair.top()->damage)
+                                        else if (temp->total_damage > c_w_pair.top()->total_damage)
                                         {
                                             Group *smallest = c_w_pair.top();
                                             c_w_pair.pop();

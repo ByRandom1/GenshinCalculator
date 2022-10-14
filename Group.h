@@ -8,7 +8,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <map>
 #include "Condition.h"
 #include "Character.h"
 #include "Weapon.h"
@@ -21,7 +20,7 @@ extern ofstream outfile_debug;
 
 //parameters
 extern bool out_header;
-extern bool cal_enable_recharge_check;
+extern bool cal_enable_recharge_discount;
 extern double cal_min_critrate_valid;
 extern double cal_max_critrate_valid;
 extern int max_up_num_per_base;
@@ -49,7 +48,7 @@ struct Team_config
         teammate_1 = teammate_1_;
         teammate_2 = teammate_2_;
         teammate_3 = teammate_3_;
-        teammate_all = teammate_1_->name + "_" + teammate_2_->name + "_" + teammate_3->name;
+        teammate_all = teammate_1->name + "_" + teammate_2->name + "_" + teammate_3->name;
         team_weapon_artifact = team_weapon_artifact_;
         ele_attach_type = ele_attach_type_;
         ele_allow_spread = ele_allow_spread_;
@@ -156,13 +155,8 @@ public:
 
     ~Deployment();
 
-//    //配置数值初始化
-//    void init_check_data(bool &suit1_valid, bool &suit2_valid, bool &main3_valid, bool &main4_valid, bool &main5_valid);
-
     //检查数据
-    void check_artifact(bool &suit1_valid, bool &suit2_valid);
-
-    void check_main(bool &main3_valid, bool &main4_valid, bool &main5_valid);
+    void check_data(bool &suit1_valid, bool &suit2_valid, bool &main3_valid, bool &main4_valid, bool &main5_valid);
 
     //获取数据
     void init_data();
@@ -175,7 +169,7 @@ public:
 
     void get_team_data();//在main中实现
 
-    void satisfy_recharge_requirement(double &min_recharge);//在main中实现
+    void satisfy_recharge_requirement();//在main中实现
 
     //单人最佳伤害(副词条)计算
     double cal_damage(int life_num, int atk_num, int def_num, int mastery_num, int recharge_num, int critrate_num, int critdam_num);

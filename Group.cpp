@@ -202,9 +202,10 @@ Deployment::~Deployment()
 //    outfile_debug << "\n";
 //}
 
-void Deployment::check_artifact(bool &suit1_valid, bool &suit2_valid)
+void Deployment::check_data(bool &suit1_valid, bool &suit2_valid, bool &main3_valid, bool &main4_valid, bool &main5_valid)
 {
     suit1_valid = suit2_valid = false;
+    main3_valid = main4_valid = main5_valid = true;
 
     Weapon::modify_useful_attribute(this);
     Artifact::modify_useful_attribute(this);
@@ -254,11 +255,6 @@ void Deployment::check_artifact(bool &suit1_valid, bool &suit2_valid)
 
         Artifact::check_artifact_special(this, suit1_valid, suit2_valid, false);
     }
-}
-
-void Deployment::check_main(bool &main3_valid, bool &main4_valid, bool &main5_valid)
-{
-    main3_valid = main4_valid = main5_valid = true;
 
     check_useful_attribute();
 
@@ -270,6 +266,7 @@ void Deployment::check_main(bool &main3_valid, bool &main4_valid, bool &main5_va
 void Deployment::init_data()
 {
     get_data_info = "";
+    min_recharge = 1.0;
 
     delete data_list[0];
     data_list[0] = new attribute(1.0, 0, 0.05, attack_config->useful_attributes[0]);
@@ -312,7 +309,7 @@ void Deployment::init_data()
     //weapon get
     w_point->get_vice(this);
     w_point->get_extra(this);
-
+    //artifact get
     suit1->get_extra(this, suit1 == suit2);
     suit2->get_extra(this, false);
 
@@ -322,7 +319,7 @@ void Deployment::init_data()
 
     get_team_data();
 
-    satisfy_recharge_requirement(min_recharge);
+    satisfy_recharge_requirement();
 
     get_data_info += "\n";
 }
@@ -388,7 +385,7 @@ double Deployment::cal_damage(int life_num, int atk_num, int def_num, int master
 
     double damage = ((double) base_atk * atk * base_skillrate + extrarate) * damplus * (1.0 + critrate * critdam) * growrate * resistence_ratio * defence_ratio + extra_damage;
 
-    if (cal_enable_recharge_check) damage = damage * min(1.0, (recharge / min_recharge));
+    if (cal_enable_recharge_discount) damage = damage * min(1.0, (recharge / min_recharge));
 
     return damage;
 }
@@ -434,7 +431,7 @@ Group::~Group()
 int Group::init_check_data()
 {
     outfile_debug << (c_point->name + "_" + w_point->name + "_" + suit1->name + "_" + suit2->name + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_")
-                  << (team_config->teammate_all + (team_config->team_weapon_artifact.empty() ? "" : ("_" + team_config->team_weapon_artifact)) + ",");
+                  << (team_config->teammate_all + "_" + team_config->team_weapon_artifact) + ",";
 
     bool suit1_valid = false;
     bool suit2_valid = false;
@@ -450,9 +447,12 @@ int Group::init_check_data()
 
     for (auto &i: combination)
     {
-        i->check_artifact(suit1_valid_, suit2_valid_);
+        i->check_data(suit1_valid_, suit2_valid_, main3_valid_, main4_valid_, main5_valid_);
         suit1_valid = suit1_valid || suit1_valid_;
         suit2_valid = suit2_valid || suit2_valid_;
+        main3_valid = main3_valid || main3_valid_;
+        main4_valid = main4_valid || main4_valid_;
+        main5_valid = main5_valid || main5_valid_;
     }
 
     if (!suit1_valid || !suit2_valid)
@@ -481,16 +481,7 @@ int Group::init_check_data()
             return 2;
         }
     }
-
-    for (auto &i: combination)
-    {
-        i->check_main(main3_valid_, main4_valid_, main5_valid_);
-        main3_valid = main3_valid || main3_valid_;
-        main4_valid = main4_valid || main4_valid_;
-        main5_valid = main5_valid || main5_valid_;
-    }
-
-    if (!main3_valid)
+    else if (!main3_valid)
     {
         outfile_debug << "main3--failure\n";
         return 3;
@@ -506,7 +497,8 @@ int Group::init_check_data()
         return 5;
     }
 
-    outfile_debug << "\n";
+    outfile_debug << "success!\n";
+
     for (auto &i: combination)
     {
         i->init_data();
