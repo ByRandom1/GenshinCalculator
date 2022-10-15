@@ -20,7 +20,7 @@ extern ofstream outfile_debug;
 
 //parameters
 extern bool out_header;
-extern bool cal_enable_recharge_discount;
+extern bool cal_enable_recharge_num;
 extern double cal_min_critrate_valid;
 extern double cal_max_critrate_valid;
 extern int max_up_num_per_base;
@@ -140,7 +140,7 @@ public:
     int base_def;
     double base_skillrate;
     string get_data_info;
-    double min_recharge;
+    int min_recharge_num;
     attribute *data_list[14];
 
     Deployment(Character *c_point_,

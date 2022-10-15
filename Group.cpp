@@ -74,7 +74,7 @@ Deployment::Deployment(Character *c_point_,
     }
 
     get_data_info = "";
-    min_recharge = 1.0;
+    min_recharge_num = 0;
 
     data_list[0] = new attribute(0, 0, 0.05, attack_config->useful_attributes[0]);
     data_list[1] = new attribute(0, 0, 0.05, attack_config->useful_attributes[1]);
@@ -266,7 +266,7 @@ void Deployment::check_data(bool &suit1_valid, bool &suit2_valid, bool &main3_va
 void Deployment::init_data()
 {
     get_data_info = "";
-    min_recharge = 1.0;
+    min_recharge_num = 0;
 
     delete data_list[0];
     data_list[0] = new attribute(1.0, 0, 0.05, attack_config->useful_attributes[0]);
@@ -319,7 +319,7 @@ void Deployment::init_data()
 
     get_team_data();
 
-    satisfy_recharge_requirement();
+    if (cal_enable_recharge_num) satisfy_recharge_requirement();
 
     get_data_info += "\n";
 }
@@ -385,7 +385,8 @@ double Deployment::cal_damage(int life_num, int atk_num, int def_num, int master
 
     double damage = ((double) base_atk * atk * base_skillrate + extrarate) * damplus * (1.0 + critrate * critdam) * growrate * resistence_ratio * defence_ratio + extra_damage;
 
-    if (cal_enable_recharge_discount) damage = damage * min(1.0, (recharge / min_recharge));
+    //TODO:TEST
+    if (w_point->name.find("祭礼") != string::npos && attack_config->condition->attack_way == "E" && !c_point->args->sustain_E_hit) damage *= 2;
 
     return damage;
 }
@@ -510,6 +511,7 @@ int Group::init_check_data()
         useful[4] = useful[4] || i->data_list[5]->useful;
         useful[5] = useful[5] || i->data_list[6]->useful;
         useful[6] = useful[6] || i->data_list[7]->useful;
+        entry[4] = max(entry[4], i->min_recharge_num);
     }
     return 0;
 }
