@@ -612,6 +612,7 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("匣里日月", "法器", 510, "暴击率", 0.276, 1, temp));
     temp.clear();
 
+    //TODO:拆分成4种分别计算
     //(special)
     weapon_list.push_back(new Weapon("流浪乐章", "法器", 510, "暴击伤害", 0.551, 5, temp));
     temp.clear();
@@ -2442,6 +2443,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc5, ac1));
 
+        //TODO:未计算，6有效词条
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc6, ac2));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
