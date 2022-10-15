@@ -2627,14 +2627,25 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         false, true, false, true, false,
                                         true, true, true, false, false, 4));
 
+        vector<Attack_config *> ac3;
+        ac3.push_back(new Attack_config(new Condition("雷", "法器", "E"), true, false, "超激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 14));
+        ac3.push_back(new Attack_config(new Condition("雷", "法器", "E"), true, false, "NONE",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 28));
+        ac3.push_back(new Attack_config(new Condition("雷", "法器", "Q"), false, true, "超激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 4));
+
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac2));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc2, ac3));//set cal_enable_recharge_num = false
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc3, ac2));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc4, ac2));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc4, ac3));//set cal_enable_recharge_num = false
     }
     if (c_name == "温迪")
     {
