@@ -2303,8 +2303,8 @@ bool out_header = true;
 //TODO:配置编写
 int top_k = 3;
 bool cal_enable_recharge_num = true;
-double cal_min_critrate_valid = 0.5;
-double cal_max_critrate_valid = 0.9;
+double cal_min_critrate_valid = 0.625;//15*0.033+0.05+0.08
+double cal_max_critrate_valid = 1.0;
 int max_up_num_per_base = 4;
 int max_attribute_num_per_pos = 3;
 int max_entry_num = 30;
