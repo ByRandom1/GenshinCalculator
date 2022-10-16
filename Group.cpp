@@ -31,7 +31,8 @@ Deployment::Deployment(Character *c_point_,
                        string a_main4_,
                        string a_main5_,
                        Team_config *team_config_,
-                       Attack_config *attack_config_)
+                       Attack_config *attack_config_,
+                       bool need_to_satisfy_recharge_)
 {
     c_point = c_point_;
     w_point = w_point_;
@@ -42,6 +43,7 @@ Deployment::Deployment(Character *c_point_,
     a_main5 = a_main5_;
     team_config = team_config_;
     attack_config = attack_config_;
+    need_to_satisfy_recharge = need_to_satisfy_recharge_;
 
     base_life = c_point->get_life();
     base_atk = c_point->get_atk() + w_point->get_atk();
@@ -117,7 +119,7 @@ void Deployment::check_data(bool &suit1_valid, bool &suit2_valid, bool &main3_va
                 break;
             }
 
-        if (cal_enable_recharge_num && attack_config->condition->attack_way == "Q")
+        if (need_to_satisfy_recharge)
             if ((data_list[5]->percentage + data_list[5]->converted_percentage) > 0)
                 suit1_valid = suit2_valid = true;
 
@@ -135,7 +137,7 @@ void Deployment::check_data(bool &suit1_valid, bool &suit2_valid, bool &main3_va
                 break;
             }
 
-        if (cal_enable_recharge_num && attack_config->condition->attack_way == "Q")
+        if (need_to_satisfy_recharge)
             if ((data_list[5]->percentage + data_list[5]->converted_percentage) > 0)
                 suit1_valid = true;
         //clear
@@ -150,7 +152,7 @@ void Deployment::check_data(bool &suit1_valid, bool &suit2_valid, bool &main3_va
                 break;
             }
 
-        if (cal_enable_recharge_num && attack_config->condition->attack_way == "Q")
+        if (need_to_satisfy_recharge)
             if ((data_list[5]->percentage + data_list[5]->converted_percentage) > 0)
                 suit2_valid = true;
 
@@ -159,7 +161,7 @@ void Deployment::check_data(bool &suit1_valid, bool &suit2_valid, bool &main3_va
 
     check_useful_attribute();
 
-    if (!data_list[str2index(a_main3)]->useful && !(cal_enable_recharge_num && attack_config->condition->attack_way == "Q" && a_main3 == "元素充能效率")) main3_valid = false;
+    if (!data_list[str2index(a_main3)]->useful && !(need_to_satisfy_recharge && a_main3 == "元素充能效率")) main3_valid = false;
     if (!data_list[str2index(a_main4)]->useful) main4_valid = false;
     if (!data_list[str2index(a_main5)]->useful) main5_valid = false;
 }
@@ -220,7 +222,7 @@ void Deployment::init_data()
 
     get_team_data();
 
-    satisfy_recharge_requirement();
+    if (need_to_satisfy_recharge) satisfy_recharge_requirement();
 
     get_data_info += "\n";
 }
@@ -300,7 +302,8 @@ Group::Group(Character *c_point_,
              string a_main4_,
              string a_main5_,
              Team_config *team_config_,
-             vector<Attack_config *> attack_config_list)
+             vector<Attack_config *> attack_config_list,
+             bool need_to_satisfy_recharge_)
 {
     c_point = c_point_;
     w_point = w_point_;
@@ -310,8 +313,9 @@ Group::Group(Character *c_point_,
     a_main4 = a_main4_;
     a_main5 = a_main5_;
     team_config = team_config_;
+    need_to_satisfy_recharge = need_to_satisfy_recharge_;
     for (auto &i: attack_config_list)
-        combination.push_back(new Deployment(c_point_, w_point_, suit1_, suit2_, a_main3_, a_main4_, a_main5_, team_config_, i));
+        combination.push_back(new Deployment(c_point_, w_point_, suit1_, suit2_, a_main3_, a_main4_, a_main5_, team_config_, i, need_to_satisfy_recharge_));
 
     for (int i = 0; i < 7; ++i)
     {
@@ -412,7 +416,7 @@ int Group::init_check_data()
         useful[4] = useful[4] || i->data_list[5]->useful;
         useful[5] = useful[5] || i->data_list[6]->useful;
         useful[6] = useful[6] || i->data_list[7]->useful;
-        entry[4] = max(entry[4], i->min_recharge_num);
+        if (need_to_satisfy_recharge) entry[4] = max(entry[4], i->min_recharge_num);
     }
     return 0;
 }

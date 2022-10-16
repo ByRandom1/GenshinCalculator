@@ -1248,7 +1248,7 @@ void Weapon::modify_useful_attribute(Deployment *data)
     if (data->w_point->name == "磐岩结绿" && data->data_list[1]->useful) data->data_list[0]->useful = true;
     else if (data->w_point->name == "圣显之钥" && data->c_point->args->sword_shengxian_level > 0 && data->data_list[4]->useful) data->data_list[0]->useful = true;
     else if (data->w_point->name == "辰砂之纺锤" && data->attack_config->condition->attack_way == "E") data->data_list[2]->useful = true;
-    else if (data->w_point->name == "西福斯的月光" && (data->data_list[5]->useful || (cal_enable_recharge_num && data->attack_config->condition->attack_way == "Q"))) data->data_list[4]->useful = true;
+    else if (data->w_point->name == "西福斯的月光" && (data->data_list[5]->useful || data->need_to_satisfy_recharge)) data->data_list[4]->useful = true;
     else if (data->w_point->name == "不灭月华" && data->attack_config->condition->attack_way == "平A") data->data_list[0]->useful = true;
     else if (data->w_point->name == "流浪的晚星" && data->data_list[1]->useful) data->data_list[4]->useful = true;
     else if (data->w_point->name == "猎人之径" && data->attack_config->condition->attack_way == "重A") data->data_list[4]->useful = true;
@@ -1864,169 +1864,165 @@ void Deployment::get_team_data()
 //build new character(needed)||build new weapon(all)||build new artifact(all) 有关充能的转化类属性要考虑
 void Deployment::satisfy_recharge_requirement()
 {
-    //调整充能数值
-    if (cal_enable_recharge_num && attack_config->condition->attack_way == "Q")
+    //能量回复值 = 微粒数 * 系数 * 实时的元素充能效率
+    double front = 1;
+    double back = 0.6;
+    double same = 3;
+    double white = 2;
+    double diff = 1;
+    double monster_drop = 10;
+
+    double Q_energy_modify = c_point->Q_energy;
+    if (team_config->teammate_all.find("雷电将军") != string::npos) Q_energy_modify -= 24;
+    //扩散与元素附着
+    if (team_config->teammate_all.find("温迪") != string::npos && team_config->ele_allow_spread.find(attack_config->condition->ele_type) != string::npos) Q_energy_modify -= 15;
+
+    double energy = monster_drop;
+    energy += team_config->teammate_1->E_energy * back * ((team_config->teammate_1->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_1->name) != string::npos) ? 2 : 1);
+    energy += team_config->teammate_2->E_energy * back * ((team_config->teammate_2->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_2->name) != string::npos) ? 2 : 1);
+    energy += team_config->teammate_3->E_energy * back * ((team_config->teammate_3->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_3->name) != string::npos) ? 2 : 1);
+
+    double converted_recharge = 0;
+
+    //"天目影打刀" 12/E 不吃充能
+    //"西风剑" 3*2/6s
+    //"祭礼剑" 1E/16s
+    //"西福斯的月光" 充能效率 mastery * 0.00036 * (0.75 + w_point->level * 0.25)
+
+    //"不灭月华" 0.6/A Q后12s内 不吃充能
+    //"试作金珀" 3*6/Q 不吃充能
+    //"西风秘典" 3*2/6s
+    //"祭礼残章" 1E/16s
+
+    //"祭礼弓" 1E/16s
+    //"西风猎弓" 3*2/6s
+
+    //"祭礼大剑" 1E/16s
+    //"桂木斩长正" 3*5-3/E 不吃充能
+    //"西风大剑" 3*2/6s
+
+    //"西风长枪" 3*2/6s
+    //"喜多院十文字" 3*5-3/E 不吃充能
+
+    if (c_point->name == "胡桃")
     {
-        //能量回复值 = 微粒数 * 系数 * 实时的元素充能效率
-        double front = 1;
-        double back = 0.6;
-        double same = 3;
-        double white = 2;
-        double diff = 1;
-        double monster_drop = 10;
+        //Q 60 E 5f 2E/Q
+        //通过歪充能词条和队友保证循环
+        energy = Q_energy_modify;
+    }
+    else if (c_point->name == "神里绫华")
+    {
+        //Q 80 E 4.5f 2E/Q
+        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
 
-        double Q_energy_modify = c_point->Q_energy;
-        if (team_config->teammate_all.find("雷电将军") != string::npos) Q_energy_modify -= 24;
-        //扩散与元素附着
-        if (team_config->teammate_all.find("温迪") != string::npos && team_config->ele_allow_spread.find(attack_config->condition->ele_type) != string::npos) Q_energy_modify -= 15;
+        if (w_point->name == "西风剑") energy += 3 * front * white;
+        else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
+        else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
+        else if (w_point->name == "西福斯的月光") converted_recharge += data_list[4]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
+    }
+    else if (c_point->name == "雷电将军")
+    {
+        //Q 90-24=66 E 10b 1E/Q
+        Q_energy_modify -= 24;
+        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * back * same;
 
-        double energy = monster_drop;
-        energy += team_config->teammate_1->E_energy * back * ((team_config->teammate_1->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_1->name) != string::npos) ? 2 : 1);
-        energy += team_config->teammate_2->E_energy * back * ((team_config->teammate_2->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_2->name) != string::npos) ? 2 : 1);
-        energy += team_config->teammate_3->E_energy * back * ((team_config->teammate_3->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_3->name) != string::npos) ? 2 : 1);
+        if (w_point->name == "西风长枪") energy += 3 * front * white;
+        else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
 
-        double converted_recharge = 0;
+        energy = min(energy, Q_energy_modify / 2.4);
+    }
+    else if (c_point->name == "甘雨")
+    {
+        //Q 60 E 2f+2b 2E/Q
+        //constellation>=1:每次重A命中恢复2点能量 constellation>=2:E变为2次
+        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * (front / 2 + back / 2) * same;
 
-        //"天目影打刀" 12/E 不吃充能
-        //"西风剑" 3*2/6s
-        //"祭礼剑" 1E/16s
-        //"西福斯的月光" 充能效率 mastery * 0.00036 * (0.75 + w_point->level * 0.25)
-
-        //"不灭月华" 0.6/A Q后12s内 不吃充能
-        //"试作金珀" 3*6/Q 不吃充能
-        //"西风秘典" 3*2/6s
-        //"祭礼残章" 1E/16s
-
-        //"祭礼弓" 1E/16s
-        //"西风猎弓" 3*2/6s
-
-        //"祭礼大剑" 1E/16s
-        //"桂木斩长正" 3*5-3/E 不吃充能
-        //"西风大剑" 3*2/6s
-
-        //"西风长枪" 3*2/6s
-        //"喜多院十文字" 3*5-3/E 不吃充能
-
-        if (c_point->name == "胡桃")
-        {
-            //Q 60 E 5f 2E/Q
-            //通过歪充能词条和队友保证循环
-            energy = Q_energy_modify;
-        }
-        else if (c_point->name == "神里绫华")
-        {
-            //Q 80 E 4.5f 2E/Q
-            energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
-
-            if (w_point->name == "西风剑") energy += 3 * front * white;
-            else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
-            else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
-            else if (w_point->name == "西福斯的月光") converted_recharge += data_list[4]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
-        }
-        else if (c_point->name == "雷电将军")
-        {
-            //Q 90-24=66 E 10b 1E/Q
-            Q_energy_modify -= 24;
-            energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * back * same;
-
-            if (w_point->name == "西风长枪") energy += 3 * front * white;
-            else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
-
-            energy = min(energy, Q_energy_modify / 2.4);
-        }
-        else if (c_point->name == "甘雨")
-        {
-            //Q 60 E 2f+2b 2E/Q
-            //constellation>=1:每次重A命中恢复2点能量 constellation>=2:E变为2次
-            energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * (front / 2 + back / 2) * same;
-
-            if (w_point->name == "西风猎弓") energy += 3 * front * white;
-            else if (w_point->name == "祭礼弓") energy += c_point->E_energy * front * same;
-        }
-        else if (c_point->name == "夜兰")
-        {
-            //Q 70 E 4f 1E/Q
-            energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
-            //constellation>=1
+        if (w_point->name == "西风猎弓") energy += 3 * front * white;
+        else if (w_point->name == "祭礼弓") energy += c_point->E_energy * front * same;
+    }
+    else if (c_point->name == "夜兰")
+    {
+        //Q 70 E 4f 1E/Q
+        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
+        //constellation>=1
 //            energy += 2 * c_point->E_energy * front * same;
 
-            if (w_point->name == "西风猎弓") energy += 3 * front * white;
-            else if (w_point->name == "祭礼弓") energy += c_point->E_energy * front * same;
-        }
-        else if (c_point->name == "行秋")
-        {
-            //Q 80-3*5=65 E 5f 1E/Q
-            Q_energy_modify -= 12;
-            energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
+        if (w_point->name == "西风猎弓") energy += 3 * front * white;
+        else if (w_point->name == "祭礼弓") energy += c_point->E_energy * front * same;
+    }
+    else if (c_point->name == "行秋")
+    {
+        //Q 80-3*5=65 E 5f 1E/Q
+        Q_energy_modify -= 12;
+        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
 
-            if (w_point->name == "西风剑") energy += 3 * front * white;
-            else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
-            else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
-            else if (w_point->name == "西福斯的月光") converted_recharge += data_list[4]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
-        }
-        else if (c_point->name == "香菱")
-        {
-            //Q 80 E 4b 1E/Q
-            energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * back * same;
+        if (w_point->name == "西风剑") energy += 3 * front * white;
+        else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
+        else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
+        else if (w_point->name == "西福斯的月光") converted_recharge += data_list[4]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
+    }
+    else if (c_point->name == "香菱")
+    {
+        //Q 80 E 4b 1E/Q
+        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * back * same;
 
-            if (w_point->name == "西风长枪") energy += 3 * front * white;
-            else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
-        }
-        else if (c_point->name == "八重神子")
-        {
-            //Q 90-24=66 E 5b 1E/Q
-            Q_energy_modify -= 24;
-            energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * back * same;
+        if (w_point->name == "西风长枪") energy += 3 * front * white;
+        else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
+    }
+    else if (c_point->name == "八重神子")
+    {
+        //Q 90-24=66 E 5b 1E/Q
+        Q_energy_modify -= 24;
+        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * back * same;
 
-            if (w_point->name == "西风秘典") energy += 3 * front * white;
-            else if (w_point->name == "祭礼残章") energy += 0;
-            else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
-            //"不灭月华" 0.6/A Q后12s内 不吃充能
-        }
-        else if (c_point->name == "温迪")
-        {
-            //Q 60-15=45 E 3f 2E/Q
-            Q_energy_modify -= 15;
-            energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
+        if (w_point->name == "西风秘典") energy += 3 * front * white;
+        else if (w_point->name == "祭礼残章") energy += 0;
+        else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
+        //"不灭月华" 0.6/A Q后12s内 不吃充能
+    }
+    else if (c_point->name == "温迪")
+    {
+        //Q 60-15=45 E 3f 2E/Q
+        Q_energy_modify -= 15;
+        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
 
-            if (w_point->name == "西风猎弓") energy += 3 * front * white;
-            else if (w_point->name == "祭礼弓") energy += c_point->E_energy * front * same;
-        }
-        else if (c_point->name == "莫娜")
-        {
-            //Q 60 E 3b 1E/Q
-            energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * back * same;
+        if (w_point->name == "西风猎弓") energy += 3 * front * white;
+        else if (w_point->name == "祭礼弓") energy += c_point->E_energy * front * same;
+    }
+    else if (c_point->name == "莫娜")
+    {
+        //Q 60 E 3b 1E/Q
+        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * back * same;
 
-            if (w_point->name == "西风秘典") energy += 3 * front * white;
-            else if (w_point->name == "祭礼残章") energy += c_point->E_energy * front * same;
-            else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
-            //"不灭月华" 0.6/A Q后12s内 不吃充能
-        }
-        else if (c_point->name == "钟离")
-        {
-            //Q 40 E 0.5f 1E/Q
+        if (w_point->name == "西风秘典") energy += 3 * front * white;
+        else if (w_point->name == "祭礼残章") energy += c_point->E_energy * front * same;
+        else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
+        //"不灭月华" 0.6/A Q后12s内 不吃充能
+    }
+    else if (c_point->name == "钟离")
+    {
+        //Q 40 E 0.5f 1E/Q
 //            energy = ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same + back_back_total;
 //
 //            if (w_point->name == "西风长枪") energy += 3 * front * white;
 //            if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
-            //通过歪充能词条和队友保证循环
-            energy = Q_energy_modify;
-        }
-            //TODO:NEW
-        else if (c_point->name == "纳西妲")
-        {
-            //Q 50 E 3f 2E/Q
-            energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
-
-            if (w_point->name == "西风秘典") energy += 3 * front * white;
-            else if (w_point->name == "祭礼残章") energy += c_point->E_energy * front * same;
-            else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
-            //"不灭月华" 0.6/A Q后12s内 不吃充能
-        }
-        else energy = Q_energy_modify;
-
-        min_recharge_num = max(0, (int) ((Q_energy_modify / energy - data_list[5]->percentage - data_list[5]->converted_percentage - converted_recharge) / data_list[5]->value_per_entry));
+        //通过歪充能词条和队友保证循环
+        energy = Q_energy_modify;
     }
+        //TODO:NEW
+    else if (c_point->name == "纳西妲")
+    {
+        //Q 50 E 3f 2E/Q
+        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
+
+        if (w_point->name == "西风秘典") energy += 3 * front * white;
+        else if (w_point->name == "祭礼残章") energy += c_point->E_energy * front * same;
+        else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
+        //"不灭月华" 0.6/A Q后12s内 不吃充能
+    }
+    else energy = Q_energy_modify;
+
+    min_recharge_num = max(0, (int) ((Q_energy_modify / energy - data_list[5]->percentage - data_list[5]->converted_percentage - converted_recharge) / data_list[5]->value_per_entry));
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
@@ -2281,6 +2277,7 @@ struct Combination
     string a_main5;
     Team_config *team_config;
     vector<Attack_config *> attack_config_list;
+    bool need_to_satisfy_recharge;
 
     Combination(Weapon *w_point_,
                 Artifact *suit1_,
@@ -2289,7 +2286,8 @@ struct Combination
                 string a_main4_,
                 string a_main5_,
                 Team_config *team_config_,
-                vector<Attack_config *> attack_config_list_)
+                vector<Attack_config *> attack_config_list_,
+                bool need_to_satisfy_recharge_)
     {
         w_point = w_point_;
         suit1 = suit1_;
@@ -2299,13 +2297,13 @@ struct Combination
         a_main5 = a_main5_;
         team_config = team_config_;
         attack_config_list = attack_config_list_;
+        need_to_satisfy_recharge = need_to_satisfy_recharge_;
     }
 };
 
 bool out_header = true;
 //TODO:配置编写
 int top_k = 3;
-bool cal_enable_recharge_num = true;
 string double_E_per_round = "神里绫华甘雨温迪纳西妲";
 double cal_min_critrate_valid = 0.625;//15*0.033+0.05+0.08
 double cal_max_critrate_valid = 1.0;
@@ -2364,15 +2362,15 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 9));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1));
+                                                   "", "", "", tc1, ac1, false));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac1));
+                                                   "", "", "", tc2, ac1, false));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac1));
+                                                   "", "", "", tc3, ac1, false));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc4, ac1));
+                                                   "", "", "", tc4, ac1, false));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc5, ac1));
+                                                   "", "", "", tc5, ac1, false));
     }
     if (c_name == "神里绫华")
     {
@@ -2398,11 +2396,11 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 20));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1));
+                                                   "", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac1));
+                                                   "", "", "", tc2, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac1));
+                                                   "", "", "", tc3, ac1, true));
     }
     if (c_name == "雷电将军")
     {
@@ -2436,23 +2434,23 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 1));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1));
+                                                   "", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac1));
+                                                   "", "", "", tc2, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac1));
+                                                   "", "", "", tc3, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc4, ac1));
+                                                   "", "", "", tc4, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc5, ac1));
+                                                   "", "", "", tc5, ac1, true));
 
         //TODO:配置未计算，6有效词条
 //        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-//                                                   "", "", "", tc6, ac2));
+//                                                   "", "", "", tc6, ac2, true));
 //        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-//                                                   "", "", "", tc7, ac2));
+//                                                   "", "", "", tc7, ac2, true));
 //        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-//                                                   "", "", "", tc8, ac2));
+//                                                   "", "", "", tc8, ac2, true));
     }
     if (c_name == "甘雨")
     {
@@ -2475,11 +2473,11 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 25));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1));
+                                                   "", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac1));
+                                                   "", "", "", tc2, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac1));
+                                                   "", "", "", tc3, ac1, true));
     }
     if (c_name == "夜兰")
     {
@@ -2499,11 +2497,11 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 46));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1));
+                                                   "", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac1));
+                                                   "", "", "", tc2, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac1));
+                                                   "", "", "", tc3, ac1, true));
     }
     if (c_name == "行秋")
     {
@@ -2534,13 +2532,13 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 45));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1));
+                                                   "", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac1));
+                                                   "", "", "", tc2, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac1));
+                                                   "", "", "", tc3, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc4, ac2));
+                                                   "", "", "", tc4, ac2, true));
     }
     if (c_name == "香菱")
     {
@@ -2591,15 +2589,15 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 15));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1));
+                                                   "", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac1));
+                                                   "", "", "", tc2, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac1));
+                                                   "", "", "", tc3, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc4, ac2));
+                                                   "", "", "", tc4, ac2, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc5, ac3));
+                                                   "", "", "", tc5, ac3, true));
     }
     if (c_name == "八重神子")
     {
@@ -2644,15 +2642,13 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 4));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1));
-        //TODO:配置未计算，set cal_enable_recharge_num = false
-//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-//                                                   "", "", "", tc2, ac3));
+                                                   "", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac2));
-        //TODO:配置未计算，set cal_enable_recharge_num = false
-//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-//                                                   "", "", "", tc4, ac3));
+                                                   "", "", "", tc2, ac3, false));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc3, ac2, true));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc4, ac3, false));
     }
     if (c_name == "温迪")
     {
@@ -2668,7 +2664,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 20));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
-                                                   "", "", "", tc1, ac1));
+                                                   "", "", "", tc1, ac1, true));
     }
     if (c_name == "莫娜")
     {
@@ -2703,17 +2699,17 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 1));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc1, ac1));
+                                                   "元素充能效率", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc2, ac1));
+                                                   "元素充能效率", "", "", tc2, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc3, ac1));
+                                                   "元素充能效率", "", "", tc3, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc4, ac2));
+                                                   "元素充能效率", "", "", tc4, ac2, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc5, ac2));
+                                                   "元素充能效率", "", "", tc5, ac2, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc6, ac2));
+                                                   "元素充能效率", "", "", tc6, ac2, true));
     }
     if (c_name == "钟离")
     {
@@ -2726,11 +2722,11 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 1));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "生命值", "", "", tc1, ac1));
+                                                   "生命值", "", "", tc1, ac1, false));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "生命值", "", "", tc1, ac1));
+                                                   "生命值", "", "", tc1, ac1, false));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "生命值", "", "", tc1, ac1));
+                                                   "生命值", "", "", tc1, ac1, false));
     }
     //TODO:NEW
     if (c_name == "纳西妲")
@@ -2752,15 +2748,15 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 1));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc1, ac1));
+                                                   "", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc2, ac1));
+                                                   "", "", "", tc2, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc3, ac1));
+                                                   "", "", "", tc3, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc4, ac1));
+                                                   "", "", "", tc4, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc5, ac1));
+                                                   "", "", "", tc5, ac1, true));
     }
 }
 
@@ -2812,7 +2808,7 @@ void cal_deployment()
                                     if (!comb_index->a_main5.empty() && comb_index->a_main5 != a_main5[main5_index]) continue;
 
                                     auto *temp = new Group(c_index, w_index, artifact_list[a_index1], artifact_list[a_index2], a_main3[main3_index],
-                                                           a_main4[main4_index], a_main5[main5_index], comb_index->team_config, comb_index->attack_config_list);
+                                                           a_main4[main4_index], a_main5[main5_index], comb_index->team_config, comb_index->attack_config_list, comb_index->need_to_satisfy_recharge);
                                     int check_num = temp->init_check_data();
                                     if (check_num == 0)//pass
                                     {

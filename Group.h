@@ -20,7 +20,6 @@ extern ofstream outfile_debug;
 
 //parameters
 extern bool out_header;
-extern bool cal_enable_recharge_num;
 extern string double_E_per_round;
 extern double cal_min_critrate_valid;
 extern double cal_max_critrate_valid;
@@ -135,6 +134,7 @@ public:
     string a_main5;
     Team_config *team_config;
     Attack_config *attack_config;
+    bool need_to_satisfy_recharge;
 
     int base_life;
     int base_atk;
@@ -152,7 +152,8 @@ public:
                string a_main4_,
                string a_main5_,
                Team_config *team_config_,
-               Attack_config *attack_config_);
+               Attack_config *attack_config_,
+               bool need_to_satisfy_recharge_);
 
     ~Deployment();
 
@@ -194,6 +195,7 @@ public:
     string a_main5;
     Team_config *team_config;
     vector<Deployment *> combination;
+    bool need_to_satisfy_recharge;
 
     bool useful[7];
 
@@ -210,7 +212,8 @@ public:
           string a_main4_,
           string a_main5_,
           Team_config *team_config_,
-          vector<Attack_config *> attack_config_list);
+          vector<Attack_config *> attack_config_list,
+          bool need_to_satisfy_recharge_);
 
     ~Group();
 
