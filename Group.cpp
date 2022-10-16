@@ -117,8 +117,8 @@ void Deployment::check_data(bool &suit1_valid, bool &suit2_valid, bool &main3_va
                 break;
             }
 
-        if (cal_enable_recharge_num)
-            if (attack_config->condition->attack_way == "Q" && (data_list[5]->percentage + data_list[5]->converted_percentage) > 0)
+        if (cal_enable_recharge_num && attack_config->condition->attack_way == "Q")
+            if ((data_list[5]->percentage + data_list[5]->converted_percentage) > 0)
                 suit1_valid = suit2_valid = true;
 
         Artifact::check_artifact_special(this, suit1_valid, suit2_valid, true);
@@ -135,8 +135,8 @@ void Deployment::check_data(bool &suit1_valid, bool &suit2_valid, bool &main3_va
                 break;
             }
 
-        if (cal_enable_recharge_num)
-            if (attack_config->condition->attack_way == "Q" && (data_list[5]->percentage + data_list[5]->converted_percentage) > 0)
+        if (cal_enable_recharge_num && attack_config->condition->attack_way == "Q")
+            if ((data_list[5]->percentage + data_list[5]->converted_percentage) > 0)
                 suit1_valid = true;
         //clear
         for (auto &i: data_list) i->percentage = i->converted_percentage = 0;
@@ -150,8 +150,8 @@ void Deployment::check_data(bool &suit1_valid, bool &suit2_valid, bool &main3_va
                 break;
             }
 
-        if (cal_enable_recharge_num)
-            if (attack_config->condition->attack_way == "Q" && (data_list[5]->percentage + data_list[5]->converted_percentage) > 0)
+        if (cal_enable_recharge_num && attack_config->condition->attack_way == "Q")
+            if ((data_list[5]->percentage + data_list[5]->converted_percentage) > 0)
                 suit2_valid = true;
 
         Artifact::check_artifact_special(this, suit1_valid, suit2_valid, false);
@@ -159,7 +159,7 @@ void Deployment::check_data(bool &suit1_valid, bool &suit2_valid, bool &main3_va
 
     check_useful_attribute();
 
-    if (!data_list[str2index(a_main3)]->useful && !(cal_enable_recharge_num && a_main3 == "元素充能效率" && attack_config->condition->attack_way == "Q")) main3_valid = false;
+    if (!data_list[str2index(a_main3)]->useful && !(cal_enable_recharge_num && attack_config->condition->attack_way == "Q" && a_main3 == "元素充能效率")) main3_valid = false;
     if (!data_list[str2index(a_main4)]->useful) main4_valid = false;
     if (!data_list[str2index(a_main5)]->useful) main5_valid = false;
 }
@@ -220,7 +220,7 @@ void Deployment::init_data()
 
     get_team_data();
 
-    if (cal_enable_recharge_num) satisfy_recharge_requirement();
+    satisfy_recharge_requirement();
 
     get_data_info += "\n";
 }
@@ -412,7 +412,7 @@ int Group::init_check_data()
         useful[4] = useful[4] || i->data_list[5]->useful;
         useful[5] = useful[5] || i->data_list[6]->useful;
         useful[6] = useful[6] || i->data_list[7]->useful;
-        if (cal_enable_recharge_num) entry[4] = max(entry[4], i->min_recharge_num);
+        entry[4] = max(entry[4], i->min_recharge_num);
     }
     return 0;
 }

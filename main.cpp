@@ -1248,7 +1248,7 @@ void Weapon::modify_useful_attribute(Deployment *data)
     if (data->w_point->name == "磐岩结绿" && data->data_list[1]->useful) data->data_list[0]->useful = true;
     else if (data->w_point->name == "圣显之钥" && data->c_point->args->sword_shengxian_level > 0 && data->data_list[4]->useful) data->data_list[0]->useful = true;
     else if (data->w_point->name == "辰砂之纺锤" && data->attack_config->condition->attack_way == "E") data->data_list[2]->useful = true;
-    else if (data->w_point->name == "西福斯的月光" && (data->data_list[5]->useful || data->attack_config->condition->attack_way == "Q")) data->data_list[4]->useful = true;
+    else if (data->w_point->name == "西福斯的月光" && (data->data_list[5]->useful || (cal_enable_recharge_num && data->attack_config->condition->attack_way == "Q"))) data->data_list[4]->useful = true;
     else if (data->w_point->name == "不灭月华" && data->attack_config->condition->attack_way == "平A") data->data_list[0]->useful = true;
     else if (data->w_point->name == "流浪的晚星" && data->data_list[1]->useful) data->data_list[4]->useful = true;
     else if (data->w_point->name == "猎人之径" && data->attack_config->condition->attack_way == "重A") data->data_list[4]->useful = true;
@@ -1865,7 +1865,7 @@ void Deployment::get_team_data()
 void Deployment::satisfy_recharge_requirement()
 {
     //调整充能数值
-    if (attack_config->condition->attack_way == "Q")
+    if (cal_enable_recharge_num && attack_config->condition->attack_way == "Q")
     {
         //能量回复值 = 微粒数 * 系数 * 实时的元素充能效率
         double front = 1;
