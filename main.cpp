@@ -241,9 +241,9 @@ void init_character_data()
     character_list.push_back(new Character("纳西妲", "草", "法器", 10360, 299, 630, "元素精通", 115.0,
                                            9, "草", (0.726 + 0.666 + 0.826 + 1.051) / 4, (0.685 + 0.629 + 0.78 + 0.993) / 4,
                                            "草", 2.376, 2.244, "草", 2.81, 2.61,
-                                           9, 6, false, 2.193, 2.064, 1.858, 1.754,
+                                           9, 3, false, 2.193, 2.064, 1.858, 1.754,
                                            9, 50, false, 0, 0, 0, 0,
-                                           0, temp,
+                                           2, temp,
                                            new weapon_artifact_related_arguments(false, false, 2, true, 2, false, true, -1,
                                                                                  -1, 3, -1, -1, false, false, -1, -1)));
     temp.clear();
@@ -442,7 +442,7 @@ bool Character::get_extra_special(Deployment *data) const
         }
 
         if (!(data->attack_config->background && !data->attack_config->lockface))
-            data->add_percentage("元素精通", 250, (name + "_extra_special"));
+            data->add_converted_percentage("元素精通", 250, (name + "_extra_special"));
 
         if (data->c_point->constellation >= 2 && data->attack_config->react_type.find("激化") != string::npos)
             data->add_percentage("防御削弱", 0.3, (name + "_extra_special"));
@@ -1242,12 +1242,13 @@ bool Weapon::get_extra_special(Deployment *data) const
 }
 
 //build new weapon(all) 被转化的属性有效
+//考虑Q充能
 void Weapon::modify_useful_attribute(Deployment *data)
 {
     if (data->w_point->name == "磐岩结绿" && data->data_list[1]->useful) data->data_list[0]->useful = true;
     else if (data->w_point->name == "圣显之钥" && data->c_point->args->sword_shengxian_level > 0 && data->data_list[4]->useful) data->data_list[0]->useful = true;
     else if (data->w_point->name == "辰砂之纺锤" && data->attack_config->condition->attack_way == "E") data->data_list[2]->useful = true;
-    else if (data->w_point->name == "西福斯的月光" && data->data_list[5]->useful) data->data_list[4]->useful = true;
+    else if (data->w_point->name == "西福斯的月光" && (data->data_list[5]->useful || data->attack_config->condition->attack_way == "Q")) data->data_list[4]->useful = true;
     else if (data->w_point->name == "不灭月华" && data->attack_config->condition->attack_way == "平A") data->data_list[0]->useful = true;
     else if (data->w_point->name == "流浪的晚星" && data->data_list[1]->useful) data->data_list[4]->useful = true;
     else if (data->w_point->name == "猎人之径" && data->attack_config->condition->attack_way == "重A") data->data_list[4]->useful = true;
@@ -1415,6 +1416,7 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
 }
 
 //build new artifact(all) 被转化的属性有效
+//考虑Q充能
 void Artifact::modify_useful_attribute(Deployment *data)
 {
     if (data->suit1->name == "绝缘之旗印" && data->suit2->name == "绝缘之旗印" && data->attack_config->condition->attack_way == "Q")
@@ -1422,6 +1424,7 @@ void Artifact::modify_useful_attribute(Deployment *data)
 }
 
 //build new artifact(all) 提供充能、队友加成的有效
+//考虑Q充能
 void Artifact::check_artifact_special(Deployment *data, bool &suit1_valid, bool &suit2_valid, bool if_4_piece)
 {
     //特殊判断圣遗物套装，原来肯定-现在肯定；原来否定-现在肯定；原来肯定-现在否定；原来否定-现在否定
@@ -1489,6 +1492,7 @@ void Artifact::check_artifact_special(Deployment *data, bool &suit1_valid, bool 
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all) 所有转化类属性的有效百分比决定开关
+//考虑Q充能
 void Deployment::check_useful_attribute()
 {
     //实际上应该采用（武器-圣遗物）对的形式考虑还原useful
@@ -1795,8 +1799,8 @@ void Deployment::get_team_data()
         if (!(attack_config->background && !attack_config->lockface))
             add_converted_percentage("元素精通", 250, "team_纳西妲");
         //constellation>=2 激化后
-//        if (config->react_type.find("激化") != string::npos)
-//            add_percentage("防御削弱", 0.3, "team_纳西妲");
+        if (attack_config->react_type.find("激化") != string::npos)
+            add_percentage("防御削弱", 0.3, "team_纳西妲");
         Dendro_num++;
     }
 
@@ -1860,7 +1864,6 @@ void Deployment::get_team_data()
 //build new character(needed)||build new weapon(all)||build new artifact(all) 有关充能的转化类属性要考虑
 void Deployment::satisfy_recharge_requirement()
 {
-    string double_E_per_round = "神里绫华甘雨温迪";//TODO:recharge parameter
     //调整充能数值
     if (attack_config->condition->attack_way == "Q")
     {
@@ -1881,6 +1884,8 @@ void Deployment::satisfy_recharge_requirement()
         energy += team_config->teammate_1->E_energy * back * ((team_config->teammate_1->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_1->name) != string::npos) ? 2 : 1);
         energy += team_config->teammate_2->E_energy * back * ((team_config->teammate_2->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_2->name) != string::npos) ? 2 : 1);
         energy += team_config->teammate_3->E_energy * back * ((team_config->teammate_3->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_3->name) != string::npos) ? 2 : 1);
+
+        double converted_recharge = 0;
 
         //"天目影打刀" 12/E 不吃充能
         //"西风剑" 3*2/6s
@@ -1916,6 +1921,7 @@ void Deployment::satisfy_recharge_requirement()
             if (w_point->name == "西风剑") energy += 3 * front * white;
             else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
             else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
+            else if (w_point->name == "西福斯的月光") converted_recharge += data_list[4]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
         }
         else if (c_point->name == "雷电将军")
         {
@@ -1956,6 +1962,7 @@ void Deployment::satisfy_recharge_requirement()
             if (w_point->name == "西风剑") energy += 3 * front * white;
             else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
             else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
+            else if (w_point->name == "西福斯的月光") converted_recharge += data_list[4]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
         }
         else if (c_point->name == "香菱")
         {
@@ -2008,25 +2015,24 @@ void Deployment::satisfy_recharge_requirement()
             //TODO:NEW
         else if (c_point->name == "纳西妲")
         {
-//            //Q 50 E 3f+3b 1E/Q
-//            energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * (front / 2 + back / 2) * same;
-//
-//            if (w_point->name == "西风秘典") energy += 3 * front * white;
-//            else if (w_point->name == "祭礼残章") energy += 3 * front * same;
-//            else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
-//            //"不灭月华" 0.6/A Q后12s内 不吃充能
-            energy = Q_energy_modify;
+            //Q 50 E 3f 2E/Q
+            energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
+
+            if (w_point->name == "西风秘典") energy += 3 * front * white;
+            else if (w_point->name == "祭礼残章") energy += c_point->E_energy * front * same;
+            else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
+            //"不灭月华" 0.6/A Q后12s内 不吃充能
         }
         else energy = Q_energy_modify;
 
-        min_recharge_num = max(0, (int) ((Q_energy_modify / energy - data_list[5]->percentage - data_list[5]->converted_percentage) / data_list[5]->value_per_entry));
+        min_recharge_num = max(0, (int) ((Q_energy_modify / energy - data_list[5]->percentage - data_list[5]->converted_percentage - converted_recharge) / data_list[5]->value_per_entry));
     }
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
 void Deployment::get_convert_value(double &life, double &atk, double &def, double &mastery, double &recharge, double &critrate, double &critdam, double &damplus)
 {
-    //先计算转化，最后再执行加成
+    //先计算转化，最后再执行加成，不加到面板上的转化可以吃converted_percentage
     double life_add = 0, atk_add = 0, def_add = 0, mastery_add = 0, recharge_add = 0, critrate_add = 0, critdam_add = 0, damplus_add = 0;
     //character
     if (c_point->name == "胡桃")//生命->攻击
@@ -2034,14 +2040,14 @@ void Deployment::get_convert_value(double &life, double &atk, double &def, doubl
     else if (c_point->name == "雷电将军" && attack_config->condition->ele_type == "雷")//充能->增伤
         damplus_add += (recharge - 1) * 0.4;
     else if (c_point->name == "八重神子" && attack_config->condition->attack_way == "E")//精通->E增伤
-        damplus_add += mastery * 0.0015;
+        damplus_add += (mastery + data_list[4]->converted_percentage) * 0.0015;
     else if (c_point->name == "莫娜" && attack_config->condition->ele_type == "水")//充能->增伤
         damplus_add += recharge * 0.2;
         //TODO:NEW
     else if (c_point->name == "纳西妲" && attack_config->condition->attack_way == "E")//精通->E暴击增伤
     {
-        damplus_add += min((mastery - 200.0), 800.0) * 0.001;
-        critrate_add += min((mastery - 200.0), 800.0) * 0.0003;
+        damplus_add += min((mastery + data_list[4]->converted_percentage - 200.0), 800.0) * 0.001;
+        critrate_add += min((mastery + data_list[4]->converted_percentage - 200.0), 800.0) * 0.0003;
     }
 
     //weapon
@@ -2167,7 +2173,7 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
     {
         double extra_damplus = 0;
         if ((suit1->name == suit2->name) && (suit1->name == "翠绿之影")) extra_damplus += 0.6;
-//        if (team_config->teammate_all.find("莫娜") != string::npos) extra_damplus += 0.15;//TODO:只有水元素扩散
+        if (team_config->teammate_all.find("莫娜") != string::npos && team_config->ele_allow_spread.find("水") != string::npos) extra_damplus += 0.15;
         extra_damage += 1.2 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
         //1.2 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
         //元素伤，吃各元素抗
@@ -2181,8 +2187,7 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
 //        {
 //            double extra_damplus = 0;
 //            if ((suit1->name == suit2->name) && (suit1->name == "炽烈的炎之魔女")) extra_damplus += 0.4;
-//            extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
-//            //TODO:NEW
+//            //extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
 //            extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus) * ((team_config->teammate_all.find("纳西妲") != string::npos) ? 1.2 : 1);
 //            //6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
 //            //草伤，吃草抗
@@ -2191,8 +2196,7 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
 //        {
 //            double extra_damplus = 0;
 //            if ((suit1->name == suit2->name) && (suit1->name == "如雷的盛怒")) extra_damplus += 0.4;
-//            extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
-//            //TODO:NEW
+//            //extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
 //            extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus) * ((team_config->teammate_all.find("纳西妲") != string::npos) ? 1.2 : 1);
 //            //6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
 //            //草伤，吃草抗
@@ -2200,8 +2204,7 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
 //        else
 //        {
 //            double extra_damplus = 0;
-//            extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
-//            //TODO:NEW
+//            //extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
 //            extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus) * ((team_config->teammate_all.find("纳西妲") != string::npos) ? 1.2 : 1);
 //            //4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
 //            //草伤，吃草抗
@@ -2216,9 +2219,8 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
     {
         double extra_damplus = 0;
         if ((suit1->name == suit2->name) && (suit1->name == "炽烈的炎之魔女")) extra_damplus += 0.4;
-        extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
-//        //TODO:NEW
-//        extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus) * ((team_config->teammate_all.find("纳西妲") != string::npos) ? 1.2 : 1);
+        //extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
+        extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus) * ((team_config->teammate_all.find("纳西妲") != string::npos) ? 1.2 : 1);
         //0.5 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
         //火伤，吃火抗，8段伤害
     }
@@ -2304,6 +2306,7 @@ bool out_header = true;
 //TODO:配置编写
 int top_k = 3;
 bool cal_enable_recharge_num = true;
+string double_E_per_round = "神里绫华甘雨温迪纳西妲";
 double cal_min_critrate_valid = 0.625;//15*0.033+0.05+0.08
 double cal_max_critrate_valid = 1.0;
 int max_up_num_per_base = 4;
@@ -2443,13 +2446,13 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc5, ac1));
 
-        //TODO:未计算，6有效词条
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc6, ac2));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc7, ac2));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc8, ac2));
+        //TODO:配置未计算，6有效词条
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc6, ac2));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc7, ac2));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc8, ac2));
     }
     if (c_name == "甘雨")
     {
@@ -2642,12 +2645,14 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1));
+        //TODO:配置未计算，set cal_enable_recharge_num = false
 //        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-//                                                   "", "", "", tc2, ac3));//set cal_enable_recharge_num = false
+//                                                   "", "", "", tc2, ac3));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc3, ac2));
+        //TODO:配置未计算，set cal_enable_recharge_num = false
 //        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-//                                                   "", "", "", tc4, ac3));//set cal_enable_recharge_num = false
+//                                                   "", "", "", tc4, ac3));
     }
     if (c_name == "温迪")
     {
@@ -2721,6 +2726,10 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 1));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+                                                   "生命值", "", "", tc1, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+                                                   "生命值", "", "", tc1, ac1));
+        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "生命值", "", "", tc1, ac1));
     }
     //TODO:NEW

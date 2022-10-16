@@ -21,6 +21,7 @@ extern ofstream outfile_debug;
 //parameters
 extern bool out_header;
 extern bool cal_enable_recharge_num;
+extern string double_E_per_round;
 extern double cal_min_critrate_valid;
 extern double cal_max_critrate_valid;
 extern int max_up_num_per_base;
