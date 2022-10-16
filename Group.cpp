@@ -569,7 +569,7 @@ void Group::out()
     outfile_result << c_point->name << ",";
     for (auto &i: combination)
         outfile_result << to_string(i->attack_config->attack_time) + "*" + i->attack_config->condition->attack_way + "_" + (i->attack_config->background ? "后台" : "前台") + "_" + i->attack_config->react_type + "/";
-    outfile_result << ","
+    outfile_result << (need_to_satisfy_recharge ? "要求循环" : "不要求循环") << ","
                    << team_config->teammate_all + "_" + team_config->team_weapon_artifact << ","
                    << w_point->name << ","
                    << suit1->name << ","
