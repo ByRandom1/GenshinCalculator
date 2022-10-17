@@ -2350,16 +2350,16 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
         auto *tc5 = new Team_config(find_character_by_name("钟离"), find_character_by_name("夜兰"), find_character_by_name("莫娜"),
                                     "讨龙_昔日宗室之仪", "水", "水");
 
-        vector<Attack_config *> ac1;//9AZ
+        vector<Attack_config *> ac1;//10AZ
         ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "平A"), false, false, "NONE",
                                         true, true, false, false, false,
                                         true, true, true, false, false, 6));
         ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "平A"), false, false, "蒸发",
                                         true, true, false, true, false,
-                                        true, true, true, false, false, 3));
+                                        true, true, true, false, false, 4));
         ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发",
                                         true, true, false, true, false,
-                                        true, true, true, false, false, 9));
+                                        true, true, true, false, false, 10));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, false));
@@ -2526,7 +2526,10 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
         vector<Attack_config *> ac2;//EQ
         ac2.push_back(new Attack_config(new Condition("水", "单手剑", "E"), false, false, "蒸发",
                                         false, true, false, true, false,
-                                        true, true, true, false, false, 2 * 1));
+                                        true, true, true, false, false, 1));
+        ac2.push_back(new Attack_config(new Condition("水", "单手剑", "E"), false, false, "NONE",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 1));
         ac2.push_back(new Attack_config(new Condition("水", "单手剑", "Q"), true, false, "NONE",
                                         false, true, false, false, false,
                                         true, true, true, false, false, 45));
@@ -2564,10 +2567,10 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 2));
         ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发",
                                         false, true, false, true, false,
-                                        true, true, true, false, false, 7));
+                                        true, true, true, false, false, 6));
         ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载",
                                         false, true, false, true, false,
-                                        true, true, true, false, false, 6));
+                                        true, true, true, false, false, 7));
 
         vector<Attack_config *> ac2;
         ac2.push_back(new Attack_config(new Condition("火", "长柄武器", "E"), true, true, "超载",
@@ -2652,13 +2655,13 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
     }
     if (c_name == "温迪")
     {
-        auto *tc1 = new Team_config(find_character_by_name("风_test"), find_character_by_name("风_test"), find_character_by_name("风_test"),
+        auto *tc1 = new Team_config(find_character_by_name("雷_test"), find_character_by_name("雷_test"), find_character_by_name("雷_test"),
                                     "", "冰水", "冰水");
 
         vector<Attack_config *> ac1;
         ac1.push_back(new Attack_config(new Condition("风", "弓", "E"), false, false, "扩散",
                                         false, true, false, true, false,
-                                        true, true, true, false, false, 1));
+                                        true, true, true, false, false, 2));
         ac1.push_back(new Attack_config(new Condition("风", "弓", "Q"), true, true, "扩散",
                                         false, true, false, true, false,
                                         true, true, true, false, false, 20));

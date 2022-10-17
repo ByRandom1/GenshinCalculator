@@ -288,9 +288,6 @@ double Deployment::cal_damage(int life_num, int atk_num, int def_num, int master
 
     double damage = ((double) base_atk * atk * base_skillrate + extrarate) * damplus * (1.0 + critrate * critdam) * growrate * resistence_ratio * defence_ratio + extra_damage;
 
-    //TODO:TEST
-    if (w_point->name.find("祭礼") != string::npos && attack_config->condition->attack_way == "E" && !c_point->args->sustain_E_hit) damage *= 2;
-
     return damage;
 }
 
@@ -531,6 +528,13 @@ void Group::cal_damage_entry_num()
                                                                 temp_damage[i] = combination[i]->attack_config->attack_time *
                                                                                  combination[i]->cal_damage(lifeup + lifebase, atkup + atkbase, defup + defbase, masteryup + masterybase,
                                                                                                             rechargeup + rechargebase, critrateup + critratebase, critdamup + critdambase);
+
+                                                                //TODO:TEST
+                                                                if (combination[i]->w_point->name.find("祭礼") != string::npos && combination[i]->attack_config->condition->attack_way == "E" && !combination[i]->c_point->args->sustain_E_hit)
+                                                                {
+                                                                    if (double_E_per_round.find(combination[i]->c_point->name) != string::npos) temp_damage[i] = temp_damage[i] * 3 / 2;
+                                                                    else temp_damage[i] = temp_damage[i] * 2 / 1;
+                                                                }
                                                                 temp_total_damage += temp_damage[i];
                                                             }
 
