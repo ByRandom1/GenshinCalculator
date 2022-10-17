@@ -272,8 +272,8 @@ double Deployment::cal_damage(int life_num, int atk_num, int def_num, int master
     double extra_damage = 0.0;
     get_react_value(mastery, extrarate, growrate, extra_damage);
 
-    if (critrate > cal_max_critrate_valid) critrate = 1.0;
-    if (critrate < cal_min_critrate_valid) critrate = 0.0;
+    if (critrate > 1.0) critrate = 1.0;
+    if (critrate < 0.0) critrate = 0.0;
 
     double resistence_ratio = data_list[9]->percentage + data_list[9]->converted_percentage;
     if (attack_config->react_type.find("超导") && attack_config->condition->ele_type == "物理") resistence_ratio += 0.4;
