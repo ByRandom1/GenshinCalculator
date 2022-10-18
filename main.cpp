@@ -42,6 +42,8 @@ string a_main3[5] = {"生命值", "攻击力", "防御力", "元素精通", "元
 string a_main4[5] = {"生命值", "攻击力", "防御力", "元素精通", "伤害加成"};
 string a_main5[7] = {"生命值", "攻击力", "防御力", "元素精通", "暴击率", "暴击伤害", "治疗加成"};
 
+//TODO:将所有添加的属性分为face_percentage,converted_face_percentage,monster_percentage，使用传入的string加到不同的变量上，转化时，先face->convert，然后加上convert在进行convert->extra，最后加上monster
+//TODO:确认所有属性加成的分类
 //build new character(needed) 保证AEQ单一攻击次数
 void init_character_data()
 {
