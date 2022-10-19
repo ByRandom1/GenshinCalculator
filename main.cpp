@@ -129,11 +129,12 @@ void init_character_data()
                                            "水", 0, 0, "物理", 2.81, 2.61,
                                            9, 4, false, 0, 0, 0, 0,
                                            9, 70, false, 0, 0, 0, 0,
-                                           0, temp,
+                                           2, temp,
                                            new weapon_artifact_related_arguments(false, false, 1, false, 1, false, true, -1,
                                                                                  -1, -1, 3, 4, true, false, -1, -1)));
     temp.clear();
     //重A 生命倍率19.68% E 生命倍率38.4% Q 生命倍率(12.42+8.28*45)/46 (extra_rate)
+    //TODO:设定为2命
 
     temp.push_back(nullptr);//每柄雨帘剑恢复当前角色6%行秋最大生命
     temp.push_back(new Set(new Condition("水", "ALL", "ALL"), "伤害加成", 0.2));
@@ -144,12 +145,13 @@ void init_character_data()
     character_list.push_back(new Character("行秋", "水", "单手剑", 10222, 202, 758, "攻击力", 0.24,
                                            9, "物理", (0.921 + 0.942 + 0.564 + 0.564 + 1.107 + 0.709 + 0.709) / 7, (0.856 + 0.875 + 0.525 + 0.525 + 1.029 + 0.659 + 0.659) / 7,
                                            "物理", (0.935 + 1.11) / 2, (0.869 + 1.032) / 2, "物理", 3.16, 2.93,
-                                           9 + 3, 5, false, (3.57 + 4.06) / 2, (3.36 + 3.82) / 2, (3.02 + 3.44) / 2, (2.86 + 3.25) / 2,
+                                           9 + 3, 5, false, (3.57 * 1.5 + 4.06 * 1.5) / 2, (3.36 * 1.5 + 3.82 * 1.5) / 2, (3.02 * 1.5 + 3.44 * 1.5) / 2, (2.86 * 1.5 + 3.25 * 1.5) / 2,
                                            9 + 3, 80, false, 1.15, 1.09, 0.977, 0.923,
                                            6, temp,
                                            new weapon_artifact_related_arguments(false, false, 2, false, 1, false, true, 2,
                                                                                  2, -1, -1, -1, false, false, -1, -1)));
     temp.clear();
+    //默认Q后E，触发4命
 
     temp.push_back(nullptr);//E喷火距离提高20%
     temp.push_back(nullptr);//E结束拾取辣椒提高10%攻击 (get_team)，不考虑
@@ -176,12 +178,13 @@ void init_character_data()
     character_list.push_back(new Character("八重神子", "雷", "法器", 10372, 340, 569, "暴击率", 0.192,
                                            9, "雷", (0.714 + 0.693 + 1.024) / 3, (0.674 + 0.655 + 0.967) / 3,
                                            "雷", 2.572, 2.429, "雷", 2.81, 2.61,
-                                           9, 5, false, 2.015, 1.896, 1.706, 1.612,
+                                           9, 5, false, 2.015 * 1.25, 1.896 * 1.25, 1.706 * 1.25, 1.612 * 1.25,
                                            9, 90, false, (5.53 + 7.09 * 3) / 4, (5.2 + 6.68 * 3) / 4, (4.68 + 6.01 * 3) / 4, (4.42 + 5.68 * 3) / 4,
-                                           1, temp,
+                                           2, temp,
                                            new weapon_artifact_related_arguments(false, false, 2, true, 3, false, true, -1,
                                                                                  -1, 3, -1, -1, false, false, -1, -1)));//E 15次
     temp.clear();
+    //TODO:设定为2命
 
     temp.push_back(nullptr);//E产生上升气流20s
     temp.push_back(nullptr);//Q恢复自己与转化元素15点能量 (recharge)
@@ -407,18 +410,6 @@ bool Character::get_extra_special(Deployment *data) const
     {
         if (!data->attack_config->background)
             data->add_percentage("伤害加成", 0.25, (name + "_extra_special"));
-    }
-    else if (data->c_point->name == "行秋")
-    {
-        if (data->attack_config->condition->attack_way == "E" && data->c_point->constellation >= 4)
-            data->add_percentage("额外倍率", data->base_skillrate * 0.5, (name + "_extra_special"));
-//            data->base_skillrate *= 1.5;
-    }
-    else if (data->c_point->name == "八重神子")
-    {
-        if (data->attack_config->condition->attack_way == "E" && data->c_point->constellation >= 2)
-            data->add_percentage("额外倍率", data->base_skillrate * 0.25, (name + "_extra_special"));
-//            data->base_skillrate *= 1.25;
     }
     else if (data->c_point->name == "莫娜")
     {
@@ -2306,7 +2297,7 @@ struct Combination
 bool out_header = true;
 //TODO:配置编写
 int top_k = 3;
-string double_E_per_round = "神里绫华甘雨温迪纳西妲";
+string double_E_per_round = "神里绫华甘雨温迪夜兰纳西妲";
 int max_up_num_per_base = 4;
 int max_attribute_num_per_pos = 3;
 int max_entry_num = 30;
@@ -2337,71 +2328,71 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
     //"纳西妲" "草_test" "钟离" "雷电将军" "昔日宗室之仪_千夜浮梦_深林的记忆" "雷草" "雷"
     //"纳西妲" "草_test" "班尼特" "雷电将军" "原木刀_昔日宗室之仪_千夜浮梦_深林的记忆" "雷草" "雷火"
 
-    if (c_name == "胡桃")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("莫娜"),
-                                    "讨龙_昔日宗室之仪", "水", "水");
-        auto *tc2 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("夜兰"),
-                                    "终末嗟叹之诗_昔日宗室之仪", "水", "水");
-        auto *tc3 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("夜兰"),
-                                    "昔日宗室之仪", "水", "水");
-        auto *tc4 = new Team_config(find_character_by_name("钟离"), find_character_by_name("夜兰"), find_character_by_name("莫娜"),
-                                    "终末嗟叹之诗_讨龙_昔日宗室之仪", "水", "水");
-        auto *tc5 = new Team_config(find_character_by_name("钟离"), find_character_by_name("夜兰"), find_character_by_name("莫娜"),
-                                    "讨龙_昔日宗室之仪", "水", "水");
-
-        vector<Attack_config *> ac1;//10AZ
-        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "平A"), false, false, "NONE",
-                                        true, true, false, false, false,
-                                        true, true, true, false, false, 6));
-        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "平A"), false, false, "蒸发",
-                                        true, true, false, true, false,
-                                        true, true, true, false, false, 4));
-        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发",
-                                        true, true, false, true, false,
-                                        true, true, true, false, false, 10));
-
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1, false));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac1, false));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac1, false));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc4, ac1, false));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc5, ac1, false));
-    }
-    if (c_name == "神里绫华")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
-                                    "昔日宗室之仪_翠绿之影", "冰水", "冰");
-        auto *tc2 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
-                                    "终末嗟叹之诗_昔日宗室之仪_翠绿之影", "冰水", "冰");
-        auto *tc3 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("枫原万叶"),
-                                    "昔日宗室之仪_翠绿之影", "冰水", "冰");
-
-        vector<Attack_config *> ac1;//EAQAZAZAZ EAZAZAZ
-        ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "平A"), false, false, "冻结",
-                                        false, true, false, false, false,
-                                        true, true, true, false, false, 1 + 6));
-        ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "重A"), false, false, "冻结",
-                                        false, true, false, false, false,
-                                        true, true, true, false, false, 3 * 6));
-        ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "E"), false, false, "冻结",
-                                        false, true, false, false, false,
-                                        true, true, true, false, false, 2));
-        ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "Q"), false, false, "冻结",
-                                        false, true, false, false, false,
-                                        true, true, true, false, false, 20));
-
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac1, true));
-    }
+//    if (c_name == "胡桃")
+//    {
+//        auto *tc1 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("莫娜"),
+//                                    "讨龙_昔日宗室之仪", "水", "水");
+//        auto *tc2 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("夜兰"),
+//                                    "终末嗟叹之诗_昔日宗室之仪", "水", "水");
+//        auto *tc3 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("夜兰"),
+//                                    "昔日宗室之仪", "水", "水");
+//        auto *tc4 = new Team_config(find_character_by_name("钟离"), find_character_by_name("夜兰"), find_character_by_name("莫娜"),
+//                                    "终末嗟叹之诗_讨龙_昔日宗室之仪", "水", "水");
+//        auto *tc5 = new Team_config(find_character_by_name("钟离"), find_character_by_name("夜兰"), find_character_by_name("莫娜"),
+//                                    "讨龙_昔日宗室之仪", "水", "水");
+//
+//        vector<Attack_config *> ac1;//10AZ
+//        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "平A"), false, false, "NONE",
+//                                        true, true, false, false, false,
+//                                        true, true, true, false, false, 6));
+//        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "平A"), false, false, "蒸发",
+//                                        true, true, false, true, false,
+//                                        true, true, true, false, false, 4));
+//        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "重A"), false, false, "蒸发",
+//                                        true, true, false, true, false,
+//                                        true, true, true, false, false, 10));
+//
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc1, ac1, false));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc2, ac1, false));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc3, ac1, false));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc4, ac1, false));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc5, ac1, false));
+//    }
+//    if (c_name == "神里绫华")
+//    {
+//        auto *tc1 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
+//                                    "昔日宗室之仪_翠绿之影", "冰水", "冰");
+//        auto *tc2 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
+//                                    "终末嗟叹之诗_昔日宗室之仪_翠绿之影", "冰水", "冰");
+//        auto *tc3 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("枫原万叶"),
+//                                    "昔日宗室之仪_翠绿之影", "冰水", "冰");
+//
+//        vector<Attack_config *> ac1;//EAQAZAZAZ EAZAZAZ
+//        ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "平A"), false, false, "冻结",
+//                                        false, true, false, false, false,
+//                                        true, true, true, false, false, 1 + 6));
+//        ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "重A"), false, false, "冻结",
+//                                        false, true, false, false, false,
+//                                        true, true, true, false, false, 3 * 6));
+//        ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "E"), false, false, "冻结",
+//                                        false, true, false, false, false,
+//                                        true, true, true, false, false, 2));
+//        ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "Q"), false, false, "冻结",
+//                                        false, true, false, false, false,
+//                                        true, true, true, false, false, 20));
+//
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc1, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc2, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc3, ac1, true));
+//    }
     if (c_name == "雷电将军")
     {
         auto *tc1 = new Team_config(find_character_by_name("香菱"), find_character_by_name("班尼特"), find_character_by_name("行秋"),
@@ -2433,16 +2424,16 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         false, true, false, true, true,
                                         true, true, true, false, false, 1));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc2, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc3, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc4, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc5, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc4, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc5, ac1, true));
 
         //TODO:配置未计算，6有效词条
 //        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
@@ -2452,33 +2443,33 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
 //        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
 //                                                   "", "", "", tc8, ac2, true));
     }
-    if (c_name == "甘雨")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
-                                    "昔日宗室之仪_翠绿之影", "冰水", "冰");
-        auto *tc2 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
-                                    "终末嗟叹之诗_昔日宗室之仪_翠绿之影", "冰水", "冰");
-        auto *tc3 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("莫娜"), find_character_by_name("枫原万叶"),
-                                    "昔日宗室之仪_翠绿之影", "冰水", "冰");
-
-        vector<Attack_config *> ac1;//Q EZ EZ
-        ac1.push_back(new Attack_config(new Condition("冰", "弓", "重A"), false, false, "冻结",
-                                        false, true, false, false, false,
-                                        true, true, true, false, false, 2 * 2));
-        ac1.push_back(new Attack_config(new Condition("冰", "弓", "E"), false, true, "冻结",
-                                        false, true, false, false, false,
-                                        true, true, true, false, false, 2 * 2));
-        ac1.push_back(new Attack_config(new Condition("冰", "弓", "Q"), true, true, "冻结",
-                                        false, true, false, false, false,
-                                        true, true, true, false, false, 25));
-
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac1, true));
-    }
+//    if (c_name == "甘雨")
+//    {
+//        auto *tc1 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
+//                                    "昔日宗室之仪_翠绿之影", "冰水", "冰");
+//        auto *tc2 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
+//                                    "终末嗟叹之诗_昔日宗室之仪_翠绿之影", "冰水", "冰");
+//        auto *tc3 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("莫娜"), find_character_by_name("枫原万叶"),
+//                                    "昔日宗室之仪_翠绿之影", "冰水", "冰");
+//
+//        vector<Attack_config *> ac1;//Q EZ EZ
+//        ac1.push_back(new Attack_config(new Condition("冰", "弓", "重A"), false, false, "冻结",
+//                                        false, true, false, false, false,
+//                                        true, true, true, false, false, 2 * 2));
+//        ac1.push_back(new Attack_config(new Condition("冰", "弓", "E"), false, true, "冻结",
+//                                        false, true, false, false, false,
+//                                        true, true, true, false, false, 2 * 2));
+//        ac1.push_back(new Attack_config(new Condition("冰", "弓", "Q"), true, true, "冻结",
+//                                        false, true, false, false, false,
+//                                        true, true, true, false, false, 25));
+//
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc1, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc2, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc3, ac1, true));
+//    }
     if (c_name == "夜兰")
     {
         auto *tc1 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("行秋"),
@@ -2491,10 +2482,10 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
         vector<Attack_config *> ac1;//EQ
         ac1.push_back(new Attack_config(new Condition("水", "弓", "E"), false, false, "NONE",
                                         true, false, false, false, false,
-                                        true, true, true, false, false, 1));
+                                        true, true, true, false, false, 2));
         ac1.push_back(new Attack_config(new Condition("水", "弓", "Q"), true, false, "NONE",
                                         true, false, false, false, false,
-                                        true, true, true, false, false, 46));
+                                        true, true, true, false, false, 53));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, true));
@@ -2591,16 +2582,16 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         false, true, false, false, false,
                                         true, true, true, false, false, 15));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc2, ac1, true));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc3, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc4, ac2, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc5, ac3, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc4, ac2, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+//                                                   "", "", "", tc5, ac3, true));
     }
     if (c_name == "八重神子")
     {
@@ -2653,67 +2644,67 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc4, ac3, false));
     }
-    if (c_name == "温迪")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("雷_test"), find_character_by_name("雷_test"), find_character_by_name("雷_test"),
-                                    "", "冰水", "冰水");
-
-        vector<Attack_config *> ac1;
-        ac1.push_back(new Attack_config(new Condition("风", "弓", "E"), false, false, "扩散",
-                                        false, true, false, true, false,
-                                        true, true, true, false, false, 2));
-        ac1.push_back(new Attack_config(new Condition("风", "弓", "Q"), true, true, "扩散",
-                                        false, true, false, true, false,
-                                        true, true, true, false, false, 20));
-
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
-                                                   "", "", "", tc1, ac1, true));
-    }
-    if (c_name == "莫娜")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("行秋"),
-                                    "昔日宗室之仪", "水", "水");
-        auto *tc2 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("夜兰"),
-                                    "终末嗟叹之诗_昔日宗室之仪", "水", "水");
-        auto *tc3 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("夜兰"),
-                                    "昔日宗室之仪", "水", "水");
-
-        auto *tc4 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("甘雨"), find_character_by_name("温迪"),
-                                    "翠绿之影", "冰水", "冰");
-        auto *tc5 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("甘雨"), find_character_by_name("温迪"),
-                                    "终末嗟叹之诗_翠绿之影", "冰水", "冰");
-        auto *tc6 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("甘雨"), find_character_by_name("枫原万叶"),
-                                    "翠绿之影", "冰水", "冰");
-
-        vector<Attack_config *> ac1;
-        ac1.push_back(new Attack_config(new Condition("水", "法器", "E"), true, false, "NONE",
-                                        false, true, false, false, true,
-                                        true, true, true, false, false, 5));
-        ac1.push_back(new Attack_config(new Condition("水", "法器", "Q"), true, false, "NONE",
-                                        false, true, false, false, true,
-                                        true, true, true, false, false, 1));
-
-        vector<Attack_config *> ac2;
-        ac2.push_back(new Attack_config(new Condition("水", "法器", "E"), true, false, "冻结",
-                                        false, true, false, false, true,
-                                        true, true, true, false, false, 5));
-        ac2.push_back(new Attack_config(new Condition("水", "法器", "Q"), true, false, "冻结",
-                                        false, true, false, false, true,
-                                        true, true, true, false, false, 1));
-
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc1, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc2, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc3, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc4, ac2, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc5, ac2, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc6, ac2, true));
-    }
+//    if (c_name == "温迪")
+//    {
+//        auto *tc1 = new Team_config(find_character_by_name("雷_test"), find_character_by_name("雷_test"), find_character_by_name("雷_test"),
+//                                    "", "冰水", "冰水");
+//
+//        vector<Attack_config *> ac1;
+//        ac1.push_back(new Attack_config(new Condition("风", "弓", "E"), false, false, "扩散",
+//                                        false, true, false, true, false,
+//                                        true, true, true, false, false, 2));
+//        ac1.push_back(new Attack_config(new Condition("风", "弓", "Q"), true, true, "扩散",
+//                                        false, true, false, true, false,
+//                                        true, true, true, false, false, 20));
+//
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
+//                                                   "", "", "", tc1, ac1, true));
+//    }
+//    if (c_name == "莫娜")
+//    {
+//        auto *tc1 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("行秋"),
+//                                    "昔日宗室之仪", "水", "水");
+//        auto *tc2 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("夜兰"),
+//                                    "终末嗟叹之诗_昔日宗室之仪", "水", "水");
+//        auto *tc3 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("夜兰"),
+//                                    "昔日宗室之仪", "水", "水");
+//
+//        auto *tc4 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("甘雨"), find_character_by_name("温迪"),
+//                                    "翠绿之影", "冰水", "冰");
+//        auto *tc5 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("甘雨"), find_character_by_name("温迪"),
+//                                    "终末嗟叹之诗_翠绿之影", "冰水", "冰");
+//        auto *tc6 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("甘雨"), find_character_by_name("枫原万叶"),
+//                                    "翠绿之影", "冰水", "冰");
+//
+//        vector<Attack_config *> ac1;
+//        ac1.push_back(new Attack_config(new Condition("水", "法器", "E"), true, false, "NONE",
+//                                        false, true, false, false, true,
+//                                        true, true, true, false, false, 5));
+//        ac1.push_back(new Attack_config(new Condition("水", "法器", "Q"), true, false, "NONE",
+//                                        false, true, false, false, true,
+//                                        true, true, true, false, false, 1));
+//
+//        vector<Attack_config *> ac2;
+//        ac2.push_back(new Attack_config(new Condition("水", "法器", "E"), true, false, "冻结",
+//                                        false, true, false, false, true,
+//                                        true, true, true, false, false, 5));
+//        ac2.push_back(new Attack_config(new Condition("水", "法器", "Q"), true, false, "冻结",
+//                                        false, true, false, false, true,
+//                                        true, true, true, false, false, 1));
+//
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+//                                                   "元素充能效率", "", "", tc1, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+//                                                   "元素充能效率", "", "", tc2, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+//                                                   "元素充能效率", "", "", tc3, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+//                                                   "元素充能效率", "", "", tc4, ac2, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+//                                                   "元素充能效率", "", "", tc5, ac2, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+//                                                   "元素充能效率", "", "", tc6, ac2, true));
+//    }
     if (c_name == "钟离")
     {
         auto *tc1 = new Team_config(find_character_by_name("风_test"), find_character_by_name("风_test"), find_character_by_name("风_test"),
@@ -2725,42 +2716,42 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 1));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "生命值", "", "", tc1, ac1, false));
+                                                   "生命值", "生命值", "", tc1, ac1, false));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "生命值", "", "", tc1, ac1, false));
+                                                   "生命值", "生命值", "", tc1, ac1, false));
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "生命值", "", "", tc1, ac1, false));
+                                                   "生命值", "生命值", "", tc1, ac1, false));
     }
-    //TODO:NEW
-    if (c_name == "纳西妲")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("草_test"), find_character_by_name("八重神子"), find_character_by_name("钟离"),
-                                    "昔日宗室之仪_深林的记忆", "雷草", "雷");
-        auto *tc2 = new Team_config(find_character_by_name("草_test"), find_character_by_name("八重神子"), find_character_by_name("班尼特"),
-                                    "昔日宗室之仪_深林的记忆", "雷草", "雷火");
-        auto *tc3 = new Team_config(find_character_by_name("草_test"), find_character_by_name("八重神子"), find_character_by_name("雷电将军"),
-                                    "深林的记忆", "雷草", "雷");
-        auto *tc4 = new Team_config(find_character_by_name("草_test"), find_character_by_name("雷电将军"), find_character_by_name("钟离"),
-                                    "昔日宗室之仪_深林的记忆", "雷草", "雷");
-        auto *tc5 = new Team_config(find_character_by_name("草_test"), find_character_by_name("雷电将军"), find_character_by_name("班尼特"),
-                                    "昔日宗室之仪_深林的记忆", "雷草", "雷火");
-
-        vector<Attack_config *> ac1;
-        ac1.push_back(new Attack_config(new Condition("草", "法器", "E"), true, false, "蔓激化",
-                                        false, true, false, true, false,
-                                        true, true, true, false, false, 1));
-
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc1, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc2, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc3, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc4, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc5, ac1, true));
-    }
+//    //TODO:NEW
+//    if (c_name == "纳西妲")
+//    {
+//        auto *tc1 = new Team_config(find_character_by_name("草_test"), find_character_by_name("八重神子"), find_character_by_name("钟离"),
+//                                    "昔日宗室之仪_深林的记忆", "雷草", "雷");
+//        auto *tc2 = new Team_config(find_character_by_name("草_test"), find_character_by_name("八重神子"), find_character_by_name("班尼特"),
+//                                    "昔日宗室之仪_深林的记忆", "雷草", "雷火");
+//        auto *tc3 = new Team_config(find_character_by_name("草_test"), find_character_by_name("八重神子"), find_character_by_name("雷电将军"),
+//                                    "深林的记忆", "雷草", "雷");
+//        auto *tc4 = new Team_config(find_character_by_name("草_test"), find_character_by_name("雷电将军"), find_character_by_name("钟离"),
+//                                    "昔日宗室之仪_深林的记忆", "雷草", "雷");
+//        auto *tc5 = new Team_config(find_character_by_name("草_test"), find_character_by_name("雷电将军"), find_character_by_name("班尼特"),
+//                                    "昔日宗室之仪_深林的记忆", "雷草", "雷火");
+//
+//        vector<Attack_config *> ac1;
+//        ac1.push_back(new Attack_config(new Condition("草", "法器", "E"), true, false, "蔓激化",
+//                                        false, true, false, true, false,
+//                                        true, true, true, false, false, 1));
+//
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+//                                                   "", "", "", tc1, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+//                                                   "", "", "", tc2, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+//                                                   "", "", "", tc3, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+//                                                   "", "", "", tc4, ac1, true));
+//        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+//                                                   "", "", "", tc5, ac1, true));
+//    }
 }
 
 struct cmp
