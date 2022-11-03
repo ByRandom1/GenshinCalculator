@@ -10,21 +10,23 @@
 				{
 					"includeDirectories" : 
 					[
+						"/usr/local/include",
 						"/Library/Developer/CommandLineTools/usr/lib/clang/14.0.0/include",
-						"/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include",
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include",
 						"/Library/Developer/CommandLineTools/usr/include"
 					],
 					"linkDirectories" : 
 					[
-						"/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/lib"
+						"/usr/local/lib",
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
 					],
 					"linkFrameworkDirectories" : 
 					[
-						"/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/System/Library/Frameworks"
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
 					],
 					"linkLibraries" : []
 				},
-				"path" : "/Library/Developer/CommandLineTools/usr/bin/cc",
+				"path" : "/usr/bin/cc",
 				"version" : "14.0.0.14000029"
 			},
 			"language" : "C",
@@ -42,25 +44,27 @@
 				{
 					"includeDirectories" : 
 					[
-						"/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include/c++/v1",
+						"/usr/local/include",
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1",
 						"/Library/Developer/CommandLineTools/usr/lib/clang/14.0.0/include",
-						"/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/include",
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include",
 						"/Library/Developer/CommandLineTools/usr/include"
 					],
 					"linkDirectories" : 
 					[
-						"/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/usr/lib"
+						"/usr/local/lib",
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib"
 					],
 					"linkFrameworkDirectories" : 
 					[
-						"/Library/Developer/CommandLineTools/SDKs/MacOSX12.3.sdk/System/Library/Frameworks"
+						"/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks"
 					],
 					"linkLibraries" : 
 					[
 						"c++"
 					]
 				},
-				"path" : "/Library/Developer/CommandLineTools/usr/bin/c++",
+				"path" : "/usr/bin/c++",
 				"version" : "14.0.0.14000029"
 			},
 			"language" : "CXX",
