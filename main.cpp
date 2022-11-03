@@ -212,8 +212,8 @@ void init_character_data()
                                            9, "水", (0.677 + 0.648 + 0.806 + 1.01) / 4, (0.639 + 0.612 + 0.762 + 0.955) / 4,
                                            "水", 2.69, 2.55, "水", 2.81, 2.61,
                                            9, 3, true, (0.68 * 4 + 2.82) / 5, (0.64 * 4 + 2.66) / 5, (0.576 * 4 + 2.39) / 5, (0.544 * 4 + 2.26) / 5,
-                                           9, 60, false, 9.4, 8.85, 7.96, 7.52,
-                                           1, temp,
+                                           9 + 3, 60, false, 9.4, 8.85, 7.96, 7.52,
+                                           3, temp,
                                            new weapon_artifact_related_arguments(false, false, 2, false, 1, false, true, -1,
                                                                                  -1, 2, -1, -1, false, false, -1, -1)));
     temp.clear();
@@ -280,7 +280,7 @@ void init_character_data()
                                            9, "物理", 0, 0, "物理", 0, 0, "物理", 0, 0,
                                            9 + 3, 2, false, 0, 0, 0, 0,
                                            9 + 3, 60, false, 0, 0, 0, 0,
-                                           5, temp,
+                                           6, temp,
                                            new weapon_artifact_related_arguments(false, true, 2, false, 3, false, false, 3,
                                                                                  3, -1, -1, -1, false, false, -1, -1)));
     temp.clear();
@@ -412,7 +412,7 @@ bool Character::get_extra_special(Deployment *data) const
     }
     else if (data->c_point->name == "莫娜")
     {
-        data->add_percentage("伤害加成", 0.58, (name + "_extra_special"));
+        data->add_percentage("伤害加成", 0.6, (name + "_extra_special"));
     }
     else if (data->c_point->name == "钟离")
     {
@@ -445,6 +445,7 @@ bool Character::get_extra_special(Deployment *data) const
 //高估：
 //  原木刀/森林王器/贯月矢：自己吃不到种子（默认触发）
 //  铁峰刺：元素伤害，2层6s（默认满层）
+//  图莱杜拉的回忆：（默认叠满）
 //      万国诸海图谱：元素反应，2层10s（默认满层）
 //  匣里日月：EQ命中，6s（默认触发）
 //  ！！！低估：流浪乐章：随机（默认无加成）
@@ -538,6 +539,12 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("西福斯的月光", "单手剑", 510, "元素精通", 165.0, 1, temp));
     temp.clear();
 
+    //TODO:NEW
+    //(get_team) 效果不予考虑
+    temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.16));
+    weapon_list.push_back(new Weapon("东花坊时雨", "单手剑", 510, "元素精通", 165.0, 1, temp));
+    temp.clear();
+
     //(get_extra_rate)
     weapon_list.push_back(new Weapon("辰砂之纺锤", "单手剑", 454, "防御力", 0.69, 5, temp));
     temp.clear();
@@ -552,6 +559,10 @@ void init_weapon_data()
 
     //(recharge)
     weapon_list.push_back(new Weapon("祭礼剑", "单手剑", 454, "元素充能效率", 0.613, 5, temp));
+    temp.clear();
+
+    //TODO:NEW
+    weapon_list.push_back(new Weapon("图莱杜拉的回忆", "法器", 674, "暴击伤害", 0.441, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("火|水|雷|冰|风|岩|草", "ALL", "ALL"), "伤害加成", 0.12));
@@ -946,6 +957,13 @@ bool Weapon::get_extra_special(Deployment *data) const
             data->add_percentage("伤害加成", (0.16 + level * 0.04), (name + "_extra_special"));
     }
 
+        //TODO:NEW
+    else if (name == "图莱杜拉的回忆")
+    {
+        if (!data->attack_config->background)
+            if (data->attack_config->condition->attack_way == "平A")
+                data->add_percentage("伤害加成", (0.48 * (0.75 + level * 0.25)), (name + "_extra_special"));
+    }
     else if (name == "四风原典")
     {
         if (!data->attack_config->background)
@@ -1017,7 +1035,7 @@ bool Weapon::get_extra_special(Deployment *data) const
                 data->add_percentage("伤害加成", (0.2 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
-    //TODO:流浪乐章默认无加成
+        //TODO:流浪乐章默认无加成
 //    else if (name == "流浪乐章")
 //    {
 //        //每个各取1/4
@@ -1298,6 +1316,11 @@ void init_artifact_data()
                                          nullptr));//(special) (get_team)
     artifact_list.push_back(new Artifact("饰金之梦", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
                                          nullptr));//(special)
+    //TODO:NEW
+    artifact_list.push_back(new Artifact("沙上楼阁史话", new Set(new Condition("风", "ALL", "ALL"), "伤害加成", 0.15),
+                                         new Set(new Condition("ALL", "ALL", "平A|重A|下落A"), "伤害加成", 0.3)));//重A命中
+    artifact_list.push_back(new Artifact("乐园遗落之花", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
+                                         nullptr));//(react)
 }
 
 //build new artifact(all) 保证二件套效果和四件套效果分开
@@ -1444,6 +1467,12 @@ void Artifact::check_artifact_special(Deployment *data, bool &suit1_valid, bool 
             if (data->c_point->args->heal_sustain)
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
+        //TODO:NEW
+        else if (data->suit1->name == "乐园遗落之花")
+        {
+            if (data->attack_config->react_type.find("绽放") != string::npos)
+                suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
+        }
 
             //team
         else if (data->suit1->name == "昔日宗室之仪")
@@ -1466,17 +1495,21 @@ void Artifact::check_artifact_special(Deployment *data, bool &suit1_valid, bool 
     else
     {
         //2+2
-        //只允许 角斗+其他/追忆 染血+其他/苍白 少女+其他/海染 乐团+其他/饰金
+        //只允许 角斗+其他/追忆 染血+其他/苍白 少女+其他/海染 乐团+其他/饰金 风套+其他/楼阁
         //suit1
         if ((data->suit1->name == "追忆之注连" && data->suit2->name != "角斗士的终幕礼") || data->suit1->name == "辰砂往生录" || data->suit1->name == "来歆余响") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit1->name == "苍白之火" && data->suit2->name != "染血的骑士道") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit1->name == "海染砗磲" && data->suit2->name != "被怜爱的少女") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (data->suit1->name == "饰金之梦" && data->suit2->name != "流浪大地的乐团") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        //TODO:NEW
+        if ((data->suit1->name == "饰金之梦" && data->suit2->name != "流浪大地的乐团") || data->suit1->name == "乐园遗落之花") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (data->suit1->name == "沙上楼阁史话" && data->suit2->name != "翠绿之影") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         //suit2
         if ((data->suit2->name == "追忆之注连" && data->suit1->name != "角斗士的终幕礼") || data->suit2->name == "辰砂往生录" || data->suit2->name == "来歆余响") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit2->name == "苍白之火" && data->suit1->name != "染血的骑士道") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit2->name == "海染砗磲" && data->suit1->name != "被怜爱的少女") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (data->suit2->name == "饰金之梦" && data->suit1->name != "流浪大地的乐团") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        //TODO:NEW
+        if ((data->suit2->name == "饰金之梦" && data->suit1->name != "流浪大地的乐团") || data->suit2->name == "乐园遗落之花") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (data->suit2->name == "沙上楼阁史话" && data->suit1->name != "翠绿之影") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
     }
 }
 
@@ -1747,8 +1780,8 @@ void Deployment::get_team_data()
         if (!(attack_config->background && !attack_config->lockface))
             add_percentage("攻击力", (191 + 608) * (1.12 + 0.2) / base_atk, "team_班尼特");
         //constellation>=6 Q内
-//        if (config->condition->ele_type == "火" && if (!(c_point->args->background && !c_point->args->lockface)))
-//            add_percentage("伤害加成", 0.15, "team_班尼特");
+        if (attack_config->condition->ele_type == "火" && (!(attack_config->background && !attack_config->lockface)))
+            add_percentage("伤害加成", 0.15, "team_班尼特");
         Pyro_num++;
     }
     if (team_config->teammate_all.find("温迪") != string::npos)
@@ -1766,7 +1799,7 @@ void Deployment::get_team_data()
     if (team_config->teammate_all.find("莫娜") != string::npos)
     {
         //Q
-        add_percentage("伤害加成", 0.58, "team_莫娜");
+        add_percentage("伤害加成", 0.6, "team_莫娜");
         //constellation>=4 Q
 //        add_percentage("暴击率", 0.15, "team_莫娜");
         Hydro_num++;
@@ -2167,6 +2200,8 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
 //        {
 //            double extra_damplus = 0;
 //            if ((suit1->name == suit2->name) && (suit1->name == "炽烈的炎之魔女")) extra_damplus += 0.4;
+//            //TODO:NEW
+//            if ((suit1->name == suit2->name) && (suit1->name == "乐园遗落之花")) extra_damplus += 1;
 //            //extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
 //            extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus) * ((team_config->teammate_all.find("纳西妲") != string::npos) ? 1.2 : 1);
 //            //6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
@@ -2176,6 +2211,8 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
 //        {
 //            double extra_damplus = 0;
 //            if ((suit1->name == suit2->name) && (suit1->name == "如雷的盛怒")) extra_damplus += 0.4;
+//            //TODO:NEW
+//            if ((suit1->name == suit2->name) && (suit1->name == "乐园遗落之花")) extra_damplus += 1;
 //            //extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
 //            extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus) * ((team_config->teammate_all.find("纳西妲") != string::npos) ? 1.2 : 1);
 //            //6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
@@ -2184,6 +2221,8 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
 //        else
 //        {
 //            double extra_damplus = 0;
+//            //TODO:NEW
+//            if ((suit1->name == suit2->name) && (suit1->name == "乐园遗落之花")) extra_damplus += 1;
 //            //extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
 //            extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus) * ((team_config->teammate_all.find("纳西妲") != string::npos) ? 1.2 : 1);
 //            //4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
@@ -2435,11 +2474,11 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 53));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc1, ac1, true));
+                                                   "", "", "", tc1, ac1, true));//no_recharge
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac1, true));
+                                                   "", "", "", tc2, ac1, true));//no_recharge
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac1, true));
+                                                   "", "", "", tc3, ac1, true));//no_recharge
     }
     if (c_name == "行秋")
     {
@@ -2645,7 +2684,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, true, false, false, 1));
 
         combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc1, ac1, true));
+                                                   "", "", "", tc1, ac1, true));//no_recharge
     }
 }
 
