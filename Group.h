@@ -12,6 +12,7 @@
 #include "Character.h"
 #include "Weapon.h"
 #include "Artifact.h"
+#include "Reinforced_Artifact.h"
 
 using namespace std;
 
@@ -25,6 +26,9 @@ extern int max_up_num_per_base;
 extern int max_attribute_num_per_pos;
 extern int max_entry_num;
 extern int artifact_2_2_max_entry_bonus;
+
+//data
+extern vector<vector<Reinforced_Artifact*>> reinforced_artifact_list;
 
 struct Team_config
 {
@@ -172,7 +176,7 @@ public:
     void satisfy_recharge_requirement();//在main中实现
 
     //单人最佳伤害(副词条)计算
-    double cal_damage(int life_num, int atk_num, int def_num, int mastery_num, int recharge_num, int critrate_num, int critdam_num);
+    double cal_damage(double life_value, double atk_value, double def_value, double mastery_value, double recharge_value, double critrate_value, double critdam_value);
 
     void get_convert_value(double &life, double &atk, double &def, double &mastery, double &recharge, double &critrate, double &critdam, double &damplus);//在main中实现
 
@@ -202,6 +206,8 @@ public:
     double *damage;
     double total_damage;
 
+    Reinforced_Artifact* optimal[5];
+
     Group(Character *c_point_,
           Weapon *w_point_,
           Artifact *suit1_,
@@ -215,9 +221,11 @@ public:
 
     ~Group();
 
-    int init_check_data();
+    int init_check_data(bool check);
 
     void cal_damage_entry_num();
+
+    void cal_optimal_artifact();
 
     void out();
 };

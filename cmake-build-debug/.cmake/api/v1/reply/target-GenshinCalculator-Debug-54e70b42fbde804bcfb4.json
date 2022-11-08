@@ -56,7 +56,8 @@
 				1,
 				3,
 				6,
-				8
+				8,
+				10
 			]
 		}
 	],
@@ -93,7 +94,8 @@
 				1,
 				3,
 				6,
-				8
+				8,
+				10
 			]
 		},
 		{
@@ -104,7 +106,8 @@
 				4,
 				5,
 				7,
-				9
+				9,
+				11
 			]
 		}
 	],
@@ -163,6 +166,17 @@
 		{
 			"backtrace" : 1,
 			"path" : "Group.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "Reinforced_Artifact.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "Reinforced_Artifact.h",
 			"sourceGroupIndex" : 1
 		}
 	],
