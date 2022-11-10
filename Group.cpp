@@ -213,8 +213,8 @@ void Deployment::init_data()
     w_point->get_vice(this);
     w_point->get_extra(this);
     //artifact get
-    suit1->get_extra(this, suit1 == suit2);
-    suit2->get_extra(this, false);
+    if (suit1 != nullptr) suit1->get_extra(this, suit1 == suit2);
+    if (suit2 != nullptr) suit2->get_extra(this, false);
 
     check_useful_attribute();
 
@@ -322,8 +322,6 @@ Group::Group(Character *c_point_,
     temp_damage = new double[combination.size()]();
     damage = new double[combination.size()]();
     total_damage = 0.0;
-
-    for (int i = 0; i < 5; ++i) optimal[i] = nullptr;
 }
 
 Group::~Group()
@@ -333,12 +331,12 @@ Group::~Group()
     delete damage;
 }
 
-int Group::init_check_data(bool check)
+int Group::init_check_data(bool enable_check)
 {
     outfile_debug << (c_point->name + "_" + w_point->name + "_" + suit1->name + "_" + suit2->name + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_")
                   << (team_config->teammate_all + "_" + team_config->team_weapon_artifact) + ",";
 
-    if (check)
+    if (enable_check)
     {
         bool suit1_valid = false;
         bool suit2_valid = false;
@@ -568,114 +566,6 @@ void Group::cal_damage_entry_num()
         }
 }
 
-void Group::cal_optimal_artifact()
-{
-    for (int pos1_index = 0; pos1_index < reinforced_artifact_list[0].size(); ++pos1_index)
-    {
-        if (!reinforced_artifact_list[0][pos1_index]->character_belong.empty()) continue;
-        for (int pos2_index = 0; pos2_index < reinforced_artifact_list[1].size(); ++pos2_index)
-        {
-            if (!reinforced_artifact_list[1][pos2_index]->character_belong.empty()) continue;
-            for (int pos3_index = 0; pos3_index < reinforced_artifact_list[2].size(); ++pos3_index)
-            {
-                if (!reinforced_artifact_list[2][pos3_index]->character_belong.empty()) continue;
-                if (reinforced_artifact_list[2][pos3_index]->main_type != a_main3) continue;
-                for (int pos4_index = 0; pos4_index < reinforced_artifact_list[3].size(); ++pos4_index)
-                {
-                    if (!reinforced_artifact_list[3][pos4_index]->character_belong.empty()) continue;
-                    if (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos && reinforced_artifact_list[3][pos4_index]->main_type != (c_point->ele_type + a_main4)) continue;
-                    if (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") == string::npos && reinforced_artifact_list[3][pos4_index]->main_type != a_main4) continue;
-                    for (int pos5_index = 0; pos5_index < reinforced_artifact_list[4].size(); ++pos5_index)
-                    {
-                        if (!reinforced_artifact_list[4][pos5_index]->character_belong.empty()) continue;
-                        if (reinforced_artifact_list[4][pos5_index]->main_type != a_main5) continue;
-
-                        Reinforced_Artifact *pair[5] = {reinforced_artifact_list[0][pos1_index], reinforced_artifact_list[1][pos2_index], reinforced_artifact_list[2][pos3_index],
-                                                        reinforced_artifact_list[3][pos4_index], reinforced_artifact_list[4][pos5_index]};
-                        int same_as_suit1 = 0;
-                        int same_as_suit2 = 0;
-                        for (auto &i: pair)
-                        {
-                            if (i->suit_name == suit1->name) same_as_suit1++;
-                            if (i->suit_name == suit2->name) same_as_suit2++;
-                        }
-                        if (same_as_suit1 < 2 || same_as_suit2 < 2) continue;
-
-                        double life_value = 0, atk_value = 0, def_value = 0, mastery_value = 0, recharge_value = 0, critrate_value = 0, critdam_value = 0;
-                        for (auto &i: pair)
-                        {
-                            if (i->entry1_type == "生命值") life_value += i->entry1_value / combination[0]->base_life;
-                            else if (i->entry1_type == "生命值%") life_value += i->entry1_value;
-                            else if (i->entry1_type == "攻击力") atk_value += i->entry1_value / combination[0]->base_atk;
-                            else if (i->entry1_type == "攻击力%") atk_value += i->entry1_value;
-                            else if (i->entry1_type == "防御力") def_value += i->entry1_value / combination[0]->base_def;
-                            else if (i->entry1_type == "防御力%") def_value += i->entry1_value;
-                            else if (i->entry1_type == "元素精通") mastery_value += i->entry1_value;
-                            else if (i->entry1_type == "元素充能效率") recharge_value += i->entry1_value;
-                            else if (i->entry1_type == "暴击率") critrate_value += i->entry1_value;
-                            else if (i->entry1_type == "暴击伤害") critdam_value += i->entry1_value;
-
-                            if (i->entry2_type == "生命值") life_value += i->entry2_value / combination[0]->base_life;
-                            else if (i->entry2_type == "生命值%") life_value += i->entry2_value;
-                            else if (i->entry2_type == "攻击力") atk_value += i->entry2_value / combination[0]->base_atk;
-                            else if (i->entry2_type == "攻击力%") atk_value += i->entry2_value;
-                            else if (i->entry2_type == "防御力") def_value += i->entry2_value / combination[0]->base_def;
-                            else if (i->entry2_type == "防御力%") def_value += i->entry2_value;
-                            else if (i->entry2_type == "元素精通") mastery_value += i->entry2_value;
-                            else if (i->entry2_type == "元素充能效率") recharge_value += i->entry2_value;
-                            else if (i->entry2_type == "暴击率") critrate_value += i->entry2_value;
-                            else if (i->entry2_type == "暴击伤害") critdam_value += i->entry2_value;
-
-                            if (i->entry3_type == "生命值") life_value += i->entry3_value / combination[0]->base_life;
-                            else if (i->entry3_type == "生命值%") life_value += i->entry3_value;
-                            else if (i->entry3_type == "攻击力") atk_value += i->entry3_value / combination[0]->base_atk;
-                            else if (i->entry3_type == "攻击力%") atk_value += i->entry3_value;
-                            else if (i->entry3_type == "防御力") def_value += i->entry3_value / combination[0]->base_def;
-                            else if (i->entry3_type == "防御力%") def_value += i->entry3_value;
-                            else if (i->entry3_type == "元素精通") mastery_value += i->entry3_value;
-                            else if (i->entry3_type == "元素充能效率") recharge_value += i->entry3_value;
-                            else if (i->entry3_type == "暴击率") critrate_value += i->entry3_value;
-                            else if (i->entry3_type == "暴击伤害") critdam_value += i->entry3_value;
-
-                            if (i->entry4_type == "生命值") life_value += i->entry4_value / combination[0]->base_life;
-                            else if (i->entry4_type == "生命值%") life_value += i->entry4_value;
-                            else if (i->entry4_type == "攻击力") atk_value += i->entry4_value / combination[0]->base_atk;
-                            else if (i->entry4_type == "攻击力%") atk_value += i->entry4_value;
-                            else if (i->entry4_type == "防御力") def_value += i->entry4_value / combination[0]->base_def;
-                            else if (i->entry4_type == "防御力%") def_value += i->entry4_value;
-                            else if (i->entry4_type == "元素精通") mastery_value += i->entry4_value;
-                            else if (i->entry4_type == "元素充能效率") recharge_value += i->entry4_value;
-                            else if (i->entry4_type == "暴击率") critrate_value += i->entry4_value;
-                            else if (i->entry4_type == "暴击伤害") critdam_value += i->entry4_value;
-                        }
-
-                        double temp_total_damage = 0;
-                        for (int i = 0; i < combination.size(); ++i)
-                        {
-                            temp_damage[i] = combination[i]->attack_config->attack_time * combination[i]->cal_damage(life_value, atk_value, def_value, mastery_value, recharge_value, critrate_value, critdam_value);
-
-                            //TODO:TEST
-                            if (combination[i]->w_point->name.find("祭礼") != string::npos && combination[i]->attack_config->condition->attack_way == "E" && !combination[i]->c_point->args->sustain_E_hit)
-                            {
-                                if (double_E_per_round.find(combination[i]->c_point->name) != string::npos) temp_damage[i] = temp_damage[i] * 3 / 2;
-                                else temp_damage[i] = temp_damage[i] * 2 / 1;
-                            }
-                            temp_total_damage += temp_damage[i];
-                        }
-
-                        if (temp_total_damage > total_damage)
-                        {
-                            for (int i = 0; i < 5; ++i) optimal[i] = pair[i];
-                            for (int i = 0; i < combination.size(); ++i) damage[i] = temp_damage[i];
-                            total_damage = temp_total_damage;
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 void Group::out()
 {
     if (out_header)
@@ -707,4 +597,124 @@ void Group::out()
                    << entry[4] << ","
                    << entry[5] << ","
                    << entry[6] << "\n";
+}
+
+void Group::cal_assigned_artifact_damage()
+{
+    double life_value = 0, atk_value = 0, def_value = 0, mastery_value = 0, recharge_value = 0, critrate_value = 0, critdam_value = 0;
+    for (auto &i: data)
+    {
+        if (i->entry1_type == "生命值") life_value += i->entry1_value / combination[0]->base_life;
+        else if (i->entry1_type == "生命值%") life_value += i->entry1_value;
+        else if (i->entry1_type == "攻击力") atk_value += i->entry1_value / combination[0]->base_atk;
+        else if (i->entry1_type == "攻击力%") atk_value += i->entry1_value;
+        else if (i->entry1_type == "防御力") def_value += i->entry1_value / combination[0]->base_def;
+        else if (i->entry1_type == "防御力%") def_value += i->entry1_value;
+        else if (i->entry1_type == "元素精通") mastery_value += i->entry1_value;
+        else if (i->entry1_type == "元素充能效率") recharge_value += i->entry1_value;
+        else if (i->entry1_type == "暴击率") critrate_value += i->entry1_value;
+        else if (i->entry1_type == "暴击伤害") critdam_value += i->entry1_value;
+
+        if (i->entry2_type == "生命值") life_value += i->entry2_value / combination[0]->base_life;
+        else if (i->entry2_type == "生命值%") life_value += i->entry2_value;
+        else if (i->entry2_type == "攻击力") atk_value += i->entry2_value / combination[0]->base_atk;
+        else if (i->entry2_type == "攻击力%") atk_value += i->entry2_value;
+        else if (i->entry2_type == "防御力") def_value += i->entry2_value / combination[0]->base_def;
+        else if (i->entry2_type == "防御力%") def_value += i->entry2_value;
+        else if (i->entry2_type == "元素精通") mastery_value += i->entry2_value;
+        else if (i->entry2_type == "元素充能效率") recharge_value += i->entry2_value;
+        else if (i->entry2_type == "暴击率") critrate_value += i->entry2_value;
+        else if (i->entry2_type == "暴击伤害") critdam_value += i->entry2_value;
+
+        if (i->entry3_type == "生命值") life_value += i->entry3_value / combination[0]->base_life;
+        else if (i->entry3_type == "生命值%") life_value += i->entry3_value;
+        else if (i->entry3_type == "攻击力") atk_value += i->entry3_value / combination[0]->base_atk;
+        else if (i->entry3_type == "攻击力%") atk_value += i->entry3_value;
+        else if (i->entry3_type == "防御力") def_value += i->entry3_value / combination[0]->base_def;
+        else if (i->entry3_type == "防御力%") def_value += i->entry3_value;
+        else if (i->entry3_type == "元素精通") mastery_value += i->entry3_value;
+        else if (i->entry3_type == "元素充能效率") recharge_value += i->entry3_value;
+        else if (i->entry3_type == "暴击率") critrate_value += i->entry3_value;
+        else if (i->entry3_type == "暴击伤害") critdam_value += i->entry3_value;
+
+        if (i->entry4_type == "生命值") life_value += i->entry4_value / combination[0]->base_life;
+        else if (i->entry4_type == "生命值%") life_value += i->entry4_value;
+        else if (i->entry4_type == "攻击力") atk_value += i->entry4_value / combination[0]->base_atk;
+        else if (i->entry4_type == "攻击力%") atk_value += i->entry4_value;
+        else if (i->entry4_type == "防御力") def_value += i->entry4_value / combination[0]->base_def;
+        else if (i->entry4_type == "防御力%") def_value += i->entry4_value;
+        else if (i->entry4_type == "元素精通") mastery_value += i->entry4_value;
+        else if (i->entry4_type == "元素充能效率") recharge_value += i->entry4_value;
+        else if (i->entry4_type == "暴击率") critrate_value += i->entry4_value;
+        else if (i->entry4_type == "暴击伤害") critdam_value += i->entry4_value;
+    }
+
+    for (int i = 0; i < combination.size(); ++i)
+    {
+        damage[i] = combination[i]->attack_config->attack_time * combination[i]->cal_damage(life_value, atk_value, def_value, mastery_value, recharge_value, critrate_value, critdam_value);
+
+        //TODO:TEST
+        if (combination[i]->w_point->name.find("祭礼") != string::npos && combination[i]->attack_config->condition->attack_way == "E" && !combination[i]->c_point->args->sustain_E_hit)
+        {
+            if (double_E_per_round.find(combination[i]->c_point->name) != string::npos) damage[i] = damage[i] * 3 / 2;
+            else damage[i] = damage[i] * 2 / 1;
+        }
+        total_damage += damage[i];
+    }
+}
+
+void Group::out_assigned_artifact()
+{
+    if (out_header)
+    {
+        outfile_result << "人物名称" << "," << "攻击序列" << "," << "队友信息" << "," << "期望伤害" << "," << "伤害占比" << "," << "圣遗物1" << "," << "圣遗物2" << ","
+                       << "圣遗物位置" << "," << "主属性" << "," << "副属性1" << "," << "副属性2" << "," << "副属性3" << "," << "副属性4" << "\n";
+        out_header = false;
+    }
+    outfile_result << c_point->name << ",";
+    for (auto &i: combination)
+        outfile_result << to_string(i->attack_config->attack_time) + "*" + i->attack_config->condition->attack_way + "_" + (i->attack_config->background ? "后台" : "前台") + "_" + i->attack_config->react_type + "/";
+    outfile_result << (need_to_satisfy_recharge ? "要求循环" : "不要求循环") << ","
+                   << team_config->teammate_all + "_" + team_config->team_weapon_artifact << ","
+                   << total_damage << ",";
+    for (int i = 0; i < combination.size(); i++)
+        outfile_result << combination[i]->attack_config->condition->attack_way + "_" + combination[i]->attack_config->react_type + "(" + to_string((int) (100.0 * damage[i] / total_damage)) + "%)";
+    outfile_result << ","
+                   << suit1->name << ","
+                   << suit2->name << ",";
+
+    outfile_result << data[0]->pos << ","
+                   << data[0]->main_type << ","
+                   << data[0]->entry1_type + "_" + to_string(data[0]->entry1_value) << ","
+                   << data[0]->entry2_type + "_" + to_string(data[0]->entry2_value) << ","
+                   << data[0]->entry3_type + "_" + to_string(data[0]->entry3_value) << ","
+                   << data[0]->entry4_type + "_" + to_string(data[0]->entry4_value) << "\n";
+    outfile_result << "," << "," << "," << "," << "," << "," << ","
+                   << data[1]->pos << ","
+                   << data[1]->main_type << ","
+                   << data[1]->entry1_type + "_" + to_string(data[1]->entry1_value) << ","
+                   << data[1]->entry2_type + "_" + to_string(data[1]->entry2_value) << ","
+                   << data[1]->entry3_type + "_" + to_string(data[1]->entry3_value) << ","
+                   << data[1]->entry4_type + "_" + to_string(data[1]->entry4_value) << "\n";
+    outfile_result << "," << "," << "," << "," << "," << "," << ","
+                   << data[2]->pos << ","
+                   << data[2]->main_type << ","
+                   << data[2]->entry1_type + "_" + to_string(data[2]->entry1_value) << ","
+                   << data[2]->entry2_type + "_" + to_string(data[2]->entry2_value) << ","
+                   << data[2]->entry3_type + "_" + to_string(data[2]->entry3_value) << ","
+                   << data[2]->entry4_type + "_" + to_string(data[2]->entry4_value) << "\n";
+    outfile_result << "," << "," << "," << "," << "," << "," << ","
+                   << data[3]->pos << ","
+                   << data[3]->main_type << ","
+                   << data[3]->entry1_type + "_" + to_string(data[3]->entry1_value) << ","
+                   << data[3]->entry2_type + "_" + to_string(data[3]->entry2_value) << ","
+                   << data[3]->entry3_type + "_" + to_string(data[3]->entry3_value) << ","
+                   << data[3]->entry4_type + "_" + to_string(data[3]->entry4_value) << "\n";
+    outfile_result << "," << "," << "," << "," << "," << "," << ","
+                   << data[4]->pos << ","
+                   << data[4]->main_type << ","
+                   << data[4]->entry1_type + "_" + to_string(data[4]->entry1_value) << ","
+                   << data[4]->entry2_type + "_" + to_string(data[4]->entry2_value) << ","
+                   << data[4]->entry3_type + "_" + to_string(data[4]->entry3_value) << ","
+                   << data[4]->entry4_type + "_" + to_string(data[4]->entry4_value) << "\n";
 }

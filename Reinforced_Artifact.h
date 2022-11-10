@@ -12,6 +12,8 @@ using namespace std;
 class Reinforced_Artifact
 {
 public:
+    int pos;
+
     string suit_name;
     string main_type;
 
@@ -26,9 +28,10 @@ public:
 
     string character_belong;
 
-    Reinforced_Artifact(string suit_name_, string main_type_, string entry1_type_, double entry1_value_, string entry2_type_,
-                        double entry2_value_, string entry3_type_, double entry3_value_, string entry4_type_, double entry4_value_)
+    Reinforced_Artifact(int pos_, string suit_name_, string main_type_, string entry1_type_, double entry1_value_, string entry2_type_, double entry2_value_,
+                        string entry3_type_, double entry3_value_, string entry4_type_, double entry4_value_, string character_belong_)
     {
+        pos = pos_;
         suit_name = suit_name_;
         main_type = main_type_;
         entry1_type = entry1_type_;
@@ -39,6 +42,7 @@ public:
         entry3_value = entry3_value_;
         entry4_type = entry4_type_;
         entry4_value = entry4_value_;
+        character_belong = character_belong_;
     };
 };
 

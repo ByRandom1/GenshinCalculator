@@ -27,9 +27,6 @@ extern int max_attribute_num_per_pos;
 extern int max_entry_num;
 extern int artifact_2_2_max_entry_bonus;
 
-//data
-extern vector<vector<Reinforced_Artifact*>> reinforced_artifact_list;
-
 struct Team_config
 {
     Character *teammate_1;
@@ -206,8 +203,6 @@ public:
     double *damage;
     double total_damage;
 
-    Reinforced_Artifact* optimal[5];
-
     Group(Character *c_point_,
           Weapon *w_point_,
           Artifact *suit1_,
@@ -221,13 +216,17 @@ public:
 
     ~Group();
 
-    int init_check_data(bool check);
+    int init_check_data(bool enable_check);
 
     void cal_damage_entry_num();
 
-    void cal_optimal_artifact();
-
     void out();
+
+    Reinforced_Artifact* data[5];
+
+    void cal_assigned_artifact_damage();
+
+    void out_assigned_artifact();
 };
 
 #endif //GENSHINCALCULATOR_GROUP_H
