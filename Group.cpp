@@ -333,7 +333,7 @@ Group::~Group()
 
 int Group::init_check_data(bool enable_check)
 {
-    outfile_debug << (c_point->name + "_" + w_point->name + "_" + suit1->name + "_" + suit2->name + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_")
+    outfile_debug << (c_point->name + "_" + w_point->name + "_" + ((suit1 == nullptr) ? "NULL" : suit1->name) + "_" + ((suit2 == nullptr) ? "NULL" : suit2->name) + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_")
                   << (team_config->teammate_all + "_" + team_config->team_weapon_artifact) + ",";
 
     if (enable_check)
@@ -401,9 +401,9 @@ int Group::init_check_data(bool enable_check)
             outfile_debug << "main5--failure\n";
             return 5;
         }
-
-        outfile_debug << "success!\n";
     }
+
+    outfile_debug << "success!\n";
 
     for (auto &i: combination)
     {
@@ -680,8 +680,8 @@ void Group::out_assigned_artifact()
     for (int i = 0; i < combination.size(); i++)
         outfile_result << combination[i]->attack_config->condition->attack_way + "_" + combination[i]->attack_config->react_type + "(" + to_string((int) (100.0 * damage[i] / total_damage)) + "%)";
     outfile_result << ","
-                   << suit1->name << ","
-                   << suit2->name << ",";
+                   << ((suit1 == nullptr) ? "NULL" : suit1->name) << ","
+                   << ((suit2 == nullptr) ? "NULL" : suit2->name) << ",";
 
     outfile_result << data[0]->pos << ","
                    << data[0]->main_type << ","

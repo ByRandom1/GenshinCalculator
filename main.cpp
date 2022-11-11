@@ -2859,25 +2859,28 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
     int pos3_count = 1;
     int pos4_count = 1;
     int pos5_count = 1;
-    if (pos2->suit_name == pos1->suit_name)
+    if (pos1_count != 0)
     {
-        pos1_count += pos2_count;
-        pos2_count = 0;
-    }
-    if (pos3->suit_name == pos1->suit_name)
-    {
-        pos1_count += pos3_count;
-        pos3_count = 0;
-    }
-    if (pos4->suit_name == pos1->suit_name)
-    {
-        pos1_count += pos4_count;
-        pos4_count = 0;
-    }
-    if (pos5->suit_name == pos1->suit_name)
-    {
-        pos1_count += pos5_count;
-        pos5_count = 0;
+        if (pos2->suit_name == pos1->suit_name)
+        {
+            pos1_count += pos2_count;
+            pos2_count = 0;
+        }
+        if (pos3->suit_name == pos1->suit_name)
+        {
+            pos1_count += pos3_count;
+            pos3_count = 0;
+        }
+        if (pos4->suit_name == pos1->suit_name)
+        {
+            pos1_count += pos4_count;
+            pos4_count = 0;
+        }
+        if (pos5->suit_name == pos1->suit_name)
+        {
+            pos1_count += pos5_count;
+            pos5_count = 0;
+        }
     }
     if (pos2_count != 0)
     {
@@ -2993,24 +2996,25 @@ void cal_optimal_artifact(string c_name)
 
         for (int pos1_index = 0; pos1_index < reinforced_artifact_list[0].size(); ++pos1_index)
         {
-            if (!reinforced_artifact_list[0][pos1_index]->character_belong.empty()) continue;
+            if (reinforced_artifact_list[0][pos1_index]->character_belong != "none") continue;
             for (int pos2_index = 0; pos2_index < reinforced_artifact_list[1].size(); ++pos2_index)
             {
-                if (!reinforced_artifact_list[1][pos2_index]->character_belong.empty()) continue;
+                if (reinforced_artifact_list[1][pos2_index]->character_belong != "none") continue;
                 for (int pos3_index = 0; pos3_index < reinforced_artifact_list[2].size(); ++pos3_index)
                 {
-                    if (!reinforced_artifact_list[2][pos3_index]->character_belong.empty()) continue;
+                    if (reinforced_artifact_list[2][pos3_index]->character_belong != "none") continue;
                     for (int pos4_index = 0; pos4_index < reinforced_artifact_list[3].size(); ++pos4_index)
                     {
-                        if (!reinforced_artifact_list[3][pos4_index]->character_belong.empty()) continue;
+                        if (reinforced_artifact_list[3][pos4_index]->character_belong != "none") continue;
                         if (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos && reinforced_artifact_list[3][pos4_index]->main_type != (c_point->ele_type + "伤害加成")) continue;
                         for (int pos5_index = 0; pos5_index < reinforced_artifact_list[4].size(); ++pos5_index)
                         {
-                            if (!reinforced_artifact_list[4][pos5_index]->character_belong.empty()) continue;
+                            if (reinforced_artifact_list[4][pos5_index]->character_belong != "none") continue;
 
                             Artifact *suit1 = nullptr;
                             Artifact *suit2 = nullptr;
-                            get_suit(reinforced_artifact_list[0][pos1_index], reinforced_artifact_list[1][pos2_index], reinforced_artifact_list[2][pos3_index], reinforced_artifact_list[3][pos4_index], reinforced_artifact_list[4][pos5_index], suit1, suit2);
+                            get_suit(reinforced_artifact_list[0][pos1_index], reinforced_artifact_list[1][pos2_index], reinforced_artifact_list[2][pos3_index],
+                                     reinforced_artifact_list[3][pos4_index], reinforced_artifact_list[4][pos5_index], suit1, suit2);
                             string a_main3 = reinforced_artifact_list[2][pos3_index]->main_type;
                             string a_main4 = (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos) ? "伤害加成" : reinforced_artifact_list[3][pos4_index]->main_type;
                             string a_main5 = reinforced_artifact_list[4][pos5_index]->main_type;
