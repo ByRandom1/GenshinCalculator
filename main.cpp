@@ -3031,6 +3031,9 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
             return;
         }
     }
+
+    if (suit1 == nullptr) suit1 = find_artifact_by_name("EMPTY");
+    if (suit2 == nullptr) suit2 = find_artifact_by_name("EMPTY");
 }
 
 void cal_optimal_artifact(string c_name)
