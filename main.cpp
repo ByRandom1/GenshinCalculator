@@ -1271,6 +1271,7 @@ void Weapon::modify_useful_attribute(Deployment *data)
 //build new artifact(all)
 void init_artifact_data()
 {
+    artifact_list.push_back(new Artifact("EMPTY", nullptr, nullptr));
     artifact_list.push_back(new Artifact("流浪大地的乐团", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
                                          new Set(new Condition("ALL", "法器|弓", "重A"), "伤害加成", 0.35)));
     artifact_list.push_back(new Artifact("角斗士的终幕礼", new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.18),
@@ -2335,7 +2336,7 @@ int max_entry_num = 30;
 int artifact_2_2_max_entry_bonus = 2;
 
 //注意圣遗物限定2+2有顺序，所有的限定条件只能是单个限定
-void get_all_config(string c_name, vector<Combination *> &combination_list)
+void get_all_config(string c_name, vector<Combination *> &combination_list, string mode)
 {
     //"白辰之环" "苍古自由之誓" "松籁响起之时" "圣显之钥" "西福斯的月光" "流浪的晚星" "玛海菈的水色"
 
@@ -2376,11 +2377,15 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, false, true, false,
                                         true, true, true, false, false, 10));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("护摩之杖");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, false));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc2, ac1, false));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc3, ac1, false));
     }
     if (c_name == "神里绫华")
@@ -2404,9 +2409,13 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         false, true, false, false, false,
                                         true, true, true, false, false, 20));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("雾切之回光");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc2, ac1, true));
     }
     if (c_name == "雷电将军")
@@ -2426,13 +2435,17 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         false, true, false, false, true,
                                         true, true, true, false, false, 1));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("渔获");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc2, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc3, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc4, ac1, true));
     }
     if (c_name == "甘雨")
@@ -2453,9 +2466,13 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         false, true, false, false, false,
                                         true, true, true, false, false, 25));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("飞雷之弦振");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc2, ac1, true));
     }
     if (c_name == "夜兰")
@@ -2475,11 +2492,15 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, false, false, false, false,
                                         true, true, true, false, false, 53));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("若水");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, true));//no_recharge
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc2, ac1, true));//no_recharge
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc3, ac1, true));//no_recharge
     }
     if (c_name == "行秋")
@@ -2511,11 +2532,15 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         false, true, false, false, false,
                                         true, true, true, false, false, 45));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("祭礼剑");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc2, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc3, ac2, true));
     }
     if (c_name == "香菱")
@@ -2564,13 +2589,17 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         false, true, false, false, false,
                                         true, true, true, false, false, 15));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("断浪长鳍");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc2, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc3, ac2, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc4, ac3, true));
     }
     if (c_name == "八重神子")
@@ -2600,9 +2629,13 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         false, true, false, true, false,
                                         true, true, true, false, false, 4));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("神乐之真意");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc2, ac2, false));
     }
     if (c_name == "温迪")
@@ -2618,7 +2651,11 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         false, true, false, true, false,
                                         true, true, true, false, false, 20));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("终末嗟叹之诗");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
                                                    "", "", "", tc1, ac1, true));
     }
     if (c_name == "莫娜")
@@ -2649,13 +2686,17 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         false, true, false, false, true,
                                         true, true, true, false, false, 1));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("试作金珀");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
                                                    "元素充能效率", "", "", tc1, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
                                                    "元素充能效率", "", "", tc2, ac1, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
                                                    "元素充能效率", "", "", tc3, ac2, true));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
                                                    "元素充能效率", "", "", tc4, ac2, true));
     }
     if (c_name == "钟离")
@@ -2668,11 +2709,15 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         true, true, false, false, false,
                                         true, true, true, false, false, 1));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("西风长枪");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
                                                    "生命值", "生命值", "", tc1, ac1, false));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
                                                    "生命值", "生命值", "", tc1, ac1, false));
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "生命值", "", "", tc1, ac1, false));
     }
     if (c_name == "纳西妲")
@@ -2685,7 +2730,11 @@ void get_all_config(string c_name, vector<Combination *> &combination_list)
                                         false, true, false, true, false,
                                         true, true, true, false, false, 1));
 
-        combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("千夜浮梦");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
                                                    "", "", "", tc1, ac1, true));//no_recharge
     }
 }
@@ -2704,7 +2753,7 @@ void cal_deployment()
     for (auto &c_index: character_list)
     {
         vector<Combination *> combination_list;
-        get_all_config(c_index->name, combination_list);
+        get_all_config(c_index->name, combination_list, "cal_deployment");
         for (auto &comb_index: combination_list)
         {
             for (auto &w_index: weapon_list)
@@ -2739,7 +2788,7 @@ void cal_deployment()
 
                                     auto *temp = new Group(c_index, w_index, artifact_list[a_index1], artifact_list[a_index2], a_main3[main3_index],
                                                            a_main4[main4_index], a_main5[main5_index], comb_index->team_config, comb_index->attack_config_list, comb_index->need_to_satisfy_recharge);
-                                    int check_num = temp->init_check_data(true);
+                                    int check_num = temp->init_check_data();
                                     if (check_num == 0)//pass
                                     {
                                         temp->cal_damage_entry_num();
@@ -2929,8 +2978,8 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
     }
     else if (pos1_count >= 2)
     {
-        if (suit1 != nullptr) suit1 = find_artifact_by_name(pos1->suit_name);
-        else if (suit2 != nullptr)
+        if (suit1 == nullptr) suit1 = find_artifact_by_name(pos1->suit_name);
+        else if (suit2 == nullptr)
         {
             suit2 = find_artifact_by_name(pos1->suit_name);
             return;
@@ -2944,8 +2993,8 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
     }
     else if (pos2_count >= 2)
     {
-        if (suit1 != nullptr) suit1 = find_artifact_by_name(pos2->suit_name);
-        else if (suit2 != nullptr)
+        if (suit1 == nullptr) suit1 = find_artifact_by_name(pos2->suit_name);
+        else if (suit2 == nullptr)
         {
             suit2 = find_artifact_by_name(pos2->suit_name);
             return;
@@ -2959,8 +3008,8 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
     }
     else if (pos3_count >= 2)
     {
-        if (suit1 != nullptr) suit1 = find_artifact_by_name(pos3->suit_name);
-        else if (suit2 != nullptr)
+        if (suit1 == nullptr) suit1 = find_artifact_by_name(pos3->suit_name);
+        else if (suit2 == nullptr)
         {
             suit2 = find_artifact_by_name(pos3->suit_name);
             return;
@@ -2974,8 +3023,8 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
     }
     else if (pos4_count >= 2)
     {
-        if (suit1 != nullptr) suit1 = find_artifact_by_name(pos4->suit_name);
-        else if (suit2 != nullptr)
+        if (suit1 == nullptr) suit1 = find_artifact_by_name(pos4->suit_name);
+        else if (suit2 == nullptr)
         {
             suit2 = find_artifact_by_name(pos4->suit_name);
             return;
@@ -2986,7 +3035,7 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
 void cal_optimal_artifact(string c_name)
 {
     vector<Combination *> combination_list;
-    get_all_config(c_name, combination_list);
+    get_all_config(c_name, combination_list, "cal_optimal_artifact");
     Character *c_point = find_character_by_name(c_name);
     for (auto &comb_index: combination_list)
     {
@@ -3011,8 +3060,8 @@ void cal_optimal_artifact(string c_name)
                         {
                             if (reinforced_artifact_list[4][pos5_index]->character_belong != "none") continue;
 
-                            Artifact *suit1 = nullptr;
-                            Artifact *suit2 = nullptr;
+                            Artifact *suit1 = find_artifact_by_name("EMPTY");
+                            Artifact *suit2 = find_artifact_by_name("EMPTY");
                             get_suit(reinforced_artifact_list[0][pos1_index], reinforced_artifact_list[1][pos2_index], reinforced_artifact_list[2][pos3_index],
                                      reinforced_artifact_list[3][pos4_index], reinforced_artifact_list[4][pos5_index], suit1, suit2);
                             string a_main3 = reinforced_artifact_list[2][pos3_index]->main_type;
@@ -3051,20 +3100,41 @@ void cal_optimal_artifact(string c_name)
                             temp->data[2] = reinforced_artifact_list[2][pos3_index];
                             temp->data[3] = reinforced_artifact_list[3][pos4_index];
                             temp->data[4] = reinforced_artifact_list[4][pos5_index];
-                            temp->init_check_data(false);
-                            temp->cal_assigned_artifact_damage();
 
-                            if (c_w_pair.size() < top_k) c_w_pair.push(temp);
-                            else if (temp->total_damage > c_w_pair.top()->total_damage)
+                            int check_num = temp->init_check_assigned_artifact();
+                            if (check_num == 0)//pass
                             {
-                                Group *smallest = c_w_pair.top();
-                                c_w_pair.pop();
-                                delete smallest;
-                                c_w_pair.push(temp);
+                                temp->cal_assigned_artifact_damage();
+                                if (c_w_pair.size() < top_k) c_w_pair.push(temp);
+                                else if (temp->total_damage > c_w_pair.top()->total_damage)
+                                {
+                                    Group *smallest = c_w_pair.top();
+                                    c_w_pair.pop();
+                                    delete smallest;
+                                    c_w_pair.push(temp);
+                                }
+                                else delete temp;
                             }
-                            else delete temp;
+                            else if (check_num == 3)//error:pos3
+                            {
+                                delete temp;
+                                goto NEXTPOS3;
+                            }
+                            else if (check_num == 4)//error:pos4
+                            {
+                                delete temp;
+                                goto NEXTPOS4;
+                            }
+                            else if (check_num == 5)//error:pos5
+                            {
+                                delete temp;
+                                goto NEXTPOS5;
+                            }
+                            NEXTPOS5:;
                         }
+                        NEXTPOS4:;
                     }
+                    NEXTPOS3:;
                 }
             }
         }
@@ -3115,7 +3185,7 @@ int main()
 
         outfile_result.open("./assign_artifact_data.csv");
         outfile_debug.open("./assign_artifact_log.csv");
-        read_artifact("./artifact.txt");
+        read_artifact("./artifacts.txt");
         cal_optimal_artifact(c_name);
         outfile_result.close();
         outfile_debug.close();

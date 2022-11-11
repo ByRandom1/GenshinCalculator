@@ -213,8 +213,8 @@ void Deployment::init_data()
     w_point->get_vice(this);
     w_point->get_extra(this);
     //artifact get
-    if (suit1 != nullptr) suit1->get_extra(this, suit1 == suit2);
-    if (suit2 != nullptr) suit2->get_extra(this, false);
+    suit1->get_extra(this, suit1 == suit2);
+    suit2->get_extra(this, false);
 
     check_useful_attribute();
 
@@ -331,76 +331,73 @@ Group::~Group()
     delete damage;
 }
 
-int Group::init_check_data(bool enable_check)
+int Group::init_check_data()
 {
-    outfile_debug << (c_point->name + "_" + w_point->name + "_" + ((suit1 == nullptr) ? "NULL" : suit1->name) + "_" + ((suit2 == nullptr) ? "NULL" : suit2->name) + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_")
+    outfile_debug << (c_point->name + "_" + w_point->name + "_" + suit1->name + "_" + suit2->name + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_")
                   << (team_config->teammate_all + "_" + team_config->team_weapon_artifact) + ",";
 
-    if (enable_check)
+    bool suit1_valid = false;
+    bool suit2_valid = false;
+    bool main3_valid = false;
+    bool main4_valid = false;
+    bool main5_valid = false;
+
+    bool suit1_valid_;
+    bool suit2_valid_;
+    bool main3_valid_;
+    bool main4_valid_;
+    bool main5_valid_;
+
+    for (auto &i: combination)
     {
-        bool suit1_valid = false;
-        bool suit2_valid = false;
-        bool main3_valid = false;
-        bool main4_valid = false;
-        bool main5_valid = false;
+        i->check_data(suit1_valid_, suit2_valid_, main3_valid_, main4_valid_, main5_valid_);
+        suit1_valid = suit1_valid || suit1_valid_;
+        suit2_valid = suit2_valid || suit2_valid_;
+        main3_valid = main3_valid || main3_valid_;
+        main4_valid = main4_valid || main4_valid_;
+        main5_valid = main5_valid || main5_valid_;
+    }
 
-        bool suit1_valid_;
-        bool suit2_valid_;
-        bool main3_valid_;
-        bool main4_valid_;
-        bool main5_valid_;
-
-        for (auto &i: combination)
+    if (!suit1_valid || !suit2_valid)
+    {
+        if (!suit1_valid && !suit2_valid)
         {
-            i->check_data(suit1_valid_, suit2_valid_, main3_valid_, main4_valid_, main5_valid_);
-            suit1_valid = suit1_valid || suit1_valid_;
-            suit2_valid = suit2_valid || suit2_valid_;
-            main3_valid = main3_valid || main3_valid_;
-            main4_valid = main4_valid || main4_valid_;
-            main5_valid = main5_valid || main5_valid_;
-        }
-
-        if (!suit1_valid || !suit2_valid)
-        {
-            if (!suit1_valid && !suit2_valid)
+            if (suit1 == suit2)
             {
-                if (suit1 == suit2)
-                {
-                    outfile_debug << suit1->name + "--piece4_failure\n";
-                    return 2;
-                }
-                else
-                {
-                    outfile_debug << suit1->name + "--piece2_failure\n";
-                    return 1;
-                }
+                outfile_debug << suit1->name + "--piece4_failure\n";
+                return 2;
             }
-            else if (!suit1_valid)
+            else
             {
                 outfile_debug << suit1->name + "--piece2_failure\n";
                 return 1;
             }
-            else
-            {
-                outfile_debug << suit2->name + "--piece2_failure\n";
-                return 2;
-            }
         }
-        else if (!main3_valid)
+        else if (!suit1_valid)
         {
-            outfile_debug << "main3--failure\n";
-            return 3;
+            outfile_debug << suit1->name + "--piece2_failure\n";
+            return 1;
         }
-        else if (!main4_valid)
+        else
         {
-            outfile_debug << "main4--failure\n";
-            return 4;
+            outfile_debug << suit2->name + "--piece2_failure\n";
+            return 2;
         }
-        else if (!main5_valid)
-        {
-            outfile_debug << "main5--failure\n";
-            return 5;
-        }
+    }
+    else if (!main3_valid)
+    {
+        outfile_debug << "main3--failure\n";
+        return 3;
+    }
+    else if (!main4_valid)
+    {
+        outfile_debug << "main4--failure\n";
+        return 4;
+    }
+    else if (!main5_valid)
+    {
+        outfile_debug << "main5--failure\n";
+        return 5;
     }
 
     outfile_debug << "success!\n";
@@ -599,6 +596,67 @@ void Group::out()
                    << entry[6] << "\n";
 }
 
+int Group::init_check_assigned_artifact()
+{
+    outfile_debug << (c_point->name + "_" + w_point->name + "_" + suit1->name + "_" + suit2->name + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_")
+                  << (team_config->teammate_all + "_" + team_config->team_weapon_artifact) + ",";
+
+    bool suit1_valid = false;
+    bool suit2_valid = false;
+    bool main3_valid = false;
+    bool main4_valid = false;
+    bool main5_valid = false;
+
+    bool suit1_valid_;
+    bool suit2_valid_;
+    bool main3_valid_;
+    bool main4_valid_;
+    bool main5_valid_;
+
+    for (auto &i: combination)
+    {
+        i->check_data(suit1_valid_, suit2_valid_, main3_valid_, main4_valid_, main5_valid_);
+        suit1_valid = suit1_valid || suit1_valid_;
+        suit2_valid = suit2_valid || suit2_valid_;
+        main3_valid = main3_valid || main3_valid_;
+        main4_valid = main4_valid || main4_valid_;
+        main5_valid = main5_valid || main5_valid_;
+    }
+
+    if (!main3_valid)
+    {
+        outfile_debug << "main3--failure\n";
+        return 3;
+    }
+    else if (!main4_valid)
+    {
+        outfile_debug << "main4--failure\n";
+        return 4;
+    }
+    else if (!main5_valid)
+    {
+        outfile_debug << "main5--failure\n";
+        return 5;
+    }
+
+    outfile_debug << "success!\n";
+
+    for (auto &i: combination)
+    {
+        i->init_data();
+//        outfile_debug << i->get_data_info;
+        useful[0] = useful[0] || i->data_list[0]->useful;
+        useful[1] = useful[1] || i->data_list[1]->useful;
+        useful[2] = useful[2] || i->data_list[2]->useful;
+        useful[3] = useful[3] || i->data_list[4]->useful;
+        useful[4] = useful[4] || i->data_list[5]->useful;
+        useful[5] = useful[5] || i->data_list[6]->useful;
+        useful[6] = useful[6] || i->data_list[7]->useful;
+        if (need_to_satisfy_recharge) entry[4] = max(entry[4], i->min_recharge_num);
+    }
+    return 0;
+}
+
 void Group::cal_assigned_artifact_damage()
 {
     double life_value = 0, atk_value = 0, def_value = 0, mastery_value = 0, recharge_value = 0, critrate_value = 0, critdam_value = 0;
@@ -680,8 +738,8 @@ void Group::out_assigned_artifact()
     for (int i = 0; i < combination.size(); i++)
         outfile_result << combination[i]->attack_config->condition->attack_way + "_" + combination[i]->attack_config->react_type + "(" + to_string((int) (100.0 * damage[i] / total_damage)) + "%)";
     outfile_result << ","
-                   << ((suit1 == nullptr) ? "NULL" : suit1->name) << ","
-                   << ((suit2 == nullptr) ? "NULL" : suit2->name) << ",";
+                   << suit1->name << ","
+                   << suit2->name << ",";
 
     outfile_result << data[0]->pos << ","
                    << data[0]->main_type << ","

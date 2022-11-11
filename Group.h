@@ -216,13 +216,15 @@ public:
 
     ~Group();
 
-    int init_check_data(bool enable_check);
+    int init_check_data();
 
     void cal_damage_entry_num();
 
     void out();
 
     Reinforced_Artifact* data[5];
+
+    int init_check_assigned_artifact();
 
     void cal_assigned_artifact_damage();
 
