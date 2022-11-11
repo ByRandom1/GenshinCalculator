@@ -598,8 +598,8 @@ void Group::out()
 
 int Group::init_check_assigned_artifact()
 {
-    outfile_debug << (c_point->name + "_" + w_point->name + "_" + suit1->name + "_" + suit2->name + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_")
-                  << (team_config->teammate_all + "_" + team_config->team_weapon_artifact) + ",";
+//    outfile_debug << (c_point->name + "_" + w_point->name + "_" + suit1->name + "_" + suit2->name + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_")
+//                  << (team_config->teammate_all + "_" + team_config->team_weapon_artifact) + ",";
 
     bool suit1_valid = false;
     bool suit2_valid = false;
@@ -639,20 +639,13 @@ int Group::init_check_assigned_artifact()
         return 5;
     }
 
-    outfile_debug << "success!\n";
+//    outfile_debug << "success!\n";
 
     for (auto &i: combination)
     {
         i->init_data();
 //        outfile_debug << i->get_data_info;
-        useful[0] = useful[0] || i->data_list[0]->useful;
-        useful[1] = useful[1] || i->data_list[1]->useful;
-        useful[2] = useful[2] || i->data_list[2]->useful;
-        useful[3] = useful[3] || i->data_list[4]->useful;
-        useful[4] = useful[4] || i->data_list[5]->useful;
-        useful[5] = useful[5] || i->data_list[6]->useful;
-        useful[6] = useful[6] || i->data_list[7]->useful;
-        if (need_to_satisfy_recharge) entry[4] = max(entry[4], i->min_recharge_num);
+//        if (need_to_satisfy_recharge) entry[4] = max(entry[4], i->min_recharge_num);
     }
     return 0;
 }

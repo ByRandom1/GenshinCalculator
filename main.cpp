@@ -1272,6 +1272,7 @@ void Weapon::modify_useful_attribute(Deployment *data)
 void init_artifact_data()
 {
     artifact_list.push_back(new Artifact("EMPTY", nullptr, nullptr));
+
     artifact_list.push_back(new Artifact("流浪大地的乐团", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
                                          new Set(new Condition("ALL", "法器|弓", "重A"), "伤害加成", 0.35)));
     artifact_list.push_back(new Artifact("角斗士的终幕礼", new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.18),
@@ -2886,8 +2887,8 @@ void read_artifact(string filename)
         string character_belong;
 
         infile >> pos >> suit_name >> main_type >> entry1_type >> entry1_value >> entry2_type >> entry2_value >> entry3_type >> entry3_value >> entry4_type >> entry4_value >> character_belong;
-        auto temp = new Reinforced_Artifact(pos, suit_name, main_type, entry1_type, entry1_value, entry2_type, entry2_value,
-                                            entry3_type, entry3_value, entry4_type, entry4_value, character_belong);
+        auto *temp = new Reinforced_Artifact(pos, suit_name, main_type, entry1_type, entry1_value, entry2_type, entry2_value,
+                                             entry3_type, entry3_value, entry4_type, entry4_value, character_belong);
         if (pos == 1) pos1.push_back(temp);
         else if (pos == 2) pos2.push_back(temp);
         else if (pos == 3) pos3.push_back(temp);
@@ -2908,6 +2909,7 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
     int pos3_count = 1;
     int pos4_count = 1;
     int pos5_count = 1;
+
     if (pos1_count != 0)
     {
         if (pos2->suit_name == pos1->suit_name)
@@ -2931,6 +2933,21 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
             pos5_count = 0;
         }
     }
+    if (pos1_count >= 4)
+    {
+        suit1 = suit2 = find_artifact_by_name(pos1->suit_name);
+        return;
+    }
+    else if (pos1_count >= 2)
+    {
+        if (suit1 == nullptr) suit1 = find_artifact_by_name(pos1->suit_name);
+        else if (suit2 == nullptr)
+        {
+            suit2 = find_artifact_by_name(pos1->suit_name);
+            return;
+        }
+    }
+
     if (pos2_count != 0)
     {
         if (pos3->suit_name == pos2->suit_name)
@@ -2949,43 +2966,6 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
             pos5_count = 0;
         }
     }
-    if (pos3_count != 0)
-    {
-        if (pos4->suit_name == pos3->suit_name)
-        {
-            pos3_count += pos4_count;
-            pos4_count = 0;
-        }
-        if (pos5->suit_name == pos3->suit_name)
-        {
-            pos3_count += pos5_count;
-            pos5_count = 0;
-        }
-    }
-    if (pos4_count != 0)
-    {
-        if (pos5->suit_name == pos4->suit_name)
-        {
-            pos4_count += pos5_count;
-            pos5_count = 0;
-        }
-    }
-
-    if (pos1_count >= 4)
-    {
-        suit1 = suit2 = find_artifact_by_name(pos1->suit_name);
-        return;
-    }
-    else if (pos1_count >= 2)
-    {
-        if (suit1 == nullptr) suit1 = find_artifact_by_name(pos1->suit_name);
-        else if (suit2 == nullptr)
-        {
-            suit2 = find_artifact_by_name(pos1->suit_name);
-            return;
-        }
-    }
-
     if (pos2_count >= 4)
     {
         suit1 = suit2 = find_artifact_by_name(pos2->suit_name);
@@ -3001,6 +2981,19 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
         }
     }
 
+    if (pos3_count != 0)
+    {
+        if (pos4->suit_name == pos3->suit_name)
+        {
+            pos3_count += pos4_count;
+            pos4_count = 0;
+        }
+        if (pos5->suit_name == pos3->suit_name)
+        {
+            pos3_count += pos5_count;
+            pos5_count = 0;
+        }
+    }
     if (pos3_count >= 4)
     {
         suit1 = suit2 = find_artifact_by_name(pos3->suit_name);
@@ -3016,6 +3009,14 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
         }
     }
 
+    if (pos4_count != 0)
+    {
+        if (pos5->suit_name == pos4->suit_name)
+        {
+            pos4_count += pos5_count;
+            pos5_count = 0;
+        }
+    }
     if (pos4_count >= 4)
     {
         suit1 = suit2 = find_artifact_by_name(pos4->suit_name);
@@ -3060,40 +3061,24 @@ void cal_optimal_artifact(string c_name)
                         {
                             if (reinforced_artifact_list[4][pos5_index]->character_belong != "none") continue;
 
-                            Artifact *suit1 = find_artifact_by_name("EMPTY");
-                            Artifact *suit2 = find_artifact_by_name("EMPTY");
+                            Artifact *suit1 = nullptr;
+                            Artifact *suit2 = nullptr;
                             get_suit(reinforced_artifact_list[0][pos1_index], reinforced_artifact_list[1][pos2_index], reinforced_artifact_list[2][pos3_index],
                                      reinforced_artifact_list[3][pos4_index], reinforced_artifact_list[4][pos5_index], suit1, suit2);
-                            string a_main3 = reinforced_artifact_list[2][pos3_index]->main_type;
-                            string a_main4 = (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos) ? "伤害加成" : reinforced_artifact_list[3][pos4_index]->main_type;
-                            string a_main5 = reinforced_artifact_list[4][pos5_index]->main_type;
+                            string main3 = reinforced_artifact_list[2][pos3_index]->main_type;
+                            string main4 = (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos) ? "伤害加成" : reinforced_artifact_list[3][pos4_index]->main_type;
+                            string main5 = reinforced_artifact_list[4][pos5_index]->main_type;
 
-                            if (comb_index->suit1 != nullptr)
-                            {
-                                if (comb_index->suit2 != nullptr)
-                                {
-                                    bool valid = false;
-                                    if (comb_index->suit1 == suit1 && comb_index->suit2 == suit2) valid = true;
-                                    if (comb_index->suit1 == suit2 && comb_index->suit2 == suit1) valid = true;
-                                    if (!valid) continue;
-                                }
-                                else
-                                {
-                                    if (comb_index->suit1 != suit1 && comb_index->suit1 != suit2) continue;
-                                }
-                            }
-                            else
-                            {
-                                if (comb_index->suit2 != nullptr)
-                                {
-                                    if (comb_index->suit2 != suit1 && comb_index->suit2 != suit2) continue;
-                                }
-                            }
-                            if (!comb_index->a_main3.empty() && comb_index->a_main3 != a_main3) continue;
-                            if (!comb_index->a_main4.empty() && comb_index->a_main4 != a_main4) continue;
-                            if (!comb_index->a_main5.empty() && comb_index->a_main5 != a_main5) continue;
+                            //check config restrictions
+                            bool valid = false;
+                            if ((comb_index->suit1 == nullptr || comb_index->suit1 == suit1) && (comb_index->suit2 == nullptr || comb_index->suit2 == suit2)) valid = true;
+                            if ((comb_index->suit1 == nullptr || comb_index->suit1 == suit2) && (comb_index->suit2 == nullptr || comb_index->suit2 == suit1)) valid = true;
+                            if (comb_index->a_main3.empty() || comb_index->a_main3 == main3) valid = true;
+                            if (comb_index->a_main4.empty() || comb_index->a_main4 == main4) valid = true;
+                            if (comb_index->a_main5.empty() || comb_index->a_main5 == main5) valid = true;
+                            if (!valid) continue;
 
-                            auto *temp = new Group(c_point, comb_index->w_point, suit1, suit2, a_main3, a_main4, a_main5,
+                            auto *temp = new Group(c_point, comb_index->w_point, suit1, suit2, main3, main4, main5,
                                                    comb_index->team_config, comb_index->attack_config_list, comb_index->need_to_satisfy_recharge);
                             temp->data[0] = reinforced_artifact_list[0][pos1_index];
                             temp->data[1] = reinforced_artifact_list[1][pos2_index];

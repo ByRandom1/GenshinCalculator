@@ -199,6 +199,9 @@ public:
     bool useful[7];
 
     int entry[7];
+
+    Reinforced_Artifact* data[5];
+
     double *temp_damage;
     double *damage;
     double total_damage;
@@ -221,8 +224,6 @@ public:
     void cal_damage_entry_num();
 
     void out();
-
-    Reinforced_Artifact* data[5];
 
     int init_check_assigned_artifact();
 
