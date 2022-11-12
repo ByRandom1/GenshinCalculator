@@ -719,7 +719,7 @@ void Group::out_assigned_artifact()
     if (out_header)
     {
         outfile_result << "人物名称" << "," << "攻击序列" << "," << "队友信息" << "," << "期望伤害" << "," << "伤害占比" << "," << "圣遗物1" << "," << "圣遗物2" << ","
-                       << "圣遗物位置" << "," << "主属性" << "," << "副属性1" << "," << "副属性2" << "," << "副属性3" << "," << "副属性4" << "\n";
+                       << "圣遗物位置" << "," << "圣遗物套装" << "," << "主属性" << "," << "副属性1" << "," << "副属性2" << "," << "副属性3" << "," << "副属性4" << "\n";
         out_header = false;
     }
     outfile_result << c_point->name << ",";
@@ -735,6 +735,7 @@ void Group::out_assigned_artifact()
                    << suit2->name << ",";
 
     outfile_result << data[0]->pos << ","
+                   << data[0]->suit_name << ","
                    << data[0]->main_type << ","
                    << data[0]->entry1_type + "_" + to_string(data[0]->entry1_value) << ","
                    << data[0]->entry2_type + "_" + to_string(data[0]->entry2_value) << ","
@@ -742,6 +743,7 @@ void Group::out_assigned_artifact()
                    << data[0]->entry4_type + "_" + to_string(data[0]->entry4_value) << "\n";
     outfile_result << "," << "," << "," << "," << "," << "," << ","
                    << data[1]->pos << ","
+                   << data[1]->suit_name << ","
                    << data[1]->main_type << ","
                    << data[1]->entry1_type + "_" + to_string(data[1]->entry1_value) << ","
                    << data[1]->entry2_type + "_" + to_string(data[1]->entry2_value) << ","
@@ -749,6 +751,7 @@ void Group::out_assigned_artifact()
                    << data[1]->entry4_type + "_" + to_string(data[1]->entry4_value) << "\n";
     outfile_result << "," << "," << "," << "," << "," << "," << ","
                    << data[2]->pos << ","
+                   << data[2]->suit_name << ","
                    << data[2]->main_type << ","
                    << data[2]->entry1_type + "_" + to_string(data[2]->entry1_value) << ","
                    << data[2]->entry2_type + "_" + to_string(data[2]->entry2_value) << ","
@@ -756,6 +759,7 @@ void Group::out_assigned_artifact()
                    << data[2]->entry4_type + "_" + to_string(data[2]->entry4_value) << "\n";
     outfile_result << "," << "," << "," << "," << "," << "," << ","
                    << data[3]->pos << ","
+                   << data[3]->suit_name << ","
                    << data[3]->main_type << ","
                    << data[3]->entry1_type + "_" + to_string(data[3]->entry1_value) << ","
                    << data[3]->entry2_type + "_" + to_string(data[3]->entry2_value) << ","
@@ -763,6 +767,7 @@ void Group::out_assigned_artifact()
                    << data[3]->entry4_type + "_" + to_string(data[3]->entry4_value) << "\n";
     outfile_result << "," << "," << "," << "," << "," << "," << ","
                    << data[4]->pos << ","
+                   << data[4]->suit_name << ","
                    << data[4]->main_type << ","
                    << data[4]->entry1_type + "_" + to_string(data[4]->entry1_value) << ","
                    << data[4]->entry2_type + "_" + to_string(data[4]->entry2_value) << ","
