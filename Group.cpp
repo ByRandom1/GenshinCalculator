@@ -645,8 +645,10 @@ int Group::init_check_assigned_artifact()
     {
         i->init_data();
 //        outfile_debug << i->get_data_info;
-//        if (need_to_satisfy_recharge) entry[4] = max(entry[4], i->min_recharge_num);
+        if (need_to_satisfy_recharge) entry[4] = max(entry[4], i->min_recharge_num);
     }
+    //TODO:设定充能容许标准
+    if (entry[4] > 2) return 6;
     return 0;
 }
 
