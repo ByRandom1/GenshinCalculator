@@ -95,7 +95,7 @@ void init_character_data()
     character_list.push_back(new Character("雷电将军", "雷", "长柄武器", 12907, 337, 789, "元素充能效率", 0.32,
                                            9, "物理", (0.784 + 0.785 + 0.986 + 0.573 + 0.573 + 1.294) / 6, (0.728 + 0.73 + 0.916 + 0.533 + 0.533 + 1.202) / 6,
                                            "物理", 1.969, 1.83, "物理", 3.16, 2.93,
-                                           9, 10, false, (2.491 + 18 * 0.893) / 19, (2.344 + 18 * 0.84) / 19, (2.11 + 18 * 0.756) / 19, (1.992 + 18 * 0.714) / 19,
+                                           10, 10, false, (2.491 + 18 * 0.893) / 19, (2.344 + 18 * 0.84) / 19, (2.11 + 18 * 0.756) / 19, (1.992 + 18 * 0.714) / 19,
                                            10, 90, false, 8.52 + 0.0826 * 60, 8.02 + 0.0778 * 60, 7.21 + 0.07 * 60, 6.81 + 0.0661 * 60,
                                            0, temp,
                                            new weapon_artifact_related_arguments(false, false, 2, true, 1, false, true, -1,
@@ -112,8 +112,8 @@ void init_character_data()
     character_list.push_back(new Character("纳西妲", "草", "法器", 10360, 299, 630, "元素精通", 115.0,
                                            9, "草", (0.726 + 0.666 + 0.826 + 1.051) / 4, (0.685 + 0.629 + 0.78 + 0.993) / 4,
                                            "草", 2.376, 2.244, "草", 2.81, 2.61,
-                                           9, 6, false, 2.193, 2.064, 1.858, 1.754,
-                                           9, 50, false, 0, 0, 0, 0,
+                                           10, 6, false, 2.193, 2.064, 1.858, 1.754,
+                                           10, 50, false, 0, 0, 0, 0,
                                            2, temp,
                                            new weapon_artifact_related_arguments(false, false, 2, true, 2, false, true, -1,
                                                                                  -1, 3, -1, -1, false, false, -1, -1)));
@@ -127,10 +127,10 @@ void init_character_data()
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.15));//Q内 (get_team)
     temp.push_back(nullptr);//E后瞬发重A
     character_list.push_back(new Character("甘雨", "冰", "弓", 9797, 335, 630, "暴击伤害", 0.384,
-                                           9, "物理", (0.627 + 0.704 + 0.899 + 0.899 + 0.954 + 1.139) / 6, (0.583 + 0.654 + 0.836 + 0.836 + 0.886 + 1.059) / 6,
+                                           10, "物理", (0.627 + 0.704 + 0.899 + 0.899 + 0.954 + 1.139) / 6, (0.583 + 0.654 + 0.836 + 0.836 + 0.886 + 1.059) / 6,
                                            "冰", (2.3 + 3.92) / 2, (2.18 + 3.7) / 2, "物理", 2.81, 2.61,
-                                           9, 4, true, 2.81, 2.64, 2.38, 2.24,
-                                           9, 60, true, 1.49, 1.41, 1.26, 1.19,
+                                           10, 4, true, 2.81, 2.64, 2.38, 2.24,
+                                           10, 60, true, 1.49, 1.41, 1.26, 1.19,
                                            0, temp,
                                            new weapon_artifact_related_arguments(false, false, 2, false, 1, false, true, -1,
                                                                                  -1, -1, 3, 4, true, false, -1, -1)));
@@ -145,8 +145,8 @@ void init_character_data()
     character_list.push_back(new Character("夜兰", "水", "弓", 14450, 244, 548, "暴击率", 0.192,
                                            9, "物理", (0.804 + 0.772 + 1.02 + 0.643 * 2) / 5, (0.747 + 0.717 + 0.948 + 0.597 * 2) / 5,
                                            "水", 0, 0, "物理", 2.81, 2.61,
-                                           9, 4, false, 0, 0, 0, 0,
-                                           9, 70, false, 0, 0, 0, 0,
+                                           10, 4, false, 0, 0, 0, 0,
+                                           10, 70, false, 0, 0, 0, 0,
                                            2, temp,
                                            new weapon_artifact_related_arguments(false, false, 1, false, 1, false, true, -1,
                                                                                  -1, -1, 3, 4, true, false, -1, -1)));
@@ -196,13 +196,12 @@ void init_character_data()
     character_list.push_back(new Character("八重神子", "雷", "法器", 10372, 340, 569, "暴击率", 0.192,
                                            9, "雷", (0.714 + 0.693 + 1.024) / 3, (0.674 + 0.655 + 0.967) / 3,
                                            "雷", 2.572, 2.429, "雷", 2.81, 2.61,
-                                           9, 5, false, 2.015 * 1.25, 1.896 * 1.25, 1.706 * 1.25, 1.612 * 1.25,
-                                           9, 90, false, (5.53 + 7.09 * 3) / 4, (5.2 + 6.68 * 3) / 4, (4.68 + 6.01 * 3) / 4, (4.42 + 5.68 * 3) / 4,
+                                           10, 5, false, 2.015 * 1.25, 1.896 * 1.25, 1.706 * 1.25, 1.612 * 1.25,
+                                           10, 90, false, (5.53 + 7.09 * 3) / 4, (5.2 + 6.68 * 3) / 4, (4.68 + 6.01 * 3) / 4, (4.42 + 5.68 * 3) / 4,
                                            2, temp,
                                            new weapon_artifact_related_arguments(false, false, 2, true, 3, false, true, -1,
                                                                                  -1, 3, -1, -1, false, false, -1, -1)));//E 15次
     temp.clear();
-    //TODO:设定为2命
 
     temp.push_back(nullptr);//E产生上升气流20s
     temp.push_back(nullptr);//Q恢复自己与转化元素15点能量 (recharge)
@@ -540,10 +539,8 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("西福斯的月光", "单手剑", 510, "元素精通", 165.0, 1, temp));
     temp.clear();
 
-    //TODO:NEW
-    //(get_team) 效果不予考虑
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.16));
-    weapon_list.push_back(new Weapon("东花坊时雨", "单手剑", 510, "元素精通", 165.0, 1, temp));
+    weapon_list.push_back(new Weapon("东花坊时雨", "单手剑", 510, "元素精通", 165.0, 5, temp));
     temp.clear();
 
     //(get_extra_rate)
@@ -562,7 +559,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("祭礼剑", "单手剑", 454, "元素充能效率", 0.613, 5, temp));
     temp.clear();
 
-    //TODO:NEW
     weapon_list.push_back(new Weapon("图莱杜拉的回忆", "法器", 674, "暴击伤害", 0.441, 1, temp));
     temp.clear();
 
@@ -958,7 +954,6 @@ bool Weapon::get_extra_special(Deployment *data) const
             data->add_percentage("伤害加成", (0.16 + level * 0.04), (name + "_extra_special"));
     }
 
-        //TODO:NEW
     else if (name == "图莱杜拉的回忆")
     {
         if (!data->attack_config->background)
@@ -1319,9 +1314,8 @@ void init_artifact_data()
                                          nullptr));//(special) (get_team)
     artifact_list.push_back(new Artifact("饰金之梦", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
                                          nullptr));//(special)
-    //TODO:NEW
     artifact_list.push_back(new Artifact("沙上楼阁史话", new Set(new Condition("风", "ALL", "ALL"), "伤害加成", 0.15),
-                                         new Set(new Condition("ALL", "ALL", "平A|重A|下落A"), "伤害加成", 0.3)));//重A命中
+                                         nullptr));
     artifact_list.push_back(new Artifact("乐园遗落之花", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
                                          nullptr));//(react)
 }
@@ -1427,6 +1421,12 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
             data->add_percentage("元素精通", 50.0 * diff, (name + "_extra_special"));
         }
     }
+    else if (if_4_piece && name == "沙上楼阁史话")
+    {
+        if (!data->attack_config->background)
+            if (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "重A" || data->attack_config->condition->attack_way == "下落A")
+                data->add_percentage("伤害加成", 0.4, (name + "_extra_special"));
+    }
     return true;
 }
 
@@ -1470,7 +1470,6 @@ void Artifact::check_artifact_special(Deployment *data, bool &suit1_valid, bool 
             if (data->c_point->args->heal_sustain)
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-            //TODO:NEW
         else if (data->suit1->name == "乐园遗落之花")
         {
             if (data->attack_config->react_type.find("绽放") != string::npos)
@@ -1503,14 +1502,12 @@ void Artifact::check_artifact_special(Deployment *data, bool &suit1_valid, bool 
         if ((data->suit1->name == "追忆之注连" && data->suit2->name != "角斗士的终幕礼") || data->suit1->name == "辰砂往生录" || data->suit1->name == "来歆余响") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit1->name == "苍白之火" && data->suit2->name != "染血的骑士道") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit1->name == "海染砗磲" && data->suit2->name != "被怜爱的少女") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        //TODO:NEW
         if ((data->suit1->name == "饰金之梦" && data->suit2->name != "流浪大地的乐团") || data->suit1->name == "乐园遗落之花") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit1->name == "沙上楼阁史话" && data->suit2->name != "翠绿之影") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         //suit2
         if ((data->suit2->name == "追忆之注连" && data->suit1->name != "角斗士的终幕礼") || data->suit2->name == "辰砂往生录" || data->suit2->name == "来歆余响") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit2->name == "苍白之火" && data->suit1->name != "染血的骑士道") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit2->name == "海染砗磲" && data->suit1->name != "被怜爱的少女") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        //TODO:NEW
         if ((data->suit2->name == "饰金之梦" && data->suit1->name != "流浪大地的乐团") || data->suit2->name == "乐园遗落之花") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit2->name == "沙上楼阁史话" && data->suit1->name != "翠绿之影") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
     }
@@ -2203,8 +2200,7 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
 //        {
 //            double extra_damplus = 0;
 //            if ((suit1->name == suit2->name) && (suit1->name == "炽烈的炎之魔女")) extra_damplus += 0.4;
-//            //TODO:NEW
-//            if ((suit1->name == suit2->name) && (suit1->name == "乐园遗落之花")) extra_damplus += 1;
+//            if ((suit1->name == suit2->name) && (suit1->name == "乐园遗落之花")) extra_damplus += 0.8;
 //            //extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
 //            extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus) * ((team_config->teammate_all.find("纳西妲") != string::npos) ? 1.2 : 1);
 //            //6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
@@ -2214,8 +2210,7 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
 //        {
 //            double extra_damplus = 0;
 //            if ((suit1->name == suit2->name) && (suit1->name == "如雷的盛怒")) extra_damplus += 0.4;
-//            //TODO:NEW
-//            if ((suit1->name == suit2->name) && (suit1->name == "乐园遗落之花")) extra_damplus += 1;
+//            if ((suit1->name == suit2->name) && (suit1->name == "乐园遗落之花")) extra_damplus += 0.8;
 //            //extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
 //            extra_damage += 6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus) * ((team_config->teammate_all.find("纳西妲") != string::npos) ? 1.2 : 1);
 //            //6.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
@@ -2224,8 +2219,7 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
 //        else
 //        {
 //            double extra_damplus = 0;
-//            //TODO:NEW
-//            if ((suit1->name == suit2->name) && (suit1->name == "乐园遗落之花")) extra_damplus += 1;
+//            if ((suit1->name == suit2->name) && (suit1->name == "乐园遗落之花")) extra_damplus += 0.8;
 //            //extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus);
 //            extra_damage += 4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + extra_damplus) * ((team_config->teammate_all.find("纳西妲") != string::npos) ? 1.2 : 1);
 //            //4.0 * 723.4 * (1.0 + (16.0 * mastery) / (mastery + 2000.0) + 如雷/魔女等) * resistance;
