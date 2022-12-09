@@ -253,6 +253,24 @@ void init_character_data()
     temp.clear();
     //E护盾减抗20%(special get_team)
 
+    //TODO:NEW
+    temp.push_back(nullptr);//重击或下落攻击命中敌人时，将产生一枚琢光镜。该效果每12秒至多触发一次。
+    temp.push_back(nullptr);//(convert)
+    temp.push_back(nullptr);//光幕攻击命中敌人时，将使共相·理式摹写的冷却时间减少1秒。该效果每1秒至多触发一次。->e cd 12s
+    temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 160));//每1枚产生的琢光镜将使元素精通提升40点，持续8秒，最多4层。默认先Q，4层，8s
+    temp.push_back(new Set(new Condition("草", "ALL", "ALL"), "伤害加成", 0.3));//Q每消耗1枚琢光镜，使队伍中的其他角色元素精通提升30点，持续15秒，每产生1枚琢光镜，使艾尔海森获得10%草元素伤害加成，持续15秒。默认先Q，3层，15s
+    temp.push_back(nullptr);//(special)产生琢光镜时，若琢光镜数量已达到上限，艾尔海森的暴击率提升10%，暴击伤害提升70%，持续6秒，默认触发
+    character_list.push_back(new Character("艾尔海森", "草", "单手剑", 13348, 313, 782, "伤害加成", 0.288,
+                                           10, "草", (1.108 + 1.124 + 0.736 + 0.736 + 1.453 + 1.908) / 6, (1.03 + 1.044 + 0.684 + 0.684 + 1.35 + 1.774) / 6,
+                                           "草", 1.408 + 1.408, 1.308 + 1.308, "草", 3.16, 2.93,
+                                           10, 3, false, 2.04, 1.92, 1.728, 1.632,
+                                           10, 70, false, 2.584, 2.432, 2.189, 2.067,
+                                           0, temp,
+                                           new weapon_artifact_related_arguments(false, false, 2, true, 1, false, true, 3,
+                                                                                 3, -1, -1, -1, false, false, -1, -1)));
+    temp.clear();
+    //E默认1枚，EQ精通倍率(extra_rate)
+
     //NO NEED TO CALCULATE
     //BUILD BASIC INFORMATION AND ARGS
     temp.push_back(nullptr);
@@ -428,8 +446,8 @@ bool Character::get_extra_special(Deployment *data) const
 
         if (data->attack_config->condition->attack_way == "E")
         {
-            if (pyro_num == 1) data->add_percentage("伤害加成", 0.253, (name + "_extra_special"));//lv9
-            else if (pyro_num >= 2) data->add_percentage("伤害加成", 0.379, (name + "_extra_special"));//lv9
+            if (pyro_num == 1) data->add_percentage("伤害加成", 0.268, (name + "_extra_special"));//lv10
+            else if (pyro_num >= 2) data->add_percentage("伤害加成", 0.402, (name + "_extra_special"));//lv10
         }
 
         if (!(data->attack_config->background && !data->attack_config->lockface))
@@ -437,6 +455,15 @@ bool Character::get_extra_special(Deployment *data) const
 
         if (data->c_point->constellation >= 2 && data->attack_config->react_type.find("激化") != string::npos)
             data->add_percentage("防御削弱", 0.3, (name + "_extra_special"));
+    }
+        //TODO:NEW
+    else if (data->c_point->name == "艾尔海森")
+    {
+        if (data->c_point->constellation >= 6)
+        {
+            data->add_converted_percentage("暴击率", 0.1, (name + "_extra_special"));
+            data->add_converted_percentage("暴击伤害", 0.7, (name + "_extra_special"));
+        }
     }
     return true;
 }
@@ -490,6 +517,12 @@ void init_weapon_data()
     //(get_convert)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2));
     weapon_list.push_back(new Weapon("磐岩结绿", "单手剑", 542, "暴击率", 0.441, 1, temp));
+    temp.clear();
+
+    //TODO:NEW
+    //(convert)
+    temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "暴击率", 0.04));
+    weapon_list.push_back(new Weapon("裁叶萃光", "单手剑", 542, "暴击伤害", 0.882, 1, temp));
     temp.clear();
 
     //(convert)
@@ -1249,6 +1282,8 @@ bool Weapon::get_extra_special(Deployment *data) const
 void Weapon::modify_useful_attribute(Deployment *data)
 {
     if (data->w_point->name == "磐岩结绿" && data->data_list[1]->useful) data->data_list[0]->useful = true;
+        //TODO:NEW
+    else if (data->w_point->name == "裁叶萃光" && (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "E")) data->data_list[4]->useful = true;
     else if (data->w_point->name == "圣显之钥" && data->c_point->args->sword_shengxian_level > 0 && data->data_list[4]->useful) data->data_list[0]->useful = true;
     else if (data->w_point->name == "辰砂之纺锤" && data->attack_config->condition->attack_way == "E") data->data_list[2]->useful = true;
     else if (data->w_point->name == "西福斯的月光" && (data->data_list[5]->useful || data->need_to_satisfy_recharge)) data->data_list[4]->useful = true;
@@ -1527,6 +1562,15 @@ void Deployment::check_useful_attribute()
         if ((data_list[0]->value_per_entry * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk) < data_list[1]->value_per_entry)
             data_list[0]->useful = attack_config->useful_attributes[0];
     }
+        //TODO:NEW
+    else if (w_point->name == "裁叶萃光")
+    {
+        if (base_skillrate != 0)
+            if ((data_list[4]->value_per_entry * (1.7 + w_point->level * 0.3) / (base_skillrate * base_atk)) < data_list[1]->value_per_entry)
+                data_list[4]->useful = attack_config->useful_attributes[4];
+        if (attack_config->condition->attack_way != "平A" && attack_config->condition->attack_way != "E")
+            data_list[4]->useful = attack_config->useful_attributes[4];
+    }
     else if (w_point->name == "圣显之钥")
     {
         if ((data_list[0]->value_per_entry * 0.0056 * (0.75 + w_point->level * 0.25) * base_life) < data_list[4]->value_per_entry)
@@ -1537,6 +1581,8 @@ void Deployment::check_useful_attribute()
         if (base_skillrate != 0)
             if ((data_list[2]->value_per_entry * 0.4 * (0.75 + w_point->level * 0.25) * base_def / (base_skillrate * base_atk)) < data_list[1]->value_per_entry)
                 data_list[2]->useful = attack_config->useful_attributes[2];
+        if (attack_config->condition->attack_way != "E")
+            data_list[2]->useful = attack_config->useful_attributes[2];
     }
     else if (w_point->name == "西福斯的月光")
     {
@@ -1548,6 +1594,8 @@ void Deployment::check_useful_attribute()
         if (base_skillrate != 0)
             if ((data_list[0]->value_per_entry * (0.005 + w_point->level * 0.005) * base_life / (base_skillrate * base_atk)) < data_list[1]->value_per_entry)
                 data_list[0]->useful = attack_config->useful_attributes[0];
+        if (attack_config->condition->attack_way != "平A")
+            data_list[0]->useful = attack_config->useful_attributes[0];
     }
     else if (w_point->name == "流浪的晚星")
     {
@@ -1559,12 +1607,16 @@ void Deployment::check_useful_attribute()
         if (base_skillrate != 0)
             if ((data_list[4]->value_per_entry * 1.6 * (0.75 + w_point->level * 0.25) / (base_skillrate * base_atk)) < data_list[1]->value_per_entry)
                 data_list[4]->useful = attack_config->useful_attributes[4];
+        if (attack_config->condition->attack_way != "重A")
+            data_list[4]->useful = attack_config->useful_attributes[4];
     }
     else if (w_point->name == "赤角石溃杵")
     {
         if (base_skillrate != 0)
             if ((data_list[2]->value_per_entry * 0.4 * (0.75 + w_point->level * 0.25) * base_def / (base_skillrate * base_atk)) < data_list[1]->value_per_entry)
                 data_list[2]->useful = attack_config->useful_attributes[2];
+        if (attack_config->condition->attack_way != "平A" && attack_config->condition->attack_way != "重A")
+            data_list[2]->useful = attack_config->useful_attributes[2];
     }
     else if (w_point->name == "玛海菈的水色")
     {
@@ -1823,6 +1875,13 @@ void Deployment::get_team_data()
             add_percentage("防御削弱", 0.3, "team_纳西妲");
         Dendro_num++;
     }
+    //TODO:NEW
+    if (team_config->teammate_all.find("艾尔海森") != string::npos)
+    {
+        //constellation>=4
+//        add_percentage("元素精通", 90, "team_艾尔海森");
+        Dendro_num++;
+    }
 
     if (team_config->teammate_1->name == "冰_test") Cryo_num++;
     else if (team_config->teammate_1->name == "火_test") Pyro_num++;
@@ -2039,6 +2098,11 @@ void Deployment::satisfy_recharge_requirement()
         else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
         //"不灭月华" 0.6/A Q后12s内 不吃充能
     }
+        //TODO:NEW
+    else if (c_point->name == "艾尔海森")
+    {
+        energy = Q_energy_modify;
+    }
     else energy = Q_energy_modify;
 
     min_recharge_num = max(0, (int) ((Q_energy_modify / energy - data_list[5]->percentage - data_list[5]->converted_percentage - converted_recharge) / data_list[5]->value_per_entry));
@@ -2062,6 +2126,11 @@ void Deployment::get_convert_value(double &life, double &atk, double &def, doubl
     {
         damplus_add += min((mastery + data_list[4]->converted_percentage - 200.0), 800.0) * 0.001;
         critrate_add += min((mastery + data_list[4]->converted_percentage - 200.0), 800.0) * 0.0003;
+    }
+        //TODO:NEW
+    else if (c_point->name == "艾尔海森" && (attack_config->condition->attack_way == "E" || attack_config->condition->attack_way == "Q"))//精通->EQ增伤
+    {
+        damplus_add += min((mastery + data_list[4]->converted_percentage) * 0.0012, 1.0);
     }
 
     //weapon
@@ -2133,7 +2202,10 @@ void Deployment::get_extra_rate_value(double life, double atk, double def, doubl
 {
     //artifact
     //weapon
-    if (w_point->name == "辰砂之纺锤" && attack_config->condition->attack_way == "E")
+    //TODO:NEW
+    if (w_point->name == "裁叶萃光" && (attack_config->condition->attack_way == "平A" || attack_config->condition->attack_way == "E"))
+        extrarate += (1.7 + w_point->level * 0.3) * mastery;
+    else if (w_point->name == "辰砂之纺锤" && attack_config->condition->attack_way == "E")
         extrarate += 0.4 * (0.75 + w_point->level * 0.25) * def * base_def;
     else if (w_point->name == "不灭月华" && attack_config->condition->attack_way == "平A")
         extrarate += (0.005 + w_point->level * 0.005) * life * base_life;
@@ -2151,14 +2223,14 @@ void Deployment::get_extra_rate_value(double life, double atk, double def, doubl
     {
         if (attack_config->condition->attack_way == "重A")//LV9
             extrarate += 0.1968 * life * base_life;
-        else if (attack_config->condition->attack_way == "E")//LV9
-            extrarate += 0.384 * life * base_life;
+        else if (attack_config->condition->attack_way == "E")//LV10
+            extrarate += 0.407 * life * base_life;
         else if (attack_config->condition->attack_way == "Q")//LV9
         {
             if (c_point->constellation >= 2)
-                extrarate += ((0.1242 + 0.0828 * 3 * 15 + 0.14 * 7) / 53) * life * base_life;
+                extrarate += ((0.1315 + 0.0877 * 3 * 15 + 0.14 * 7) / 53) * life * base_life;
             else
-                extrarate += ((0.1242 + 0.0828 * 3 * 15) / 46) * life * base_life;
+                extrarate += ((0.1315 + 0.0877 * 3 * 15) / 46) * life * base_life;
         }
     }
     else if (c_point->name == "钟离")
@@ -2173,7 +2245,15 @@ void Deployment::get_extra_rate_value(double life, double atk, double def, doubl
     else if (c_point->name == "纳西妲")
     {
         if (attack_config->condition->attack_way == "E")
-            extrarate += 3.509 * mastery;//LV9
+            extrarate += 3.715 * mastery;//LV10
+    }
+        //TODO:NEW
+    else if (c_point->name == "艾尔海森")
+    {
+        if (attack_config->condition->attack_way == "E")
+            extrarate += 3.456 * mastery;//LV10
+        else if (attack_config->condition->attack_way == "Q")
+            extrarate += 4.378 * mastery;//LV10
     }
 }
 
@@ -2352,7 +2432,67 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
 
     //"纳西妲" "草_test" "八重神子" "钟离" "昔日宗室之仪_千夜浮梦_深林的记忆" "雷草" ""
     //"纳西妲" "夜兰" "八重神子" "雷_test" "千夜浮梦_深林的记忆" "雷草" ""
+    //TODO:NEW
+    if (c_name == "艾尔海森")
+    {
+        auto *tc1 = new Team_config(find_character_by_name("八重神子"), find_character_by_name("纳西妲"), find_character_by_name("钟离"),
+                                    "千夜浮梦_深林的记忆_昔日宗室之仪", "雷草", "");
 
+        vector<Attack_config *> ac1;
+        ac1.push_back(new Attack_config(new Condition("草", "单手剑", "平A"), false, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 1));
+        vector<Attack_config *> ac2;
+        ac2.push_back(new Attack_config(new Condition("草", "单手剑", "重A"), false, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 1));
+        vector<Attack_config *> ac3;
+        ac3.push_back(new Attack_config(new Condition("草", "单手剑", "E"), false, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 1));
+        vector<Attack_config *> ac4;
+        ac4.push_back(new Attack_config(new Condition("草", "单手剑", "Q"), false, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 1));
+        vector<Attack_config *> ac5;//EZAQ
+        ac5.push_back(new Attack_config(new Condition("草", "单手剑", "重A"), false, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 1));
+        ac5.push_back(new Attack_config(new Condition("草", "单手剑", "E"), false, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 3));
+        ac5.push_back(new Attack_config(new Condition("草", "单手剑", "E"), false, false, "NONE",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 2));
+        ac5.push_back(new Attack_config(new Condition("草", "单手剑", "平A"), false, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 2));
+        ac5.push_back(new Attack_config(new Condition("草", "单手剑", "平A"), false, false, "NONE",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 4));
+        ac5.push_back(new Attack_config(new Condition("草", "单手剑", "Q"), false, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 4));
+        ac5.push_back(new Attack_config(new Condition("草", "单手剑", "Q"), false, false, "NONE",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 6));
+
+        Weapon *w_point = nullptr;
+        if (mode == "cal_deployment") w_point = nullptr;
+        else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("雾切之回光");
+
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac1, false));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac2, false));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac3, false));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac4, false));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc1, ac5, false));
+    }
+    return;
     if (c_name == "胡桃")
     {
         auto *tc1 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("莫娜"),
