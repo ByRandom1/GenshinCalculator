@@ -12,6 +12,7 @@
 #include "Character.h"
 #include "Weapon.h"
 #include "Artifact.h"
+#include "Reinforced_Artifact.h"
 
 using namespace std;
 
@@ -172,7 +173,7 @@ public:
     void satisfy_recharge_requirement();//在main中实现
 
     //单人最佳伤害(副词条)计算
-    double cal_damage(int life_num, int atk_num, int def_num, int mastery_num, int recharge_num, int critrate_num, int critdam_num);
+    double cal_damage(double life_value, double atk_value, double def_value, double mastery_value, double recharge_value, double critrate_value, double critdam_value);
 
     void get_convert_value(double &life, double &atk, double &def, double &mastery, double &recharge, double &critrate, double &critdam, double &damplus);//在main中实现
 
@@ -198,6 +199,9 @@ public:
     bool useful[7];
 
     int entry[7];
+
+    Reinforced_Artifact* data[5];
+
     double *temp_damage;
     double *damage;
     double total_damage;
@@ -220,6 +224,12 @@ public:
     void cal_damage_entry_num();
 
     void out();
+
+    int init_check_assigned_artifact();
+
+    void cal_assigned_artifact_damage();
+
+    void out_assigned_artifact();
 };
 
 #endif //GENSHINCALCULATOR_GROUP_H
