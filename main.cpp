@@ -2405,13 +2405,18 @@ struct Combination
 };
 
 bool out_header = true;
-//TODO:配置编写
-int top_k = 3;
 string double_E_per_round = "神里绫华甘雨温迪夜兰";
 int max_up_num_per_base = 4;
 int max_attribute_num_per_pos = 3;
 int max_entry_num = 30;
 int artifact_2_2_max_entry_bonus = 2;
+
+//TODO:配置编写
+int top_k = 5;
+string config_cal_enable = "ALL";//ALL全部启用
+string add_character = "";
+string add_weapon = "";
+string add_artifact = "";
 
 //注意圣遗物限定2+2有顺序，所有的限定条件只能是单个限定
 void get_all_config(string c_name, vector<Combination *> &combination_list, string mode)
@@ -2426,6 +2431,8 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
     //"神里绫华" "甘雨" "温迪" "莫娜" "终末嗟叹之诗_昔日宗室之仪_翠绿之影" "冰水" "冰"
     //"雷电将军" "行秋" "香菱" "班尼特" "昔日宗室之仪" "水雷" "水雷火"
     //"纳西妲" "行秋" "八重神子" "雷_test" "千夜浮梦_深林的记忆" "雷草" ""
+
+    if (config_cal_enable.find(c_name) == string::npos && config_cal_enable != "ALL") return;
 
     if (c_name == "胡桃")
     {
@@ -2564,12 +2571,9 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                         true, true, true, false, false, 45));
 
         vector<Attack_config *> ac2;//EQ
-        ac2.push_back(new Attack_config(new Condition("水", "单手剑", "E"), false, false, "蒸发",
-                                        false, true, false, true, false,
-                                        true, true, true, false, false, 1));
-        ac2.push_back(new Attack_config(new Condition("水", "单手剑", "E"), false, false, "蒸发_no_add_damage",
+        ac2.push_back(new Attack_config(new Condition("水", "单手剑", "E"), false, false, "NONE",
                                         false, true, false, false, false,
-                                        true, true, true, false, false, 1));
+                                        true, true, true, false, false, 2 * 1));
         ac2.push_back(new Attack_config(new Condition("水", "单手剑", "Q"), true, false, "感电_no_add_damage",
                                         false, true, false, false, false,
                                         true, true, true, false, false, 45));
@@ -2599,15 +2603,15 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                     "昔日宗室之仪", "水雷", "水雷火");
 
         vector<Attack_config *> ac1;
-        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "E"), true, true, "NONE",
-                                        false, true, false, false, false,
+        ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "E"), true, true, "蒸发",
+                                        false, true, false, true, false,
                                         true, true, true, false, false, 4));
         ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载_no_add_damage",
                                         false, true, false, false, false,
-                                        true, true, true, false, false, 2));
+                                        true, true, true, false, false, 3));
         ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "Q"), true, true, "蒸发_超载",
                                         false, true, false, true, false,
-                                        true, true, true, false, false, 13));
+                                        true, true, true, false, false, 12));
 
         Weapon *w_point = nullptr;
         if (mode == "cal_deployment") w_point = nullptr;
@@ -2706,7 +2710,9 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         if (mode == "cal_deployment") w_point = nullptr;
         else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("西风长枪");
 
-        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name("悠古的磐岩"), find_artifact_by_name("悠古的磐岩"),
+                                                   "生命值", "", "", tc1, ac1, false));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
                                                    "生命值", "", "", tc1, ac1, false));
     }
     if (c_name == "纳西妲")
@@ -2730,7 +2736,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("千夜浮梦");
 
         combination_list.push_back(new Combination(w_point, find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc1, ac1, false));
+                                                   "", "", "", tc1, ac1, false));//TODO:recharge=true
     }
 }
 
@@ -2743,16 +2749,23 @@ struct cmp
     }
 };
 
-void cal_deployment()
+void cal_deployment(string mode)
 {
+    clock_t total_start = clock();
     for (auto &c_index: character_list)
     {
+        //没有武器和圣遗物更新则不用计算未更新角色的任何配置
+        if (mode == "ADD" && add_weapon.empty() && add_artifact.empty() && add_character.find(c_index->name) == string::npos) continue;
+
         vector<Combination *> combination_list;
         get_all_config(c_index->name, combination_list, "cal_deployment");
         for (auto &comb_index: combination_list)
         {
             for (auto &w_index: weapon_list)
             {
+                //没有圣遗物更新则不用计算未更新武器的任何配置
+                if (mode == "ADD" && add_artifact.empty() && add_weapon.find(w_index->name) == string::npos) continue;
+
                 if (c_index->weapon_type != w_index->weapon_type) continue;
 
                 if (comb_index->w_point != nullptr && comb_index->w_point != w_index) continue;
@@ -2822,6 +2835,11 @@ void cal_deployment()
                                         delete temp;
                                         goto NEXTMAIN5;
                                     }
+                                    else if (check_num == 6)//error:recharge
+                                    {
+                                        delete temp;
+                                        goto NEXTMAIN5;
+                                    }
                                     NEXTMAIN5:;
                                 }
                                 NEXTMAIN4:;
@@ -2851,6 +2869,9 @@ void cal_deployment()
         }
         combination_list.clear();
     }
+    clock_t total_end = clock();
+    double total_time = (double) (total_end - total_start) / CLOCKS_PER_SEC;
+    cout << "total_time:" << total_time << "s" << endl;
 }
 
 vector<vector<Reinforced_Artifact *>> reinforced_artifact_list;
@@ -3154,13 +3175,13 @@ int main()
     init_artifact_data();
 
     int mode = 0;
-    cout << "计算模式(1:cal_deployment 2:cal_optimal_artifact):";
+    cout << "计算模式(1:cal_deployment 2:cal_optimal_artifact 3:cal_add_deployment):";
     cin >> mode;
     if (mode == 1)
     {
         outfile_result.open("./data.csv");
         outfile_debug.open("./log_data.csv");
-        cal_deployment();
+        cal_deployment("ALL");
         outfile_result.close();
         outfile_debug.close();
     }
@@ -3174,6 +3195,14 @@ int main()
         outfile_debug.open("./assign_artifact_log_" + c_name + ".csv");
         read_artifact("./artifacts.txt");
         cal_optimal_artifact(c_name);
+        outfile_result.close();
+        outfile_debug.close();
+    }
+    else if (mode == 3)
+    {
+        outfile_result.open("./data_add.csv");
+        outfile_debug.open("./log_data_add.csv");
+        cal_deployment("ADD");
         outfile_result.close();
         outfile_debug.close();
     }

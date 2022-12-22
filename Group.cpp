@@ -415,6 +415,8 @@ int Group::init_check_data()
         useful[6] = useful[6] || i->data_list[7]->useful;
         if (need_to_satisfy_recharge) entry[4] = max(entry[4], i->min_recharge_num);
     }
+    //TODO:设定充能容许标准
+    if (entry[4] > 9) return 6;
     return 0;
 }
 
