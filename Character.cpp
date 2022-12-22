@@ -6,6 +6,7 @@
 #include "Group.h"
 
 Character::Character(string name_,
+                     string english_name_,
                      string ele_type_,
                      string weapon_type_,
                      int life_,
@@ -41,6 +42,7 @@ Character::Character(string name_,
                      weapon_artifact_related_arguments *args_)
 {
     name = name_;
+    english_name = english_name_;
     ele_type = ele_type_;
     weapon_type = weapon_type_;
     life = life_;
@@ -105,7 +107,7 @@ double Character::get_normal_A(int A_level_)
     int target = (A_level_ == 0) ? A_level : A_level_;
     if (target == 10) return normal_A[0];
     else if (target == 9) return normal_A[1];
-    else return 1.0;
+    else return normal_A[1];
 }
 
 double Character::get_heavy_A(int A_level_)
@@ -113,7 +115,7 @@ double Character::get_heavy_A(int A_level_)
     int target = (A_level_ == 0) ? A_level : A_level_;
     if (target == 10) return heavy_A[0];
     else if (target == 9) return heavy_A[1];
-    else return 1.0;
+    else return heavy_A[1];
 }
 
 double Character::get_down_A(int A_level_)
@@ -121,7 +123,7 @@ double Character::get_down_A(int A_level_)
     int target = (A_level_ == 0) ? A_level : A_level_;
     if (target == 10) return down_A[0];
     else if (target == 9) return down_A[1];
-    else return 1.0;
+    else return down_A[1];
 }
 
 double Character::get_E(int E_level_)
@@ -131,7 +133,7 @@ double Character::get_E(int E_level_)
     else if (target == 12) return E[1];
     else if (target == 10) return E[2];
     else if (target == 9) return E[3];
-    else return 1.0;
+    else return E[3];
 }
 
 double Character::get_Q(int Q_level_)
@@ -141,7 +143,7 @@ double Character::get_Q(int Q_level_)
     else if (target == 12) return Q[1];
     else if (target == 10) return Q[2];
     else if (target == 9) return Q[3];
-    else return 1.0;
+    else return Q[3];
 }
 
 bool Character::get_extra(Deployment *data)

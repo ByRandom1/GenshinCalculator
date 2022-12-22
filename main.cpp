@@ -7,6 +7,7 @@
 #include "Artifact.h"
 #include "Reinforced_Artifact.h"
 #include "Group.h"
+#include "Gcsim_Script.h"
 
 using namespace std;
 vector<Character *> character_list;
@@ -57,7 +58,7 @@ void init_character_data()
     temp.push_back(nullptr);//血梅香敌人被击败 队友12%暴击15s (get_team)
     temp.push_back(nullptr);
     //temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "暴击率", 1));//25%血以下，CD60s，不考虑
-    character_list.push_back(new Character("胡桃", "火", "长柄武器", 15552, 107, 876, "暴击伤害", 0.384,
+    character_list.push_back(new Character("胡桃", "hutao", "火", "长柄武器", 15552, 107, 876, "暴击伤害", 0.384,
                                            10, "火", (0.836 + 0.861 + 1.089 + 1.171 + 0.594 + 0.628 + 1.534) / 7, (0.789 + 0.812 + 1.027 + 1.104 + 0.56 + 0.592 + 1.446) / 7,
                                            "火", 2.426, 2.287, "火", 2.92, 2.75,
                                            10, 5, false, 1.36, 1.28, 1.15, 1.09,
@@ -76,7 +77,7 @@ void init_character_data()
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "防御削弱", 0.3));//Q命中 (get_team)
     temp.push_back(nullptr);
     //temp.push_back(new Set(new Condition("ALL", "ALL", "重A"), "伤害加成", 2.98));//CD10s，不考虑
-    character_list.push_back(new Character("神里绫华", "冰", "单手剑", 12858, 342, 784, "暴击伤害", 0.384,
+    character_list.push_back(new Character("神里绫华", "ayaka", "冰", "单手剑", 12858, 342, 784, "暴击伤害", 0.384,
                                            10, "冰", (0.904 + 0.962 + 1.238 + 0.448 * 3 + 1.545) / 7, (0.84 + 0.894 + 1.15 + 0.416 * 3 + 1.436) / 7,
                                            "冰", 1.09, 1.013, "冰", 3.156, 2.934,
                                            10, 4.5, false, 5.083, 4.784, 4.305, 4.066,
@@ -92,8 +93,8 @@ void init_character_data()
     temp.push_back(new Set(new Condition("ALL", "ALL", "E|Q"), "防御无视", 0.6));//Q后
     temp.push_back(nullptr);//Q结束 队友30%攻击10s (get_team)
     temp.push_back(nullptr);//Q伤害命中，1次减队友CD1s/5次
-    character_list.push_back(new Character("雷电将军", "雷", "长柄武器", 12907, 337, 789, "元素充能效率", 0.32,
-                                           9, "物理", (0.784 + 0.785 + 0.986 + 0.573 + 0.573 + 1.294) / 6, (0.728 + 0.73 + 0.916 + 0.533 + 0.533 + 1.202) / 6,
+    character_list.push_back(new Character("雷电将军", "raiden", "雷", "长柄武器", 12907, 337, 789, "元素充能效率", 0.32,
+                                           6, "物理", (0.784 + 0.785 + 0.986 + 0.573 + 0.573 + 1.294) / 6, (0.728 + 0.73 + 0.916 + 0.533 + 0.533 + 1.202) / 6,
                                            "物理", 1.969, 1.83, "物理", 3.16, 2.93,
                                            10, 10, false, (2.491 + 18 * 0.893) / 19, (2.344 + 18 * 0.84) / 19, (2.11 + 18 * 0.756) / 19, (1.992 + 18 * 0.714) / 19,
                                            10, 90, false, 8.52 + 0.0826 * 60, 8.02 + 0.0778 * 60, 7.21 + 0.07 * 60, 6.81 + 0.0661 * 60,
@@ -109,8 +110,8 @@ void init_character_data()
     temp.push_back(nullptr);
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 130));//默认平均
     temp.push_back(nullptr);//与E一致，倍率为200%ATK+400%EM
-    character_list.push_back(new Character("纳西妲", "草", "法器", 10360, 299, 630, "元素精通", 115.0,
-                                           9, "草", (0.726 + 0.666 + 0.826 + 1.051) / 4, (0.685 + 0.629 + 0.78 + 0.993) / 4,
+    character_list.push_back(new Character("纳西妲", "nahida", "草", "法器", 10360, 299, 630, "元素精通", 115.0,
+                                           6, "草", (0.726 + 0.666 + 0.826 + 1.051) / 4, (0.685 + 0.629 + 0.78 + 0.993) / 4,
                                            "草", 2.376, 2.244, "草", 2.81, 2.61,
                                            10, 6, false, 2.193, 2.064, 1.858, 1.754,
                                            10, 50, false, 0, 0, 0, 0,
@@ -126,7 +127,7 @@ void init_character_data()
     temp.push_back(nullptr);//E变为2次 (recharge)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.15));//Q内 (get_team)
     temp.push_back(nullptr);//E后瞬发重A
-    character_list.push_back(new Character("甘雨", "冰", "弓", 9797, 335, 630, "暴击伤害", 0.384,
+    character_list.push_back(new Character("甘雨", "ganyu", "冰", "弓", 9797, 335, 630, "暴击伤害", 0.384,
                                            10, "物理", (0.627 + 0.704 + 0.899 + 0.899 + 0.954 + 1.139) / 6, (0.583 + 0.654 + 0.836 + 0.836 + 0.886 + 1.059) / 6,
                                            "冰", (2.3 + 3.92) / 2, (2.18 + 3.7) / 2, "物理", 2.81, 2.61,
                                            10, 4, true, 2.81, 2.64, 2.38, 2.24,
@@ -142,8 +143,8 @@ void init_character_data()
     temp.push_back(nullptr);//每1.8s Q倍率增加14%*LIFE (extra_rate)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.4));//E后 25s (get_team)
     temp.push_back(nullptr);//Q后平A变为重A，伤害*1.56*5
-    character_list.push_back(new Character("夜兰", "水", "弓", 14450, 244, 548, "暴击率", 0.192,
-                                           9, "物理", (0.804 + 0.772 + 1.02 + 0.643 * 2) / 5, (0.747 + 0.717 + 0.948 + 0.597 * 2) / 5,
+    character_list.push_back(new Character("夜兰", "yelan", "水", "弓", 14450, 244, 548, "暴击率", 0.192,
+                                           6, "物理", (0.804 + 0.772 + 1.02 + 0.643 * 2) / 5, (0.747 + 0.717 + 0.948 + 0.597 * 2) / 5,
                                            "水", 0, 0, "物理", 2.81, 2.61,
                                            10, 4, false, 0, 0, 0, 0,
                                            10, 70, false, 0, 0, 0, 0,
@@ -160,8 +161,8 @@ void init_character_data()
     temp.push_back(nullptr);//平A最后一击2s后造成75%火元素伤害
     temp.push_back(nullptr);//Q变为14s
     temp.push_back(new Set(new Condition("火", "ALL", "平A|重A|下落A|E"), "伤害加成", 0.15));//Q持续期间 (get_team)
-    character_list.push_back(new Character("香菱", "火", "长柄武器", 10875, 225, 669, "元素精通", 96,
-                                           9, "物理", (0.831 + 0.833 + 0.515 + 0.515 + 0.279 * 4 + 1.4) / 9, (0.773 + 0.774 + 0.479 + 0.479 + 0.259 * 4 + 1.31) / 9,
+    character_list.push_back(new Character("香菱", "xiangling", "火", "长柄武器", 10875, 225, 669, "元素精通", 96,
+                                           6, "物理", (0.831 + 0.833 + 0.515 + 0.515 + 0.279 * 4 + 1.4) / 9, (0.773 + 0.774 + 0.479 + 0.479 + 0.259 * 4 + 1.31) / 9,
                                            "物理", 2.41, 2.24, "物理", 3.16, 2.93,
                                            9 + 3, 4, true, 2.36, 2.23, 2.0, 1.89,
                                            9 + 3, 80, true, (1.53 + 1.87 + 2.33 + 12 * 2.38) / 15, (1.44 + 1.76 + 2.19 + 12 * 2.24) / 15, (1.3 + 1.58 + 1.97 + 12 * 2.02) / 15, (1.22 + 1.5 + 1.86 + 12 * 1.9) / 15,
@@ -176,8 +177,8 @@ void init_character_data()
     temp.push_back(new Set(new Condition("水", "ALL", "ALL"), "抗性削弱", 0.15));//Q变为18s Q命中 (get_team)
     temp.push_back(nullptr);//Q期间，E倍率*1.5 (special)
     temp.push_back(nullptr);//每2次攻击，下次攻击变为5柄剑，回复3点能量 (recharge)
-    character_list.push_back(new Character("行秋", "水", "单手剑", 10222, 202, 758, "攻击力", 0.24,
-                                           9, "物理", (0.921 + 0.942 + 0.564 + 0.564 + 1.107 + 0.709 + 0.709) / 7, (0.856 + 0.875 + 0.525 + 0.525 + 1.029 + 0.659 + 0.659) / 7,
+    character_list.push_back(new Character("行秋", "xingqiu", "水", "单手剑", 10222, 202, 758, "攻击力", 0.24,
+                                           6, "物理", (0.921 + 0.942 + 0.564 + 0.564 + 1.107 + 0.709 + 0.709) / 7, (0.856 + 0.875 + 0.525 + 0.525 + 1.029 + 0.659 + 0.659) / 7,
                                            "物理", (0.935 + 1.11) / 2, (0.869 + 1.032) / 2, "物理", 3.16, 2.93,
                                            9 + 3, 5, false, (3.57 * 1.5 + 4.06 * 1.5) / 2, (3.36 * 1.5 + 3.82 * 1.5) / 2, (3.02 * 1.5 + 3.44 * 1.5) / 2, (2.86 * 1.5 + 3.25 * 1.5) / 2,
                                            9 + 3, 80, false, 1.15, 1.09, 0.977, 0.923,
@@ -193,8 +194,8 @@ void init_character_data()
     temp.push_back(nullptr);//E倍率提升25% (get_special)
     temp.push_back(new Set(new Condition("雷", "ALL", "ALL"), "伤害加成", 0.2));//E命中 (get_team)
     temp.push_back(new Set(new Condition("ALL", "ALL", "E"), "防御无视", 0.6));
-    character_list.push_back(new Character("八重神子", "雷", "法器", 10372, 340, 569, "暴击率", 0.192,
-                                           9, "雷", (0.714 + 0.693 + 1.024) / 3, (0.674 + 0.655 + 0.967) / 3,
+    character_list.push_back(new Character("八重神子", "yaemiko", "雷", "法器", 10372, 340, 569, "暴击率", 0.192,
+                                           6, "雷", (0.714 + 0.693 + 1.024) / 3, (0.674 + 0.655 + 0.967) / 3,
                                            "雷", 2.572, 2.429, "雷", 2.81, 2.61,
                                            10, 5, false, 2.015 * 1.25, 1.896 * 1.25, 1.706 * 1.25, 1.612 * 1.25,
                                            10, 90, false, (5.53 + 7.09 * 3) / 4, (5.2 + 6.68 * 3) / 4, (4.68 + 6.01 * 3) / 4, (4.42 + 5.68 * 3) / 4,
@@ -209,8 +210,8 @@ void init_character_data()
     temp.push_back(new Set(new Condition("风|物理", "ALL", "ALL"), "抗性削弱", 0.24));//E后起飞0.24，落地0.12 (get_team)
     temp.push_back(new Set(new Condition("风", "ALL", "ALL"), "伤害加成", 0.25));//获得元素微粒
     temp.push_back(new Set(new Condition("火|水|雷|冰|风", "ALL", "ALL"), "抗性削弱", 0.2));//Q (get_team)
-    character_list.push_back(new Character("温迪", "风", "弓", 10531, 263, 669, "元素充能效率", 0.32,
-                                           9, "物理", (0.403 + 0.403 + 0.877 + 1.035 + 0.515 + 0.515 + 1.001 + 1.403) / 8, (0.375 + 0.375 + 0.815 + 0.962 + 0.479 + 0.479 + 0.931 + 1.304) / 8,
+    character_list.push_back(new Character("温迪", "venti", "风", "弓", 10531, 263, 669, "元素充能效率", 0.32,
+                                           6, "物理", (0.403 + 0.403 + 0.877 + 1.035 + 0.515 + 0.515 + 1.001 + 1.403) / 8, (0.375 + 0.375 + 0.815 + 0.962 + 0.479 + 0.479 + 0.931 + 1.304) / 8,
                                            "风", 2.23, 2.11, "物理", 2.81, 2.61,
                                            9, 3, false, 5.87, 5.52, 4.97, 4.69,
                                            9, 60, true, 0.799, 0.752, 0.677, 0.639,
@@ -225,8 +226,8 @@ void init_character_data()
     temp.push_back(nullptr);//平A后20%重A一次，CD5s
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "暴击率", 0.15));//Q后 (get_team)
     temp.push_back(new Set(new Condition("ALL", "ALL", "重A"), "伤害加成", 1.8));//冲刺 60%/s
-    character_list.push_back(new Character("莫娜", "水", "法器", 10409, 287, 653, "元素充能效率", 0.32,
-                                           9, "水", (0.677 + 0.648 + 0.806 + 1.01) / 4, (0.639 + 0.612 + 0.762 + 0.955) / 4,
+    character_list.push_back(new Character("莫娜", "mona", "水", "法器", 10409, 287, 653, "元素充能效率", 0.32,
+                                           6, "水", (0.677 + 0.648 + 0.806 + 1.01) / 4, (0.639 + 0.612 + 0.762 + 0.955) / 4,
                                            "水", 2.69, 2.55, "水", 2.81, 2.61,
                                            9, 3, true, (0.68 * 4 + 2.82) / 5, (0.64 * 4 + 2.66) / 5, (0.576 * 4 + 2.39) / 5, (0.544 * 4 + 2.26) / 5,
                                            9 + 3, 60, false, 9.4, 8.85, 7.96, 7.52,
@@ -242,8 +243,8 @@ void init_character_data()
     temp.push_back(nullptr);//Q加盾
     temp.push_back(nullptr);//Q影响范围扩大20%，石化效果持续时间延长2秒。
     temp.push_back(nullptr);//护盾生效期间，受到伤害的40%转为等额生命值恢复。单次恢复量不超过角色最大生命值的8%。
-    character_list.push_back(new Character("钟离", "岩", "长柄武器", 14695, 251, 738, "伤害加成", 0.288,
-                                           9, "物理", (0.608 + 0.616 + 0.763 + 0.849 + 0.213 * 4 + 1.077) / 9, (0.565 + 0.572 + 0.709 + 0.789 + 0.198 * 4 + 1.001) / 9,
+    character_list.push_back(new Character("钟离", "zhongli", "岩", "长柄武器", 14695, 251, 738, "伤害加成", 0.288,
+                                           6, "物理", (0.608 + 0.616 + 0.763 + 0.849 + 0.213 * 4 + 1.077) / 9, (0.565 + 0.572 + 0.709 + 0.789 + 0.198 * 4 + 1.001) / 9,
                                            "物理", 2.2, 2.04, "物理", 3.16, 2.93,
                                            9, 0.5, true, 1.7, 1.6, 1.44, 1.36,
                                            9, 40, false, 10.84, 10.3, 9, 8.35,
@@ -260,7 +261,7 @@ void init_character_data()
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 160));//每1枚产生的琢光镜将使元素精通提升40点，持续8秒，最多4层。默认先Q，4层，8s
     temp.push_back(new Set(new Condition("草", "ALL", "ALL"), "伤害加成", 0.3));//Q每消耗1枚琢光镜，使队伍中的其他角色元素精通提升30点，持续15秒，每产生1枚琢光镜，使艾尔海森获得10%草元素伤害加成，持续15秒。默认先Q，3层，15s
     temp.push_back(nullptr);//(special)产生琢光镜时，若琢光镜数量已达到上限，艾尔海森的暴击率提升10%，暴击伤害提升70%，持续6秒，默认触发
-    character_list.push_back(new Character("艾尔海森", "草", "单手剑", 13348, 313, 782, "伤害加成", 0.288,
+    character_list.push_back(new Character("艾尔海森", "alhaitham", "草", "单手剑", 13348, 313, 782, "伤害加成", 0.288,
                                            10, "草", (1.108 + 1.124 + 0.736 + 0.736 + 1.453 + 1.908) / 6, (1.03 + 1.044 + 0.684 + 0.684 + 1.35 + 1.774) / 6,
                                            "草", 1.408 + 1.408, 1.308 + 1.308, "草", 3.16, 2.93,
                                            10, 3, false, 2.04, 1.92, 1.728, 1.632,
@@ -279,8 +280,8 @@ void init_character_data()
     temp.push_back(nullptr);
     temp.push_back(nullptr);
     temp.push_back(nullptr);
-    character_list.push_back(new Character("枫原万叶", "风", "单手剑", 13348, 297, 807, "元素精通", 115.0,
-                                           9, "物理", 0, 0, "物理", 0, 0, "物理", 0, 0,
+    character_list.push_back(new Character("枫原万叶", "kazuha", "风", "单手剑", 13348, 297, 807, "元素精通", 115.0,
+                                           6, "物理", 0, 0, "物理", 0, 0, "物理", 0, 0,
                                            9, 4, false, 0, 0, 0, 0,
                                            9, 60, true, 0, 0, 0, 0,
                                            0, temp,
@@ -294,12 +295,27 @@ void init_character_data()
     temp.push_back(nullptr);
     temp.push_back(nullptr);
     temp.push_back(nullptr);
-    character_list.push_back(new Character("班尼特", "火", "单手剑", 12397, 191, 771, "元素充能效率", 0.267,
-                                           9, "物理", 0, 0, "物理", 0, 0, "物理", 0, 0,
+    character_list.push_back(new Character("班尼特", "bennett", "火", "单手剑", 12397, 191, 771, "元素充能效率", 0.267,
+                                           6, "物理", 0, 0, "物理", 0, 0, "物理", 0, 0,
                                            9 + 3, 2, false, 0, 0, 0, 0,
                                            9 + 3, 60, false, 0, 0, 0, 0,
                                            6, temp,
                                            new weapon_artifact_related_arguments(false, true, 2, false, 3, false, false, 3,
+                                                                                 3, -1, -1, -1, false, false, -1, -1)));
+    temp.clear();
+
+    temp.push_back(nullptr);
+    temp.push_back(nullptr);
+    temp.push_back(nullptr);
+    temp.push_back(nullptr);
+    temp.push_back(nullptr);
+    temp.push_back(nullptr);
+    character_list.push_back(new Character("久岐忍", "kuki", "雷", "单手剑", 12289, 212, 751, "生命值", 0.24,
+                                           1, "物理", 0, 0, "物理", 0, 0, "物理", 0, 0,
+                                           6, 4.5, false, 0, 0, 0, 0,
+                                           6, 60, false, 0, 0, 0, 0,
+                                           0, temp,
+                                           new weapon_artifact_related_arguments(false, true, 2, true, 1, false, true, 2,
                                                                                  3, -1, -1, -1, false, false, -1, -1)));
     temp.clear();
 
@@ -310,7 +326,7 @@ void init_character_data()
     temp.push_back(nullptr);
     temp.push_back(nullptr);
     temp.push_back(nullptr);
-    character_list.push_back(new Character("火_test", "火", "单手剑", 10000, 300, 700, "暴击率", 0.192,
+    character_list.push_back(new Character("火_test", "", "火", "单手剑", 10000, 300, 700, "暴击率", 0.192,
                                            9, "火", 0, 0, "火", 0, 0, "火", 0, 0,
                                            9, 3, false, 0, 0, 0, 0,
                                            9, 60, false, 0, 0, 0, 0,
@@ -325,7 +341,7 @@ void init_character_data()
     temp.push_back(nullptr);
     temp.push_back(nullptr);
     temp.push_back(nullptr);
-    character_list.push_back(new Character("水_test", "水", "单手剑", 10000, 300, 700, "暴击率", 0.192,
+    character_list.push_back(new Character("水_test", "", "水", "单手剑", 10000, 300, 700, "暴击率", 0.192,
                                            9, "水", 0, 0, "水", 0, 0, "水", 0, 0,
                                            9, 3, false, 0, 0, 0, 0,
                                            9, 60, false, 0, 0, 0, 0,
@@ -340,7 +356,7 @@ void init_character_data()
     temp.push_back(nullptr);
     temp.push_back(nullptr);
     temp.push_back(nullptr);
-    character_list.push_back(new Character("雷_test", "雷", "单手剑", 10000, 300, 700, "暴击率", 0.192,
+    character_list.push_back(new Character("雷_test", "", "雷", "单手剑", 10000, 300, 700, "暴击率", 0.192,
                                            9, "雷", 0, 0, "雷", 0, 0, "雷", 0, 0,
                                            9, 3, false, 0, 0, 0, 0,
                                            9, 60, false, 0, 0, 0, 0,
@@ -355,7 +371,7 @@ void init_character_data()
     temp.push_back(nullptr);
     temp.push_back(nullptr);
     temp.push_back(nullptr);
-    character_list.push_back(new Character("冰_test", "冰", "单手剑", 10000, 300, 700, "暴击率", 0.192,
+    character_list.push_back(new Character("冰_test", "", "冰", "单手剑", 10000, 300, 700, "暴击率", 0.192,
                                            9, "冰", 0, 0, "冰", 0, 0, "冰", 0, 0,
                                            9, 3, false, 0, 0, 0, 0,
                                            9, 60, false, 0, 0, 0, 0,
@@ -370,7 +386,7 @@ void init_character_data()
     temp.push_back(nullptr);
     temp.push_back(nullptr);
     temp.push_back(nullptr);
-    character_list.push_back(new Character("风_test", "风", "单手剑", 10000, 300, 700, "暴击率", 0.192,
+    character_list.push_back(new Character("风_test", "", "风", "单手剑", 10000, 300, 700, "暴击率", 0.192,
                                            9, "风", 0, 0, "风", 0, 0, "风", 0, 0,
                                            9, 3, false, 0, 0, 0, 0,
                                            9, 60, false, 0, 0, 0, 0,
@@ -385,7 +401,7 @@ void init_character_data()
     temp.push_back(nullptr);
     temp.push_back(nullptr);
     temp.push_back(nullptr);
-    character_list.push_back(new Character("岩_test", "岩", "单手剑", 10000, 300, 700, "暴击率", 0.192,
+    character_list.push_back(new Character("岩_test", "", "岩", "单手剑", 10000, 300, 700, "暴击率", 0.192,
                                            9, "岩", 0, 0, "岩", 0, 0, "岩", 0, 0,
                                            9, 3, false, 0, 0, 0, 0,
                                            9, 60, false, 0, 0, 0, 0,
@@ -400,7 +416,7 @@ void init_character_data()
     temp.push_back(nullptr);
     temp.push_back(nullptr);
     temp.push_back(nullptr);
-    character_list.push_back(new Character("草_test", "草", "单手剑", 10000, 300, 700, "暴击率", 0.192,
+    character_list.push_back(new Character("草_test", "", "草", "单手剑", 10000, 300, 700, "暴击率", 0.192,
                                            9, "草", 0, 0, "草", 0, 0, "草", 0, 0,
                                            9, 3, false, 0, 0, 0, 0,
                                            9, 60, false, 0, 0, 0, 0,
@@ -487,452 +503,475 @@ void init_weapon_data()
 
     //(special)
     temp.push_back(new Set(new Condition("火|水|雷|冰|风|岩|草", "ALL", "ALL"), "伤害加成", 0.12));
-    weapon_list.push_back(new Weapon("雾切之回光", "单手剑", 674, "暴击伤害", 0.441, 1, temp));
+    weapon_list.push_back(new Weapon("雾切之回光", "mistsplitterreforged", "单手剑", 674, "暴击伤害", 0.441, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.2));
-    weapon_list.push_back(new Weapon("风鹰剑", "单手剑", 674, "伤害加成", 0.413, 1, temp));
+    weapon_list.push_back(new Weapon("风鹰剑", "aquilafavonia", "单手剑", 674, "伤害加成", 0.413, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("火|水|雷|冰|风|岩|草", "ALL", "ALL"), "伤害加成", 0.12));
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A"), "伤害加成", 0.4));//队友E，2层
-    weapon_list.push_back(new Weapon("波乱月白经津", "单手剑", 608, "暴击率", 0.331, 1, temp));
+    weapon_list.push_back(new Weapon("波乱月白经津", "harangeppakufutsu", "单手剑", 608, "暴击率", 0.331, 1, temp));
     temp.clear();
 
     //(special)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "护盾强效", 0.2));
-    weapon_list.push_back(new Weapon("斫峰之刃", "单手剑", 608, "攻击力", 0.496, 1, temp));
+    weapon_list.push_back(new Weapon("斫峰之刃", "summitshaper", "单手剑", 608, "攻击力", 0.496, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "暴击率", 0.04));
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A|重A"), "额外倍率", 0.2));//Q后
-    weapon_list.push_back(new Weapon("天空之刃", "单手剑", 608, "元素充能效率", 0.551, 1, temp));
+    weapon_list.push_back(new Weapon("天空之刃", "skywardblade", "单手剑", 608, "元素充能效率", 0.551, 1, temp));
     temp.clear();
 
     //(special)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.1));
-    weapon_list.push_back(new Weapon("苍古自由之誓", "单手剑", 608, "元素精通", 198.0, 1, temp));
+    weapon_list.push_back(new Weapon("苍古自由之誓", "freedomsworn", "单手剑", 608, "元素精通", 198.0, 1, temp));
     temp.clear();
 
     //(get_convert)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2));
-    weapon_list.push_back(new Weapon("磐岩结绿", "单手剑", 542, "暴击率", 0.441, 1, temp));
+    weapon_list.push_back(new Weapon("磐岩结绿", "primordialjadecutter", "单手剑", 542, "暴击率", 0.441, 1, temp));
     temp.clear();
 
     //TODO:NEW
     //(convert)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "暴击率", 0.04));
-    weapon_list.push_back(new Weapon("裁叶萃光", "单手剑", 542, "暴击伤害", 0.882, 1, temp));
+    weapon_list.push_back(new Weapon("裁叶萃光", "lightoffoliarincision", "单手剑", 542, "暴击伤害", 0.882, 1, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     //(convert)
     //(get_team)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2));
-    weapon_list.push_back(new Weapon("圣显之钥", "单手剑", 542, "生命值", 0.662, 1, temp));
+    weapon_list.push_back(new Weapon("圣显之钥", "keyofkhajnisut", "单手剑", 542, "生命值", 0.662, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.12));
-    weapon_list.push_back(new Weapon("暗巷闪光", "单手剑", 620, "元素精通", 55.0, 1, temp));
+    weapon_list.push_back(new Weapon("暗巷闪光", "thealleyflash", "单手剑", 620, "元素精通", 55.0, 1, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("试作斩岩", "单手剑", 565, "伤害加成", 0.345, 5, temp));
+    weapon_list.push_back(new Weapon("试作斩岩", "prototyperancour", "单手剑", 565, "伤害加成", 0.345, 5, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     //(special) (get_team)
-    weapon_list.push_back(new Weapon("原木刀", "单手剑", 565, "元素充能效率", 0.306, 5, temp));
+    weapon_list.push_back(new Weapon("原木刀", "sapwoodblade", "单手剑", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A|重A"), "伤害加成", 0.2));
-    weapon_list.push_back(new Weapon("黑剑", "单手剑", 510, "暴击率", 0.276, 1, temp));
+    weapon_list.push_back(new Weapon("黑剑", "theblacksword", "单手剑", 510, "暴击率", 0.276, 1, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("匣里龙吟", "单手剑", 510, "攻击力", 0.413, 5, temp));
+    weapon_list.push_back(new Weapon("匣里龙吟", "lionsroar", "单手剑", 510, "攻击力", 0.413, 5, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.15));//平A重A下落A
-    weapon_list.push_back(new Weapon("笼钓瓶一心", "单手剑", 510, "攻击力", 0.413, 1, temp));
+    weapon_list.push_back(new Weapon("笼钓瓶一心", "prizedisshinblade", "单手剑", 510, "攻击力", 0.413, 1, temp));
     temp.clear();
 
-    weapon_list.push_back(new Weapon("笛剑", "单手剑", 510, "攻击力", 0.413, 5, temp));
+    weapon_list.push_back(new Weapon("笛剑", "theflute", "单手剑", 510, "攻击力", 0.413, 5, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "E"), "伤害加成", 0.16));
     temp.push_back(new Set(new Condition("ALL", "ALL", "E"), "暴击率", 0.06));
-    weapon_list.push_back(new Weapon("腐殖之剑", "单手剑", 510, "元素充能效率", 0.459, 5, temp));
+    weapon_list.push_back(new Weapon("腐殖之剑", "festeringdesire", "单手剑", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.12));//元素伤害，2层
-    weapon_list.push_back(new Weapon("铁蜂刺", "单手剑", 510, "元素精通", 165.0, 5, temp));
+    weapon_list.push_back(new Weapon("铁蜂刺", "ironsting", "单手剑", 510, "元素精通", 165.0, 5, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     //(convert)
     //(get_team)
-    weapon_list.push_back(new Weapon("西福斯的月光", "单手剑", 510, "元素精通", 165.0, 1, temp));
+    weapon_list.push_back(new Weapon("西福斯的月光", "xiphosmoonlight", "单手剑", 510, "元素精通", 165.0, 1, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.16));
-    weapon_list.push_back(new Weapon("东花坊时雨", "单手剑", 510, "元素精通", 165.0, 5, temp));
+    weapon_list.push_back(new Weapon("东花坊时雨", "toukaboushigure", "单手剑", 510, "元素精通", 165.0, 5, temp));
     temp.clear();
 
     //(get_extra_rate)
-    weapon_list.push_back(new Weapon("辰砂之纺锤", "单手剑", 454, "防御力", 0.69, 5, temp));
+    weapon_list.push_back(new Weapon("辰砂之纺锤", "cinnabarspindle", "单手剑", 454, "防御力", 0.69, 5, temp));
     temp.clear();
 
     //(recharge)
-    weapon_list.push_back(new Weapon("天目影打刀", "单手剑", 454, "攻击力", 0.551, 5, temp));
+    weapon_list.push_back(new Weapon("天目影打刀", "amenomakageuchi", "单手剑", 454, "攻击力", 0.551, 5, temp));
     temp.clear();
 
     //(recharge)
-    weapon_list.push_back(new Weapon("西风剑", "单手剑", 454, "元素充能效率", 0.613, 5, temp));
+    weapon_list.push_back(new Weapon("西风剑", "favoniussword", "单手剑", 454, "元素充能效率", 0.613, 5, temp));
     temp.clear();
 
     //(recharge)
-    weapon_list.push_back(new Weapon("祭礼剑", "单手剑", 454, "元素充能效率", 0.613, 5, temp));
+    weapon_list.push_back(new Weapon("祭礼剑", "sacrificialsword", "单手剑", 454, "元素充能效率", 0.613, 5, temp));
     temp.clear();
 
-    weapon_list.push_back(new Weapon("图莱杜拉的回忆", "法器", 674, "暴击伤害", 0.441, 1, temp));
+    //TODO:verify eng-name
+    weapon_list.push_back(new Weapon("图莱杜拉的回忆", "tulaytullahsremembrance", "法器", 674, "暴击伤害", 0.441, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("火|水|雷|冰|风|岩|草", "ALL", "ALL"), "伤害加成", 0.12));
-    weapon_list.push_back(new Weapon("天空之卷", "法器", 674, "攻击力", 0.331, 1, temp));
+    weapon_list.push_back(new Weapon("天空之卷", "skywardatlas", "法器", 674, "攻击力", 0.331, 1, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("四风原典", "法器", 608, "暴击率", 0.331, 1, temp));
+    weapon_list.push_back(new Weapon("四风原典", "lostprayertothesacredwinds", "法器", 608, "暴击率", 0.331, 1, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("神乐之真意", "法器", 608, "暴击伤害", 0.662, 1, temp));
+    weapon_list.push_back(new Weapon("神乐之真意", "kagurasverity", "法器", 608, "暴击伤害", 0.662, 1, temp));
     temp.clear();
 
     //(special)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "护盾强效", 0.2));
-    weapon_list.push_back(new Weapon("尘世之锁", "法器", 608, "攻击力", 0.496, 1, temp));
+    weapon_list.push_back(new Weapon("尘世之锁", "memoryofdust", "法器", 608, "攻击力", 0.496, 1, temp));
     temp.clear();
 
     //(get_extra_rate)
     //(recharge)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "治疗加成", 0.1));
-    weapon_list.push_back(new Weapon("不灭月华", "法器", 608, "生命值", 0.496, 1, temp));
+    weapon_list.push_back(new Weapon("不灭月华", "everlastingmoonglow", "法器", 608, "生命值", 0.496, 1, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     //(special)
     //(get_team)
-    weapon_list.push_back(new Weapon("千夜浮梦", "法器", 542, "元素精通", 265.0, 1, temp));
+    weapon_list.push_back(new Weapon("千夜浮梦", "athousandfloatingdreams", "法器", 542, "元素精通", 265.0, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素充能效率", 0.24));//E后
-    weapon_list.push_back(new Weapon("证誓之明瞳", "法器", 565, "攻击力", 0.276, 5, temp));
+    weapon_list.push_back(new Weapon("证誓之明瞳", "oathsworneye", "法器", 565, "攻击力", 0.276, 5, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.2));//冲刺
-    weapon_list.push_back(new Weapon("暗巷的酒与诗", "法器", 565, "元素充能效率", 0.306, 1, temp));
+    weapon_list.push_back(new Weapon("暗巷的酒与诗", "wineandsong", "法器", 565, "元素充能效率", 0.306, 1, temp));
     temp.clear();
 
     //(special) (get_team)
-    weapon_list.push_back(new Weapon("白辰之环", "法器", 565, "元素充能效率", 0.306, 5, temp));
+    weapon_list.push_back(new Weapon("白辰之环", "hakushinring", "法器", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("万国诸海图谱", "法器", 565, "元素精通", 110.0, 5, temp));
+    weapon_list.push_back(new Weapon("万国诸海图谱", "mappamare", "法器", 565, "元素精通", 110.0, 5, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("匣里日月", "法器", 510, "暴击率", 0.276, 1, temp));
+    weapon_list.push_back(new Weapon("匣里日月", "solarpearl", "法器", 510, "暴击率", 0.276, 1, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("流浪乐章", "法器", 510, "暴击伤害", 0.551, 5, temp));
+    weapon_list.push_back(new Weapon("流浪乐章", "thewidsith", "法器", 510, "暴击伤害", 0.551, 5, temp));
     temp.clear();
 
-    weapon_list.push_back(new Weapon("忍冬之果", "法器", 510, "攻击力", 0.413, 5, temp));
+    weapon_list.push_back(new Weapon("忍冬之果", "frostbearer", "法器", 510, "攻击力", 0.413, 5, temp));
     temp.clear();
 
     //(recharge)
-    weapon_list.push_back(new Weapon("试作金珀", "法器", 510, "生命值", 0.413, 5, temp));
+    weapon_list.push_back(new Weapon("试作金珀", "prototypeamber", "法器", 510, "生命值", 0.413, 5, temp));
     temp.clear();
 
     //(recharge)
-    weapon_list.push_back(new Weapon("西风秘典", "法器", 510, "元素充能效率", 0.459, 5, temp));
+    weapon_list.push_back(new Weapon("西风秘典", "favoniuscodex", "法器", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     //(convert)
     //(get_team)
-    weapon_list.push_back(new Weapon("流浪的晚星", "法器", 510, "元素精通", 165.0, 1, temp));
+    weapon_list.push_back(new Weapon("流浪的晚星", "wanderingevenstar", "法器", 510, "元素精通", 165.0, 1, temp));
+    temp.clear();
+
+    //TODO:verify eng-name
+    //(special)
+    weapon_list.push_back(new Weapon("盈满之实", "fruitoffulfillment", "法器", 510, "元素充能效率", 0.459, 5, temp));
+    temp.clear();
+
+    weapon_list.push_back(new Weapon("昭心", "eyeofperception", "法器", 454, "攻击力", 0.551, 5, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("盈满之实", "法器", 510, "元素充能效率", 0.459, 5, temp));
-    temp.clear();
-
-    weapon_list.push_back(new Weapon("昭心", "法器", 454, "攻击力", 0.551, 5, temp));
-    temp.clear();
-
-    //(special)
-    weapon_list.push_back(new Weapon("嘟嘟可故事集", "法器", 454, "攻击力", 0.551, 5, temp));
+    weapon_list.push_back(new Weapon("嘟嘟可故事集", "dodocotales", "法器", 454, "攻击力", 0.551, 5, temp));
     temp.clear();
 
     //(recharge)
-    weapon_list.push_back(new Weapon("祭礼残章", "法器", 454, "元素精通", 221.0, 5, temp));
+    weapon_list.push_back(new Weapon("祭礼残章", "sacrificialfragments", "法器", 454, "元素精通", 221.0, 5, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "暴击伤害", 0.2));
-    weapon_list.push_back(new Weapon("天空之翼", "弓", 674, "暴击率", 0.221, 1, temp));
+    weapon_list.push_back(new Weapon("天空之翼", "skywardharp", "弓", 674, "暴击率", 0.221, 1, temp));
     temp.clear();
 
     //(special)
     temp.push_back(new Set(new Condition("ALL", "ALL", "E|Q"), "伤害加成", 0.12));
-    weapon_list.push_back(new Weapon("冬极白星", "弓", 608, "暴击率", 0.331, 1, temp));
+    weapon_list.push_back(new Weapon("冬极白星", "polarstar", "弓", 608, "暴击率", 0.331, 1, temp));
     temp.clear();
 
     //(special)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.2));
-    weapon_list.push_back(new Weapon("飞雷之弦振", "弓", 608, "暴击伤害", 0.662, 1, temp));
+    weapon_list.push_back(new Weapon("飞雷之弦振", "thunderingpulse", "弓", 608, "暴击伤害", 0.662, 1, temp));
     temp.clear();
 
     //高估
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A|重A"), "伤害加成", 0.12));
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A"), "伤害加成", 0.16));//2层
     temp.push_back(new Set(new Condition("ALL", "ALL", "重A"), "伤害加成", 0.32));//4层
-    weapon_list.push_back(new Weapon("阿莫斯之弓", "弓", 608, "攻击力", 0.496, 1, temp));
+    weapon_list.push_back(new Weapon("阿莫斯之弓", "amosbow", "弓", 608, "攻击力", 0.496, 1, temp));
     temp.clear();
 
     //(get_team)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 60.0));
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 100.0));
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.2));
-    weapon_list.push_back(new Weapon("终末嗟叹之诗", "弓", 608, "元素充能效率", 0.551, 1, temp));
+    weapon_list.push_back(new Weapon("终末嗟叹之诗", "elegyfortheend", "弓", 608, "元素充能效率", 0.551, 1, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     //(get_extra_rate)
     temp.push_back(new Set(new Condition("火|水|雷|冰|风|岩|草", "ALL", "ALL"), "伤害加成", 0.12));
-    weapon_list.push_back(new Weapon("猎人之径", "弓", 542, "暴击率", 0.441, 1, temp));
+    weapon_list.push_back(new Weapon("猎人之径", "hunterspath", "弓", 542, "暴击率", 0.441, 1, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.16));
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.2));
-    weapon_list.push_back(new Weapon("若水", "弓", 542, "暴击伤害", 0.882, 1, temp));
+    weapon_list.push_back(new Weapon("若水", "aquasimulacra", "弓", 542, "暴击伤害", 0.882, 1, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("暗巷猎手", "弓", 565, "攻击力", 0.276, 1, temp));
+    weapon_list.push_back(new Weapon("暗巷猎手", "alleyhunter", "弓", 565, "攻击力", 0.276, 1, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("曚云之月", "弓", 565, "攻击力", 0.276, 2, temp));
+    weapon_list.push_back(new Weapon("曚云之月", "mouunsmoon", "弓", 565, "攻击力", 0.276, 2, temp));
     temp.clear();
 
     //(recharge)
-    weapon_list.push_back(new Weapon("祭礼弓", "弓", 565, "元素充能效率", 0.306, 5, temp));
+    weapon_list.push_back(new Weapon("祭礼弓", "sacrificialbow", "弓", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.1));
-    weapon_list.push_back(new Weapon("落霞", "弓", 565, "元素充能效率", 0.306, 5, temp));
+    weapon_list.push_back(new Weapon("落霞", "fadingtwilight", "弓", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
 
-    weapon_list.push_back(new Weapon("苍翠猎弓", "弓", 510, "暴击率", 0.276, 1, temp));
+    weapon_list.push_back(new Weapon("苍翠猎弓", "theviridescenthunt", "弓", 510, "暴击率", 0.276, 1, temp));
     temp.clear();
 
     //(special)
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A"), "伤害加成", 0.4));
-    weapon_list.push_back(new Weapon("弓藏", "弓", 510, "攻击力", 0.413, 5, temp));
+    weapon_list.push_back(new Weapon("弓藏", "rust", "弓", 510, "攻击力", 0.413, 5, temp));
     temp.clear();
 
-    weapon_list.push_back(new Weapon("试作澹月", "弓", 510, "攻击力", 0.413, 5, temp));
+    weapon_list.push_back(new Weapon("试作澹月", "prototypecrescent", "弓", 510, "攻击力", 0.413, 5, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("幽夜华尔兹", "弓", 510, "伤害加成", 0.517, 1, temp));
+    weapon_list.push_back(new Weapon("幽夜华尔兹", "mitternachtswaltz", "弓", 510, "伤害加成", 0.517, 1, temp));
     temp.clear();
 
-    weapon_list.push_back(new Weapon("竭泽", "弓", 510, "元素充能效率", 0.459, 5, temp));
+    //TODO:verify eng-name
+    weapon_list.push_back(new Weapon("竭泽", "endoftheline", "弓", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "E|Q"), "伤害加成", 0.24));
-    weapon_list.push_back(new Weapon("绝弦", "弓", 510, "元素精通", 165.0, 5, temp));
+    weapon_list.push_back(new Weapon("绝弦", "thestringless", "弓", 510, "元素精通", 165.0, 5, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.16));//E后
-    weapon_list.push_back(new Weapon("风花之颂", "弓", 510, "元素精通", 165.0, 5, temp));
+    weapon_list.push_back(new Weapon("风花之颂", "windblumeode", "弓", 510, "元素精通", 165.0, 5, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("破魔之弓", "弓", 454, "攻击力", 0.551, 5, temp));
+    weapon_list.push_back(new Weapon("破魔之弓", "hamayumi", "弓", 454, "攻击力", 0.551, 5, temp));
+    temp.clear();
+
+    //TODO:verify eng-name
+    //(special)
+    weapon_list.push_back(new Weapon("王下近侍", "kingssquire", "弓", 454, "攻击力", 0.551, 5, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("王下近侍", "弓", 454, "攻击力", 0.551, 5, temp));
-    temp.clear();
-
-    //(special)
-    weapon_list.push_back(new Weapon("钢轮弓", "弓", 454, "伤害加成", 0.69, 5, temp));
+    weapon_list.push_back(new Weapon("钢轮弓", "compoundbow", "弓", 454, "伤害加成", 0.69, 5, temp));
     temp.clear();
 
     //(recharge)
-    weapon_list.push_back(new Weapon("西风猎弓", "弓", 454, "元素充能效率", 0.613, 5, temp));
+    weapon_list.push_back(new Weapon("西风猎弓", "favoniuswarbow", "弓", 454, "元素充能效率", 0.613, 5, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.16));
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.2));//平A重A4次 (get_team)
-    weapon_list.push_back(new Weapon("松籁响起之时", "双手剑", 741, "伤害加成", 0.207, 1, temp));
+    weapon_list.push_back(new Weapon("松籁响起之时", "songofbrokenpines", "双手剑", 741, "伤害加成", 0.207, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.08));
-    weapon_list.push_back(new Weapon("天空之傲", "双手剑", 674, "元素充能效率", 0.368, 1, temp));
+    weapon_list.push_back(new Weapon("天空之傲", "skywardpride", "双手剑", 674, "元素充能效率", 0.368, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.2));//默认不触发特效
-    weapon_list.push_back(new Weapon("狼的末路", "双手剑", 608, "攻击力", 0.496, 1, temp));
+    weapon_list.push_back(new Weapon("狼的末路", "wolfsgravestone", "双手剑", 608, "攻击力", 0.496, 1, temp));
     temp.clear();
 
     //(special)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "护盾强效", 0.2));
-    weapon_list.push_back(new Weapon("无工之剑", "双手剑", 608, "攻击力", 0.496, 1, temp));
+    weapon_list.push_back(new Weapon("无工之剑", "theunforged", "双手剑", 608, "攻击力", 0.496, 1, temp));
     temp.clear();
 
     //(get_extra_rate)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "防御力", 0.28));
-    weapon_list.push_back(new Weapon("赤角石溃杵", "双手剑", 542, "暴击伤害", 0.882, 1, temp));
+    weapon_list.push_back(new Weapon("赤角石溃杵", "redhornstonethresher", "双手剑", 542, "暴击伤害", 0.882, 1, temp));
     temp.clear();
 
-    weapon_list.push_back(new Weapon("试作古华", "双手剑", 565, "攻击力", 0.276, 5, temp));
+    weapon_list.push_back(new Weapon("试作古华", "prototypearchaic", "双手剑", 565, "攻击力", 0.276, 5, temp));
     temp.clear();
 
-    weapon_list.push_back(new Weapon("雪葬的星银", "双手剑", 565, "伤害加成", 0.345, 5, temp));
+    weapon_list.push_back(new Weapon("雪葬的星银", "snowtombedstarsilver", "双手剑", 565, "伤害加成", 0.345, 5, temp));
     temp.clear();
 
     //(recharge)
-    weapon_list.push_back(new Weapon("祭礼大剑", "双手剑", 565, "元素充能效率", 0.306, 5, temp));
+    weapon_list.push_back(new Weapon("祭礼大剑", "sacrificialgreatsword", "双手剑", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     //(special) (get_team)
-    weapon_list.push_back(new Weapon("森林王器", "双手剑", 565, "元素充能效率", 0.306, 5, temp));
+    weapon_list.push_back(new Weapon("森林王器", "forestregalia", "双手剑", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("螭骨剑", "双手剑", 510, "暴击率", 0.276, 5, temp));
+    weapon_list.push_back(new Weapon("螭骨剑", "serpentspine", "双手剑", 510, "暴击率", 0.276, 5, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("白影剑", "双手剑", 510, "防御力", 0.517, 5, temp));
+    weapon_list.push_back(new Weapon("白影剑", "whiteblind", "双手剑", 510, "防御力", 0.517, 5, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("千岩古剑", "双手剑", 510, "攻击力", 0.413, 1, temp));
+    weapon_list.push_back(new Weapon("千岩古剑", "lithicblade", "双手剑", 510, "攻击力", 0.413, 1, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("恶王丸", "双手剑", 510, "攻击力", 0.413, 1, temp));
+    weapon_list.push_back(new Weapon("恶王丸", "akuoumaru", "双手剑", 510, "攻击力", 0.413, 1, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("钟剑", "双手剑", 510, "生命值", 0.413, 5, temp));
+    weapon_list.push_back(new Weapon("钟剑", "thebell", "双手剑", 510, "生命值", 0.413, 5, temp));
     temp.clear();
 
     //(recharge)
     temp.push_back(new Set(new Condition("ALL", "ALL", "E"), "伤害加成", 0.06));
-    weapon_list.push_back(new Weapon("桂木斩长正", "双手剑", 510, "元素充能效率", 0.459, 5, temp));
+    weapon_list.push_back(new Weapon("桂木斩长正", "katsuragikirinagamasa", "双手剑", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("雨裁", "双手剑", 510, "元素精通", 165.0, 5, temp));
+    weapon_list.push_back(new Weapon("雨裁", "rainslasher", "双手剑", 510, "元素精通", 165.0, 5, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     //(convert)
     //(get_team)
-    weapon_list.push_back(new Weapon("玛海菈的水色", "双手剑", 510, "元素精通", 165.0, 1, temp));
+    weapon_list.push_back(new Weapon("玛海菈的水色", "makhairaaquamarine", "双手剑", 510, "元素精通", 165.0, 1, temp));
     temp.clear();
 
     //(recharge)
-    weapon_list.push_back(new Weapon("西风大剑", "双手剑", 454, "元素充能效率", 0.613, 5, temp));
+    weapon_list.push_back(new Weapon("西风大剑", "favoniusgreatsword", "双手剑", 454, "元素充能效率", 0.613, 5, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "Q"), "伤害加成", 0.12));
-    weapon_list.push_back(new Weapon("衔珠海皇", "双手剑", 454, "攻击力", 0.551, 5, temp));
+    weapon_list.push_back(new Weapon("衔珠海皇", "luxurioussealord", "双手剑", 454, "攻击力", 0.551, 5, temp));
     temp.clear();
 
     //(special)
     temp.push_back(new Set(new Condition("火|水|雷|冰|风|岩|草", "ALL", "ALL"), "伤害加成", 0.12));
-    weapon_list.push_back(new Weapon("息灾", "长柄武器", 741, "攻击力", 0.165, 1, temp));
+    weapon_list.push_back(new Weapon("息灾", "calamityqueller", "长柄武器", 741, "攻击力", 0.165, 1, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("和璞鸢", "长柄武器", 674, "暴击率", 0.221, 1, temp));
+    weapon_list.push_back(new Weapon("和璞鸢", "primordialjadewingedspear", "长柄武器", 674, "暴击率", 0.221, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "暴击率", 0.08));
-    weapon_list.push_back(new Weapon("天空之脊", "长柄武器", 674, "元素充能效率", 0.368, 1, temp));
+    weapon_list.push_back(new Weapon("天空之脊", "skywardspine", "长柄武器", 674, "元素充能效率", 0.368, 1, temp));
     temp.clear();
 
     //(get_convert)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2));
-    weapon_list.push_back(new Weapon("护摩之杖", "长柄武器", 608, "暴击伤害", 0.662, 1, temp));
+    weapon_list.push_back(new Weapon("护摩之杖", "staffofhoma", "长柄武器", 608, "暴击伤害", 0.662, 1, temp));
     temp.clear();
 
     //(special)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "护盾强效", 0.2));
-    weapon_list.push_back(new Weapon("贯虹之槊", "长柄武器", 608, "攻击力", 0.496, 1, temp));
+    weapon_list.push_back(new Weapon("贯虹之槊", "vortexvanquisher", "长柄武器", 608, "攻击力", 0.496, 1, temp));
     temp.clear();
 
     //(special) (get_convert)
-    weapon_list.push_back(new Weapon("薙草之稻光", "长柄武器", 608, "元素充能效率", 0.551, 1, temp));
+    weapon_list.push_back(new Weapon("薙草之稻光", "engulfinglightning", "长柄武器", 608, "元素充能效率", 0.551, 1, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     //(convert)
     //(get_team)
-    weapon_list.push_back(new Weapon("赤沙之杖", "长柄武器", 542, "暴击率", 0.441, 1, temp));
+    weapon_list.push_back(new Weapon("赤沙之杖", "staffofthescarletsands", "长柄武器", 542, "暴击率", 0.441, 1, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("断浪长鳍", "长柄武器", 620, "攻击力", 0.138, 4, temp));
+    weapon_list.push_back(new Weapon("断浪长鳍", "wavebreakersfin", "长柄武器", 620, "攻击力", 0.138, 4, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("千岩长枪", "长柄武器", 565, "攻击力", 0.276, 1, temp));
+    weapon_list.push_back(new Weapon("千岩长枪", "lithicspear", "长柄武器", 565, "攻击力", 0.276, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A|重A"), "额外倍率", 0.2));
-    weapon_list.push_back(new Weapon("流月针", "长柄武器", 565, "伤害加成", 0.345, 5, temp));
+    weapon_list.push_back(new Weapon("流月针", "crescentpike", "长柄武器", 565, "伤害加成", 0.345, 5, temp));
     temp.clear();
 
     //(recharge)
-    weapon_list.push_back(new Weapon("西风长枪", "长柄武器", 565, "元素充能效率", 0.306, 5, temp));
+    weapon_list.push_back(new Weapon("西风长枪", "favoniuslance", "长柄武器", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
 
     //(recharge)
     temp.push_back(new Set(new Condition("ALL", "ALL", "E"), "伤害加成", 0.06));
-    weapon_list.push_back(new Weapon("喜多院十文字", "长柄武器", 565, "元素精通", 110.0, 5, temp));
+    weapon_list.push_back(new Weapon("喜多院十文字", "kitaincrossspear", "长柄武器", 565, "元素精通", 110.0, 5, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     //(special) (get_team)
-    weapon_list.push_back(new Weapon("贯月矢", "长柄武器", 565, "元素精通", 110.0, 5, temp));
+    weapon_list.push_back(new Weapon("贯月矢", "moonpiercer", "长柄武器", 565, "元素精通", 110.0, 5, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("试作星镰", "长柄武器", 510, "元素充能效率", 0.459, 5, temp));
+    weapon_list.push_back(new Weapon("试作星镰", "prototypestarglitter", "长柄武器", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
 
+    //TODO:verify eng-name
     //(special)
-    weapon_list.push_back(new Weapon("风信之锋", "长柄武器", 510, "攻击力", 0.413, 5, temp));
+    weapon_list.push_back(new Weapon("风信之锋", "missivewindspear", "长柄武器", 510, "攻击力", 0.413, 5, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "Q"), "伤害加成", 0.16));
     temp.push_back(new Set(new Condition("ALL", "ALL", "Q"), "暴击率", 0.06));
-    weapon_list.push_back(new Weapon("渔获", "长柄武器", 510, "元素充能效率", 0.459, 5, temp));
+    weapon_list.push_back(new Weapon("渔获", "thecatch", "长柄武器", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.24));//单怪条件
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "防御力", 0.16));//多怪条件
-    weapon_list.push_back(new Weapon("决斗之枪", "长柄武器", 454, "暴击率", 0.368, 3, temp));
+    weapon_list.push_back(new Weapon("决斗之枪", "deathmatch", "长柄武器", 454, "暴击率", 0.368, 3, temp));
     temp.clear();
 
-    weapon_list.push_back(new Weapon("龙脊长枪", "长柄武器", 454, "伤害加成", 0.69, 5, temp));
+    weapon_list.push_back(new Weapon("龙脊长枪", "dragonspinespear", "长柄武器", 454, "伤害加成", 0.69, 5, temp));
     temp.clear();
 
     //(special)
-    weapon_list.push_back(new Weapon("匣里灭辰", "长柄武器", 454, "元素精通", 221.0, 5, temp));
+    weapon_list.push_back(new Weapon("匣里灭辰", "dragonsbane", "长柄武器", 454, "元素精通", 221.0, 5, temp));
+    temp.clear();
+
+    //(special)
+    weapon_list.push_back(new Weapon("讨龙英杰谭", "thrillingtalesofdragonslayers", "法器", 401, "生命值", 0.352, 5, temp));
     temp.clear();
 }
 
@@ -1302,58 +1341,58 @@ void Weapon::modify_useful_attribute(Deployment *data)
 //build new artifact(all)
 void init_artifact_data()
 {
-    artifact_list.push_back(new Artifact("EMPTY", nullptr, nullptr));
+    artifact_list.push_back(new Artifact("EMPTY", "EMPTY", nullptr, nullptr));
 
-    artifact_list.push_back(new Artifact("流浪大地的乐团", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
+    artifact_list.push_back(new Artifact("流浪大地的乐团", "wandererstroupe", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
                                          new Set(new Condition("ALL", "法器|弓", "重A"), "伤害加成", 0.35)));
-    artifact_list.push_back(new Artifact("角斗士的终幕礼", new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.18),
+    artifact_list.push_back(new Artifact("角斗士的终幕礼", "gladiatorsfinale", new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.18),
                                          new Set(new Condition("ALL", "单手剑|双手剑|长柄武器", "平A"), "伤害加成", 0.35)));
-    artifact_list.push_back(new Artifact("冰风迷途的勇士", new Set(new Condition("冰", "ALL", "ALL"), "伤害加成", 0.15),
+    artifact_list.push_back(new Artifact("冰风迷途的勇士", "blizzardstrayer", new Set(new Condition("冰", "ALL", "ALL"), "伤害加成", 0.15),
                                          nullptr));//(special)
-    artifact_list.push_back(new Artifact("沉沦之心", new Set(new Condition("水", "ALL", "ALL"), "伤害加成", 0.15),
+    artifact_list.push_back(new Artifact("沉沦之心", "heartofdepth", new Set(new Condition("水", "ALL", "ALL"), "伤害加成", 0.15),
                                          new Set(new Condition("ALL", "ALL", "平A|重A"), "伤害加成", 0.3)));
-    artifact_list.push_back(new Artifact("悠古的磐岩", new Set(new Condition("岩", "ALL", "ALL"), "伤害加成", 0.15),
+    artifact_list.push_back(new Artifact("悠古的磐岩", "archaicpetra", new Set(new Condition("岩", "ALL", "ALL"), "伤害加成", 0.15),
                                          nullptr));//(get_team)
-    artifact_list.push_back(new Artifact("逆飞的流星", new Set(new Condition("ALL", "ALL", "ALL"), "护盾强效", 0.35),
+    artifact_list.push_back(new Artifact("逆飞的流星", "retracingbolide", new Set(new Condition("ALL", "ALL", "ALL"), "护盾强效", 0.35),
                                          nullptr));//(special)
-    artifact_list.push_back(new Artifact("染血的骑士道", new Set(new Condition("物理", "ALL", "ALL"), "伤害加成", 0.25),
+    artifact_list.push_back(new Artifact("染血的骑士道", "bloodstainedchivalry", new Set(new Condition("物理", "ALL", "ALL"), "伤害加成", 0.25),
                                          nullptr));//new Set(new Condition("ALL", "ALL", "重A"), "伤害加成", 0.5)));//击败敌人
-    artifact_list.push_back(new Artifact("昔日宗室之仪", new Set(new Condition("ALL", "ALL", "Q"), "伤害加成", 0.2),
+    artifact_list.push_back(new Artifact("昔日宗室之仪", "noblesseoblige", new Set(new Condition("ALL", "ALL", "Q"), "伤害加成", 0.2),
                                          new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.2)));//(get_team) 高估
-    artifact_list.push_back(new Artifact("翠绿之影", new Set(new Condition("风", "ALL", "ALL"), "伤害加成", 0.15),
+    artifact_list.push_back(new Artifact("翠绿之影", "viridescentvenerer", new Set(new Condition("风", "ALL", "ALL"), "伤害加成", 0.15),
                                          nullptr));//(react) (get_team)
-    artifact_list.push_back(new Artifact("被怜爱的少女", new Set(new Condition("ALL", "ALL", "ALL"), "治疗加成", 0.15),
+    artifact_list.push_back(new Artifact("被怜爱的少女", "maidenbeloved", new Set(new Condition("ALL", "ALL", "ALL"), "治疗加成", 0.15),
                                          nullptr));//受治疗加成
-    artifact_list.push_back(new Artifact("苍白之火", new Set(new Condition("物理", "ALL", "ALL"), "伤害加成", 0.25),
+    artifact_list.push_back(new Artifact("苍白之火", "paleflame", new Set(new Condition("物理", "ALL", "ALL"), "伤害加成", 0.25),
                                          nullptr));//(special)
-    artifact_list.push_back(new Artifact("千岩牢固", new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2),
+    artifact_list.push_back(new Artifact("千岩牢固", "tenacityofthemillelith", new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2),
                                          nullptr));//(special) (get_team)
-    artifact_list.push_back(new Artifact("炽烈的炎之魔女", new Set(new Condition("火", "ALL", "ALL"), "伤害加成", 0.15),
+    artifact_list.push_back(new Artifact("炽烈的炎之魔女", "crimsonwitchofflames", new Set(new Condition("火", "ALL", "ALL"), "伤害加成", 0.15),
                                          nullptr));//(special) (react)
-    artifact_list.push_back(new Artifact("渡过烈火的贤人", nullptr, nullptr));//(special)
-    artifact_list.push_back(new Artifact("如雷的盛怒", new Set(new Condition("雷", "ALL", "ALL"), "伤害加成", 0.15),
+    artifact_list.push_back(new Artifact("渡过烈火的贤人", "lavawalker", nullptr, nullptr));//(special)
+    artifact_list.push_back(new Artifact("如雷的盛怒", "thunderingfury", new Set(new Condition("雷", "ALL", "ALL"), "伤害加成", 0.15),
                                          nullptr));//(react) 减CD
-    artifact_list.push_back(new Artifact("平息鸣雷的尊者", nullptr, nullptr));//(special)
-    artifact_list.push_back(new Artifact("追忆之注连", new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.18),
+    artifact_list.push_back(new Artifact("平息鸣雷的尊者", "thundersoother", nullptr, nullptr));//(special)
+    artifact_list.push_back(new Artifact("追忆之注连", "shimenawasreminiscence", new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.18),
                                          nullptr));//new Set(new Condition("ALL", "ALL", "平A|重A|下落A"), "伤害加成", 0.5)));//15能量
-    artifact_list.push_back(new Artifact("绝缘之旗印", new Set(new Condition("ALL", "ALL", "ALL"), "元素充能效率", 0.2),
+    artifact_list.push_back(new Artifact("绝缘之旗印", "emblemofseveredfate", new Set(new Condition("ALL", "ALL", "ALL"), "元素充能效率", 0.2),
                                          nullptr));//(get_convert)
-    artifact_list.push_back(new Artifact("华馆梦醒形骸记", new Set(new Condition("ALL", "ALL", "ALL"), "防御力", 0.3),
+    artifact_list.push_back(new Artifact("华馆梦醒形骸记", "huskofopulentdreams", new Set(new Condition("ALL", "ALL", "ALL"), "防御力", 0.3),
                                          nullptr));//(special)
-    artifact_list.push_back(new Artifact("海染砗磲", new Set(new Condition("ALL", "ALL", "ALL"), "治疗加成", 0.15),
+    artifact_list.push_back(new Artifact("海染砗磲", "oceanhuedclam", new Set(new Condition("ALL", "ALL", "ALL"), "治疗加成", 0.15),
                                          nullptr));//额外物理伤害
-    artifact_list.push_back(new Artifact("辰砂往生录", new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.18),
+    artifact_list.push_back(new Artifact("辰砂往生录", "vermillionhereafter", new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.18),
                                          nullptr));//(special)
-    artifact_list.push_back(new Artifact("来歆余响", new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.18),
+    artifact_list.push_back(new Artifact("来歆余响", "echoesofanoffering", new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.18),
                                          new Set(new Condition("ALL", "ALL", "平A"), "额外倍率", 0.35)));
-    artifact_list.push_back(new Artifact("深林的记忆", new Set(new Condition("草", "ALL", "ALL"), "伤害加成", 0.15),
-                                         nullptr));//(special) (get_team)
-    artifact_list.push_back(new Artifact("饰金之梦", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
-                                         nullptr));//(special)
-    artifact_list.push_back(new Artifact("沙上楼阁史话", new Set(new Condition("风", "ALL", "ALL"), "伤害加成", 0.15),
-                                         nullptr));
-    artifact_list.push_back(new Artifact("乐园遗落之花", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
-                                         nullptr));//(react)
+    artifact_list.push_back(new Artifact("深林的记忆", "deepwoodmemories", new Set(new Condition("草", "ALL", "ALL"), "伤害加成", 0.15),
+                                         nullptr));//(special) (get_team)//TODO:verify eng-name
+    artifact_list.push_back(new Artifact("饰金之梦", "gildeddreams", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
+                                         nullptr));//(special)//TODO:verify eng-name
+    artifact_list.push_back(new Artifact("沙上楼阁史话", "desertpavilionchronicle", new Set(new Condition("风", "ALL", "ALL"), "伤害加成", 0.15),
+                                         nullptr));//TODO:verify eng-name
+    artifact_list.push_back(new Artifact("乐园遗落之花", "flowerofparadiselost", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
+                                         nullptr));//(react)//TODO:verify eng-name
 }
 
 //build new artifact(all) 保证二件套效果和四件套效果分开
@@ -2404,6 +2443,8 @@ struct Combination
     }
 };
 
+ofstream outfile_result;
+ofstream outfile_debug;
 bool out_header = true;
 string double_E_per_round = "神里绫华甘雨温迪夜兰";
 int max_up_num_per_base = 4;
@@ -2412,6 +2453,9 @@ int max_entry_num = 30;
 int artifact_2_2_max_entry_bonus = 2;
 
 //TODO:配置编写
+
+//cal_(add_)deployment
+
 int top_k = 5;
 string config_cal_enable = "ALL";//ALL全部启用
 string add_character = "";
@@ -2430,7 +2474,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
     //"胡桃" "夜兰" "钟离" "莫娜" "讨龙_昔日宗室之仪" "水" "水"
     //"神里绫华" "甘雨" "温迪" "莫娜" "终末嗟叹之诗_昔日宗室之仪_翠绿之影" "冰水" "冰"
     //"雷电将军" "行秋" "香菱" "班尼特" "昔日宗室之仪" "水雷" "水雷火"
-    //"纳西妲" "行秋" "八重神子" "雷_test" "千夜浮梦_深林的记忆" "雷草" ""
+    //"纳西妲" "行秋" "八重神子" "久岐忍" "千夜浮梦_深林的记忆" "雷草" ""
 
     if (config_cal_enable.find(c_name) == string::npos && config_cal_enable != "ALL") return;
 
@@ -2559,7 +2603,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                     "昔日宗室之仪", "水", "水");
         auto *tc2 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("香菱"), find_character_by_name("班尼特"),
                                     "昔日宗室之仪", "水雷", "水雷火");
-        auto *tc3 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("八重神子"), find_character_by_name("雷_test"),
+        auto *tc3 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("八重神子"), find_character_by_name("久岐忍"),
                                     "千夜浮梦_深林的记忆", "雷草", "");
 
         vector<Attack_config *> ac1;//EQ
@@ -2622,7 +2666,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
     }
     if (c_name == "八重神子")
     {
-        auto *tc1 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("行秋"), find_character_by_name("雷_test"),
+        auto *tc1 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("行秋"), find_character_by_name("久岐忍"),
                                     "千夜浮梦_深林的记忆", "雷草", "");
 
         vector<Attack_config *> ac1;
@@ -2717,7 +2761,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
     }
     if (c_name == "纳西妲")
     {
-        auto *tc1 = new Team_config(find_character_by_name("行秋"), find_character_by_name("八重神子"), find_character_by_name("雷_test"),
+        auto *tc1 = new Team_config(find_character_by_name("行秋"), find_character_by_name("八重神子"), find_character_by_name("久岐忍"),
                                     "深林的记忆", "雷草", "");
 
         vector<Attack_config *> ac1;
@@ -2873,6 +2917,8 @@ void cal_deployment(string mode)
     double total_time = (double) (total_end - total_start) / CLOCKS_PER_SEC;
     cout << "total_time:" << total_time << "s" << endl;
 }
+
+//cal_optimal_artifact
 
 vector<vector<Reinforced_Artifact *>> reinforced_artifact_list;
 
@@ -3165,8 +3211,206 @@ void cal_optimal_artifact(string c_name)
     combination_list.clear();
 }
 
-ofstream outfile_result;
-ofstream outfile_debug;
+//generate_gcsim_script
+
+Character *c_1;
+Character *c_2;
+Character *c_3;
+Character *c_4;
+vector<string> attack_list;
+
+size_t replace_all(string &inout, string_view what, string_view with)
+{
+    size_t count{};
+    for (string::size_type pos{}; string::npos != (pos = inout.find(what.data(), pos, what.length())); pos += with.length(), ++count)
+        inout.replace(pos, what.length(), with.data(), with.length());
+    return count;
+}
+
+void parse_file(string filename)
+{
+    ifstream infile;
+    infile.open(filename);
+    string c_name_1;
+    string c_name_2;
+    string c_name_3;
+    string c_name_4;
+
+    infile >> c_name_1 >> c_name_2 >> c_name_3 >> c_name_4;
+    c_1 = find_character_by_name(c_name_1);
+    c_2 = find_character_by_name(c_name_2);
+    c_3 = find_character_by_name(c_name_3);
+    c_4 = find_character_by_name(c_name_4);
+
+    string info;
+    getline(infile, info);
+    while (!infile.eof())
+    {
+        getline(infile, info);
+        replace_all(info, c_1->name, c_1->english_name);
+        replace_all(info, c_2->name, c_2->english_name);
+        replace_all(info, c_3->name, c_3->english_name);
+        replace_all(info, c_4->name, c_4->english_name);
+        replace_all(info, "平A", "attack");
+        replace_all(info, "重A", "charge");
+        replace_all(info, "下落A", "plunge");
+        replace_all(info, "E", "skill");
+        replace_all(info, "Q", "burst");
+        replace_all(info, "冲刺", "dash");
+        replace_all(info, "跳跃", "jump");
+        attack_list.push_back(info);
+    }
+    infile.close();
+}
+
+void get_build_up(Character *c, vector<Build_up *> &build_up_list)
+{
+    if (c->name == "胡桃")
+    {
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("赤沙之杖"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素精通", "伤害加成", "暴击伤害")));
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("赤沙之杖"), find_artifact_by_name("炽烈的炎之魔女"), find_artifact_by_name("炽烈的炎之魔女"), "元素精通", "伤害加成", "暴击伤害")));
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("赤沙之杖"), find_artifact_by_name("追忆之注连"), find_artifact_by_name("追忆之注连"), "元素精通", "伤害加成", "暴击伤害")));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "生命值", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("炽烈的炎之魔女"), find_artifact_by_name("炽烈的炎之魔女"), "元素精通", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("追忆之注连"), find_artifact_by_name("追忆之注连"), "元素精通", "伤害加成", "暴击率"));
+    }
+    else if (c->name == "神里绫华")
+    {
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("雾切之回光"), find_artifact_by_name("冰风迷途的勇士"), find_artifact_by_name("冰风迷途的勇士"), "攻击力", "伤害加成", "暴击伤害"));
+    }
+    else if (c->name == "雷电将军")
+    {
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("薙草之稻光"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("决斗之枪"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击伤害"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("薙草之稻光"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "攻击力", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "攻击力", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("决斗之枪"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "攻击力", "暴击伤害"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "攻击力", "暴击率"));
+    }
+    else if (c->name == "纳西妲")
+    {
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("千夜浮梦"), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"), "元素精通", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("千夜浮梦"), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"), "元素精通", "元素精通", "暴击率"));
+    }
+    else if (c->name == "甘雨")
+    {
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("飞雷之弦振"), find_artifact_by_name("冰风迷途的勇士"), find_artifact_by_name("冰风迷途的勇士"), "攻击力", "伤害加成", "暴击伤害"));
+    }
+    else if (c->name == "夜兰")
+    {
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("若水"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "生命值", "伤害加成", "暴击率"));
+    }
+    else if (c->name == "香菱")
+    {
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("赤沙之杖"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "火元素伤害加成", "元素精通"));
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("赤沙之杖"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "火元素伤害加成", "暴击伤害"));
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("赤沙之杖"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素充能效率", "火元素伤害加成", "暴击伤害"));
+
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("薙草之稻光"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素精通", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("薙草之稻光"), find_artifact_by_name("炽烈的炎之魔女"), find_artifact_by_name("炽烈的炎之魔女"), "元素精通", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("薙草之稻光"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素精通", "伤害加成", "暴击率"));
+
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("匣里灭辰"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("匣里灭辰"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素充能效率", "伤害加成", "暴击率"));
+
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素精通", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("渔获"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素精通", "伤害加成", "暴击率"));
+
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素充能效率", "伤害加成", "暴击率"));
+
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("断浪长鳍"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "元素精通", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("断浪长鳍"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素充能效率", "伤害加成", "暴击率"));
+    }
+    else if (c->name == "行秋")
+    {
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("磐岩结绿"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "攻击力", "伤害加成", "暴击伤害"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("磐岩结绿"), find_artifact_by_name("沉沦之心"), find_artifact_by_name("昔日宗室之仪"), "攻击力", "伤害加成", "暴击伤害"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("祭礼剑"), find_artifact_by_name("沉沦之心"), find_artifact_by_name("昔日宗室之仪"), "攻击力", "伤害加成", "暴击率"));
+    }
+    else if (c->name == "八重神子")
+    {
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("神乐之真意"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "攻击力", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("神乐之真意"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("流浪大地的乐团"), "攻击力", "伤害加成", "暴击率"));
+    }
+    else if (c->name == "温迪")
+    {
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("终末嗟叹之诗"), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"), "元素精通", "元素精通", "元素精通"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("终末嗟叹之诗"), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"), "攻击力", "伤害加成", "暴击率"));
+    }
+    else if (c->name == "莫娜")
+    {
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("试作金珀"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "元素充能效率", "攻击力", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("讨龙英杰谭"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "元素充能效率", "攻击力", "暴击率"));
+    }
+    else if (c->name == "钟离")
+    {
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "生命值", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("决斗之枪"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "生命值", "伤害加成", "暴击伤害"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("西风长枪"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "生命值", "生命值", "暴击率"));
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("悠古的磐岩"), find_artifact_by_name("悠古的磐岩"), "生命值", "岩元素伤害加成", "暴击率"));
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("决斗之枪"), find_artifact_by_name("悠古的磐岩"), find_artifact_by_name("悠古的磐岩"), "生命值", "岩元素伤害加成", "暴击伤害"));
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("西风长枪"), find_artifact_by_name("悠古的磐岩"), find_artifact_by_name("悠古的磐岩"), "生命值", "生命值", "暴击率"));
+    }
+    else if (c->name == "枫原万叶")
+    {
+        //苍古自由之誓
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("东花坊时雨"), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"), "元素精通", "元素精通", "元素精通"));
+    }
+    else if (c->name == "班尼特")
+    {
+        //风鹰剑 原木刀
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("天空之刃"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "元素充能效率", "生命值", "治疗加成"));
+    }
+    else if (c->name == "久岐忍")
+    {
+        //苍古自由之誓 圣显之钥
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("东花坊时雨"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素精通", "元素精通", "治疗加成"));
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("东花坊时雨"), find_artifact_by_name("千岩牢固"), find_artifact_by_name("千岩牢固"), "元素精通", "元素精通", "治疗加成"));
+    }
+}
+
+void generate_gcsim_script(string filename)
+{
+    int filecount = 0;
+    vector<Build_up *> build_up_list_1;
+    vector<Build_up *> build_up_list_2;
+    vector<Build_up *> build_up_list_3;
+    vector<Build_up *> build_up_list_4;
+    get_build_up(c_1, build_up_list_1);
+    get_build_up(c_2, build_up_list_2);
+    get_build_up(c_3, build_up_list_3);
+    get_build_up(c_4, build_up_list_4);
+
+    for (auto &build_up_1: build_up_list_1)
+        for (auto &build_up_2: build_up_list_2)
+            for (auto &build_up_3: build_up_list_3)
+                for (auto &build_up_4: build_up_list_4)
+                {
+                    outfile_result.open(filename.substr(0, filename.length() - 4) + "_" + to_string(filecount) + ".txt");
+                    //head
+                    outfile_result << "options iteration=1000 duration=110 swap_delay=4;" << endl;
+                    outfile_result << "target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;" << endl;
+                    //config
+                    build_up_1->out();
+                    build_up_2->out();
+                    build_up_3->out();
+                    build_up_4->out();
+                    //active
+                    outfile_result << "active " << attack_list[0].substr(0, attack_list[0].find_first_of(' ')) << ";" << endl;
+                    outfile_result << endl;
+                    //attack_list
+                    outfile_result << "let x = 5;" << endl;
+                    outfile_result << "while x {" << endl;
+                    for (auto &i: attack_list) outfile_result << "  " << i << ";" << endl;
+                    outfile_result << "  x = x - 1;" << endl;
+                    outfile_result << "}";
+                    outfile_result.close();
+                    filecount++;
+                }
+}
 
 int main()
 {
@@ -3175,12 +3419,12 @@ int main()
     init_artifact_data();
 
     int mode = 0;
-    cout << "计算模式(1:cal_deployment 2:cal_optimal_artifact 3:cal_add_deployment):";
+    cout << "计算模式(1:cal_deployment 2:cal_optimal_artifact 3:cal_add_deployment 4:generate_gcsim_script):";
     cin >> mode;
     if (mode == 1)
     {
-        outfile_result.open("./data.csv");
-        outfile_debug.open("./log_data.csv");
+        outfile_result.open("./RESULTS/data.csv");
+        outfile_debug.open("./RESULTS/log_data.csv");
         cal_deployment("ALL");
         outfile_result.close();
         outfile_debug.close();
@@ -3191,20 +3435,29 @@ int main()
         cout << "人物:";
         cin >> c_name;
 
-        outfile_result.open("./assign_artifact_data_" + c_name + ".csv");
-        outfile_debug.open("./assign_artifact_log_" + c_name + ".csv");
-        read_artifact("./artifacts.txt");
+        outfile_result.open("./RESULTS/assign_artifact_data_" + c_name + ".csv");
+        outfile_debug.open("./RESULTS/assign_artifact_log_" + c_name + ".csv");
+        read_artifact("./RESULTS/artifacts.txt");
         cal_optimal_artifact(c_name);
         outfile_result.close();
         outfile_debug.close();
     }
     else if (mode == 3)
     {
-        outfile_result.open("./data_add.csv");
-        outfile_debug.open("./log_data_add.csv");
+        outfile_result.open("./RESULTS/data_add.csv");
+        outfile_debug.open("./RESULTS/log_data_add.csv");
         cal_deployment("ADD");
         outfile_result.close();
         outfile_debug.close();
+    }
+    else if (mode == 4)
+    {
+        string team_name;
+        cout << "team_name:";
+        cin >> team_name;
+
+        parse_file("./RESULTS/chinese_config/" + team_name + ".txt");
+        generate_gcsim_script("./RESULTS/config/" + team_name + ".txt");
     }
     return 0;
 }

@@ -17,6 +17,7 @@ class Weapon
 {
 public:
     string name;
+    string english_name;
     string weapon_type;
     int atk;
     string vice_type;
@@ -25,6 +26,7 @@ public:
     vector<Set *> extra_value;
 
     Weapon(string name_,
+           string english_name_,
            string weapon_type_,
            int atk_,
            string vice_type_,

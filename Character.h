@@ -83,6 +83,7 @@ class Character
 {
 public:
     string name;
+    string english_name;
     string ele_type;
     string weapon_type;
     int life;
@@ -119,6 +120,7 @@ public:
     weapon_artifact_related_arguments *args;
 
     Character(string name_,
+              string english_name_,
               string ele_type_,
               string weapon_type_,
               int life_,

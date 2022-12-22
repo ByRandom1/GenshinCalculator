@@ -17,10 +17,12 @@ class Artifact
 {
 public:
     string name;
+    string english_name;
     Set *piece_2;
     Set *piece_4;
 
     Artifact(string name_,
+             string english_name_,
              Set *piece_2_,
              Set *piece_4_);
 

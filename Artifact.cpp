@@ -6,10 +6,12 @@
 #include "Group.h"
 
 Artifact::Artifact(string name_,
+                   string english_name_,
                    Set *piece_2_,
                    Set *piece_4_)
 {
     name = name_;
+    english_name = english_name_;
     piece_2 = piece_2_;
     piece_4 = piece_4_;
 }
