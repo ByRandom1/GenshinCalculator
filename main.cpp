@@ -541,7 +541,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("裁叶萃光", "lightoffoliarincision", "单手剑", 542, "暴击伤害", 0.882, 1, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(convert)
     //(get_team)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2));
@@ -556,7 +555,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("试作斩岩", "prototyperancour", "单手剑", 565, "伤害加成", 0.345, 5, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(special) (get_team)
     weapon_list.push_back(new Weapon("原木刀", "sapwoodblade", "单手剑", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
@@ -569,9 +567,8 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("匣里龙吟", "lionsroar", "单手剑", 510, "攻击力", 0.413, 5, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.15));//平A重A下落A
-    weapon_list.push_back(new Weapon("笼钓瓶一心", "prizedisshinblade", "单手剑", 510, "攻击力", 0.413, 1, temp));
+    weapon_list.push_back(new Weapon("笼钓瓶一心", "kagotsurubeisshin", "单手剑", 510, "攻击力", 0.413, 1, temp));
     temp.clear();
 
     weapon_list.push_back(new Weapon("笛剑", "theflute", "单手剑", 510, "攻击力", 0.413, 5, temp));
@@ -586,13 +583,11 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("铁蜂刺", "ironsting", "单手剑", 510, "元素精通", 165.0, 5, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(convert)
     //(get_team)
     weapon_list.push_back(new Weapon("西福斯的月光", "xiphosmoonlight", "单手剑", 510, "元素精通", 165.0, 1, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.16));
     weapon_list.push_back(new Weapon("东花坊时雨", "toukaboushigure", "单手剑", 510, "元素精通", 165.0, 5, temp));
     temp.clear();
@@ -613,7 +608,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("祭礼剑", "sacrificialsword", "单手剑", 454, "元素充能效率", 0.613, 5, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     weapon_list.push_back(new Weapon("图莱杜拉的回忆", "tulaytullahsremembrance", "法器", 674, "暴击伤害", 0.441, 1, temp));
     temp.clear();
 
@@ -640,7 +634,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("不灭月华", "everlastingmoonglow", "法器", 608, "生命值", 0.496, 1, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(special)
     //(get_team)
     weapon_list.push_back(new Weapon("千夜浮梦", "athousandfloatingdreams", "法器", 542, "元素精通", 265.0, 1, temp));
@@ -681,13 +674,11 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("西风秘典", "favoniuscodex", "法器", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(convert)
     //(get_team)
     weapon_list.push_back(new Weapon("流浪的晚星", "wanderingevenstar", "法器", 510, "元素精通", 165.0, 1, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(special)
     weapon_list.push_back(new Weapon("盈满之实", "fruitoffulfillment", "法器", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
@@ -731,13 +722,11 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("终末嗟叹之诗", "elegyfortheend", "弓", 608, "元素充能效率", 0.551, 1, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(get_extra_rate)
     temp.push_back(new Set(new Condition("火|水|雷|冰|风|岩|草", "ALL", "ALL"), "伤害加成", 0.12));
     weapon_list.push_back(new Weapon("猎人之径", "hunterspath", "弓", 542, "暴击率", 0.441, 1, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.16));
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.2));
     weapon_list.push_back(new Weapon("若水", "aquasimulacra", "弓", 542, "暴击伤害", 0.882, 1, temp));
@@ -755,7 +744,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("祭礼弓", "sacrificialbow", "弓", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.1));
     weapon_list.push_back(new Weapon("落霞", "fadingtwilight", "弓", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
@@ -775,7 +763,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("幽夜华尔兹", "mitternachtswaltz", "弓", 510, "伤害加成", 0.517, 1, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     weapon_list.push_back(new Weapon("竭泽", "endoftheline", "弓", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
 
@@ -791,7 +778,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("破魔之弓", "hamayumi", "弓", 454, "攻击力", 0.551, 5, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(special)
     weapon_list.push_back(new Weapon("王下近侍", "kingssquire", "弓", 454, "攻击力", 0.551, 5, temp));
     temp.clear();
@@ -837,7 +823,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("祭礼大剑", "sacrificialgreatsword", "双手剑", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(special) (get_team)
     weapon_list.push_back(new Weapon("森林王器", "forestregalia", "双手剑", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
@@ -871,7 +856,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("雨裁", "rainslasher", "双手剑", 510, "元素精通", 165.0, 5, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(convert)
     //(get_team)
     weapon_list.push_back(new Weapon("玛海菈的水色", "makhairaaquamarine", "双手剑", 510, "元素精通", 165.0, 1, temp));
@@ -912,7 +896,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("薙草之稻光", "engulfinglightning", "长柄武器", 608, "元素充能效率", 0.551, 1, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(convert)
     //(get_team)
     weapon_list.push_back(new Weapon("赤沙之杖", "staffofthescarletsands", "长柄武器", 542, "暴击率", 0.441, 1, temp));
@@ -939,7 +922,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("喜多院十文字", "kitaincrossspear", "长柄武器", 565, "元素精通", 110.0, 5, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(special) (get_team)
     weapon_list.push_back(new Weapon("贯月矢", "moonpiercer", "长柄武器", 565, "元素精通", 110.0, 5, temp));
     temp.clear();
@@ -948,7 +930,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("试作星镰", "prototypestarglitter", "长柄武器", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
 
-    //TODO:verify eng-name
     //(special)
     weapon_list.push_back(new Weapon("风信之锋", "missivewindspear", "长柄武器", 510, "攻击力", 0.413, 5, temp));
     temp.clear();
@@ -1386,9 +1367,9 @@ void init_artifact_data()
     artifact_list.push_back(new Artifact("来歆余响", "echoesofanoffering", new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.18),
                                          new Set(new Condition("ALL", "ALL", "平A"), "额外倍率", 0.35)));
     artifact_list.push_back(new Artifact("深林的记忆", "deepwoodmemories", new Set(new Condition("草", "ALL", "ALL"), "伤害加成", 0.15),
-                                         nullptr));//(special) (get_team)//TODO:verify eng-name
+                                         nullptr));//(special) (get_team)
     artifact_list.push_back(new Artifact("饰金之梦", "gildeddreams", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
-                                         nullptr));//(special)//TODO:verify eng-name
+                                         nullptr));//(special)
     artifact_list.push_back(new Artifact("沙上楼阁史话", "desertpavilionchronicle", new Set(new Condition("风", "ALL", "ALL"), "伤害加成", 0.15),
                                          nullptr));//TODO:verify eng-name
     artifact_list.push_back(new Artifact("乐园遗落之花", "flowerofparadiselost", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
@@ -2001,6 +1982,12 @@ void Deployment::satisfy_recharge_requirement()
     energy += team_config->teammate_1->E_energy * back * ((team_config->teammate_1->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_1->name) != string::npos) ? 2 : 1);
     energy += team_config->teammate_2->E_energy * back * ((team_config->teammate_2->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_2->name) != string::npos) ? 2 : 1);
     energy += team_config->teammate_3->E_energy * back * ((team_config->teammate_3->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_3->name) != string::npos) ? 2 : 1);
+    int electro_num = 0;
+    if (c_point->ele_type == "雷") electro_num++;
+    if (team_config->teammate_1->ele_type == "雷") electro_num++;
+    if (team_config->teammate_2->ele_type == "雷") electro_num++;
+    if (team_config->teammate_3->ele_type == "雷") electro_num++;
+    if (electro_num >= 2) energy += (4 * back + 1 * front);
 
     double converted_recharge = 0;
 
@@ -2472,9 +2459,15 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
 
     //"胡桃" "行秋" "钟离" "夜兰" "昔日宗室之仪" "水" "水"
     //"胡桃" "夜兰" "钟离" "莫娜" "讨龙_昔日宗室之仪" "水" "水"
+    //"胡桃" "行秋" "钟离" "莫娜" "讨龙_昔日宗室之仪" "水" "水"
+
     //"神里绫华" "甘雨" "温迪" "莫娜" "终末嗟叹之诗_昔日宗室之仪_翠绿之影" "冰水" "冰"
+
     //"雷电将军" "行秋" "香菱" "班尼特" "昔日宗室之仪" "水雷" "水雷火"
+    //"雷电将军" "夜兰" "香菱" "班尼特" "昔日宗室之仪" "水雷" "水雷火"
+
     //"纳西妲" "行秋" "八重神子" "久岐忍" "千夜浮梦_深林的记忆" "雷草" ""
+    //"纳西妲" "夜兰" "八重神子" "久岐忍" "千夜浮梦_深林的记忆" "雷草" ""
 
     if (config_cal_enable.find(c_name) == string::npos && config_cal_enable != "ALL") return;
 
@@ -2483,6 +2476,8 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         auto *tc1 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("夜兰"),
                                     "昔日宗室之仪", "水", "水");
         auto *tc2 = new Team_config(find_character_by_name("钟离"), find_character_by_name("夜兰"), find_character_by_name("莫娜"),
+                                    "讨龙_昔日宗室之仪", "水", "水");
+        auto *tc3 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("莫娜"),
                                     "讨龙_昔日宗室之仪", "水", "水");
 
         vector<Attack_config *> ac1;//10AZ
@@ -2504,19 +2499,21 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                                    "", "", "", tc1, ac1, false));
         combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc2, ac1, false));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc3, ac1, false));
     }
     if (c_name == "神里绫华")
     {
         auto *tc1 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
                                     "终末嗟叹之诗_昔日宗室之仪_翠绿之影", "冰水", "冰");
 
-        vector<Attack_config *> ac1;//EAQAZAZAZ EAZAZAZ
+        vector<Attack_config *> ac1;//EAQ AZAAAZ
         ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "平A"), false, false, "冻结",
                                         false, true, false, false, false,
-                                        true, true, true, false, false, 1 + 6));
+                                        true, true, true, false, false, 1 + 1 + 3));
         ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "重A"), false, false, "冻结",
                                         false, true, false, false, false,
-                                        true, true, true, false, false, 3 * 6));
+                                        true, true, true, false, false, 3 * 2));
         ac1.push_back(new Attack_config(new Condition("冰", "单手剑", "E"), false, false, "冻结",
                                         false, true, false, false, false,
                                         true, true, true, false, false, 2));
@@ -2535,7 +2532,8 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
     {
         auto *tc1 = new Team_config(find_character_by_name("香菱"), find_character_by_name("班尼特"), find_character_by_name("行秋"),
                                     "昔日宗室之仪", "水雷", "水雷火");
-        //TODO:雷九万班
+        auto *tc2 = new Team_config(find_character_by_name("香菱"), find_character_by_name("班尼特"), find_character_by_name("夜兰"),
+                                    "昔日宗室之仪", "水雷", "水雷火");
 
         //无法准确建立反应次数和倍率之间的关系（Q的后续攻击）
         vector<Attack_config *> ac1;
@@ -2549,6 +2547,8 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
 
         combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, true));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc2, ac1, true));
     }
     if (c_name == "甘雨")
     {
@@ -2564,7 +2564,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                         true, true, true, false, false, 2 * 2));
         ac1.push_back(new Attack_config(new Condition("冰", "弓", "Q"), true, true, "冻结",
                                         false, true, false, false, false,
-                                        true, true, true, false, false, 25));
+                                        true, true, true, false, false, 17));
 
         Weapon *w_point = nullptr;
         if (mode == "cal_deployment") w_point = nullptr;
@@ -2580,11 +2580,33 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         auto *tc2 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("莫娜"),
                                     "昔日宗室之仪", "水", "水");
 
+        auto *tc3 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("香菱"), find_character_by_name("班尼特"),
+                                    "昔日宗室之仪", "水雷", "水雷火");
+
+        auto *tc4 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("八重神子"), find_character_by_name("久岐忍"),
+                                    "千夜浮梦_深林的记忆", "雷草", "");
+
         vector<Attack_config *> ac1;//EEQ
         ac1.push_back(new Attack_config(new Condition("水", "弓", "E"), false, false, "NONE",
                                         true, false, false, false, false,
                                         true, true, true, false, false, 2));
         ac1.push_back(new Attack_config(new Condition("水", "弓", "Q"), true, false, "NONE",
+                                        true, false, false, false, false,
+                                        true, true, true, false, false, 53));
+
+        vector<Attack_config *> ac2;//EEQ
+        ac2.push_back(new Attack_config(new Condition("水", "弓", "E"), false, false, "感电_no_add_damage",
+                                        true, false, false, false, false,
+                                        true, true, true, false, false, 2));
+        ac2.push_back(new Attack_config(new Condition("水", "弓", "Q"), true, false, "感电_no_add_damage",
+                                        true, false, false, false, false,
+                                        true, true, true, false, false, 53));
+
+        vector<Attack_config *> ac3;//EEQ
+        ac3.push_back(new Attack_config(new Condition("水", "弓", "E"), false, false, "超绽放_no_add_damage",
+                                        true, false, false, false, false,
+                                        true, true, true, false, false, 2));
+        ac3.push_back(new Attack_config(new Condition("水", "弓", "Q"), true, false, "超绽放_no_add_damage",
                                         true, false, false, false, false,
                                         true, true, true, false, false, 53));
 
@@ -2596,14 +2618,22 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                                    "", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc2, ac1, true));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc3, ac2, true));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc4, ac3, true));
     }
     if (c_name == "行秋")
     {
         auto *tc1 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("夜兰"),
                                     "昔日宗室之仪", "水", "水");
-        auto *tc2 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("香菱"), find_character_by_name("班尼特"),
+        auto *tc2 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("莫娜"),
+                                    "昔日宗室之仪", "水", "水");
+
+        auto *tc3 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("香菱"), find_character_by_name("班尼特"),
                                     "昔日宗室之仪", "水雷", "水雷火");
-        auto *tc3 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("八重神子"), find_character_by_name("久岐忍"),
+
+        auto *tc4 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("八重神子"), find_character_by_name("久岐忍"),
                                     "千夜浮梦_深林的记忆", "雷草", "");
 
         vector<Attack_config *> ac1;//EQ
@@ -2615,7 +2645,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                         true, true, true, false, false, 45));
 
         vector<Attack_config *> ac2;//EQ
-        ac2.push_back(new Attack_config(new Condition("水", "单手剑", "E"), false, false, "NONE",
+        ac2.push_back(new Attack_config(new Condition("水", "单手剑", "E"), false, false, "感电_no_add_damage",
                                         false, true, false, false, false,
                                         true, true, true, false, false, 2 * 1));
         ac2.push_back(new Attack_config(new Condition("水", "单手剑", "Q"), true, false, "感电_no_add_damage",
@@ -2637,13 +2667,17 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc2, ac2, true));
+                                                   "", "", "", tc2, ac1, true));
         combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
-                                                   "", "", "", tc3, ac3, true));
+                                                   "", "", "", tc3, ac2, true));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc4, ac3, true));
     }
     if (c_name == "香菱")
     {
         auto *tc1 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("班尼特"), find_character_by_name("行秋"),
+                                    "昔日宗室之仪", "水雷", "水雷火");
+        auto *tc2 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("班尼特"), find_character_by_name("夜兰"),
                                     "昔日宗室之仪", "水雷", "水雷火");
 
         vector<Attack_config *> ac1;
@@ -2663,19 +2697,26 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
 
         combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, true));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc2, ac1, true));
     }
     if (c_name == "八重神子")
     {
         auto *tc1 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("行秋"), find_character_by_name("久岐忍"),
                                     "千夜浮梦_深林的记忆", "雷草", "");
+        auto *tc2 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("夜兰"), find_character_by_name("久岐忍"),
+                                    "千夜浮梦_深林的记忆", "雷草", "");
 
         vector<Attack_config *> ac1;
+        ac1.push_back(new Attack_config(new Condition("雷", "法器", "平A"), false, false, "NONE",
+                                        false, true, false, false, false,
+                                        true, true, true, false, false, 3));
         ac1.push_back(new Attack_config(new Condition("雷", "法器", "E"), true, false, "超激化",
                                         false, true, false, true, false,
-                                        true, true, true, false, false, 14));
+                                        true, true, true, false, false, 3));
         ac1.push_back(new Attack_config(new Condition("雷", "法器", "E"), true, false, "超激化_no_add_damage",
                                         false, true, false, true, false,
-                                        true, true, true, false, false, 28));
+                                        true, true, true, false, false, 18));
         ac1.push_back(new Attack_config(new Condition("雷", "法器", "Q"), false, true, "超激化",
                                         false, true, false, true, false,
                                         true, true, true, false, false, 4));
@@ -2686,11 +2727,13 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
 
         combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
                                                    "", "", "", tc1, ac1, false));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name(""), find_artifact_by_name(""),
+                                                   "", "", "", tc2, ac1, false));
     }
     if (c_name == "温迪")
     {
         auto *tc1 = new Team_config(find_character_by_name("雷_test"), find_character_by_name("雷_test"), find_character_by_name("雷_test"),
-                                    "", "冰水", "冰水");
+                                    "", "", "");
 
         vector<Attack_config *> ac1;
         ac1.push_back(new Attack_config(new Condition("风", "弓", "E"), false, false, "扩散",
@@ -2711,8 +2754,10 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
     {
         auto *tc1 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("夜兰"),
                                     "昔日宗室之仪", "水", "水");
+        auto *tc2 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("行秋"),
+                                    "昔日宗室之仪", "水", "水");
 
-        auto *tc2 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("甘雨"), find_character_by_name("温迪"),
+        auto *tc3 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("甘雨"), find_character_by_name("温迪"),
                                     "终末嗟叹之诗_翠绿之影", "冰水", "冰");
 
         vector<Attack_config *> ac1;
@@ -2738,7 +2783,9 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         combination_list.push_back(new Combination(w_point, find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
                                                    "元素充能效率", "", "", tc1, ac1, true));
         combination_list.push_back(new Combination(w_point, find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                   "元素充能效率", "", "", tc2, ac2, true));
+                                                   "元素充能效率", "", "", tc2, ac1, true));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
+                                                   "元素充能效率", "", "", tc3, ac2, true));
     }
     if (c_name == "钟离")
     {
@@ -2762,25 +2809,32 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
     if (c_name == "纳西妲")
     {
         auto *tc1 = new Team_config(find_character_by_name("行秋"), find_character_by_name("八重神子"), find_character_by_name("久岐忍"),
-                                    "深林的记忆", "雷草", "");
+                                    "", "雷草", "");
+        auto *tc2 = new Team_config(find_character_by_name("夜兰"), find_character_by_name("八重神子"), find_character_by_name("久岐忍"),
+                                    "", "雷草", "");
 
         vector<Attack_config *> ac1;
         ac1.push_back(new Attack_config(new Condition("草", "法器", "平A"), false, false, "蔓激化",
                                         false, true, false, true, false,
-                                        true, true, true, false, false, 11));
+                                        true, true, true, false, false, 2));
         ac1.push_back(new Attack_config(new Condition("草", "法器", "平A"), false, false, "蔓激化_no_add_damage",
                                         false, true, false, false, false,
-                                        true, true, true, false, false, 21));
+                                        true, true, true, false, false, 8));
         ac1.push_back(new Attack_config(new Condition("草", "法器", "E"), false, false, "蔓激化",
                                         false, true, false, true, false,
-                                        true, true, true, false, false, 9));
+                                        true, true, true, false, false, 3));
+        ac1.push_back(new Attack_config(new Condition("草", "法器", "E"), false, false, "蔓激化_no_add_damage",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 6));
 
         Weapon *w_point = nullptr;
         if (mode == "cal_deployment") w_point = nullptr;
         else if (mode == "cal_optimal_artifact") w_point = find_weapon_by_name("千夜浮梦");
 
         combination_list.push_back(new Combination(w_point, find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                   "", "", "", tc1, ac1, false));//TODO:recharge=true
+                                                   "", "", "", tc1, ac1, false));
+        combination_list.push_back(new Combination(w_point, find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
+                                                   "", "", "", tc2, ac1, false));
     }
 }
 
@@ -3281,18 +3335,15 @@ void get_build_up(Character *c, vector<Build_up *> &build_up_list)
     else if (c->name == "雷电将军")
     {
         build_up_list.push_back(new Build_up(c, find_weapon_by_name("薙草之稻光"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击率"));
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击率"));
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("决斗之枪"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击伤害"));
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击率"));
         build_up_list.push_back(new Build_up(c, find_weapon_by_name("薙草之稻光"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "攻击力", "暴击率"));
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "攻击力", "暴击率"));
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("决斗之枪"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "攻击力", "暴击伤害"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击率"));
         build_up_list.push_back(new Build_up(c, find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "攻击力", "暴击率"));
     }
     else if (c->name == "纳西妲")
     {
         build_up_list.push_back(new Build_up(c, find_weapon_by_name("千夜浮梦"), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"), "元素精通", "伤害加成", "暴击率"));
         build_up_list.push_back(new Build_up(c, find_weapon_by_name("千夜浮梦"), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"), "元素精通", "元素精通", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("千夜浮梦"), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"), "元素精通", "元素精通", "暴击伤害"));
     }
     else if (c->name == "甘雨")
     {
@@ -3308,32 +3359,23 @@ void get_build_up(Character *c, vector<Build_up *> &build_up_list)
 //        build_up_list.push_back(new Build_up(c, find_weapon_by_name("赤沙之杖"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "火元素伤害加成", "暴击伤害"));
 //        build_up_list.push_back(new Build_up(c, find_weapon_by_name("赤沙之杖"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素充能效率", "火元素伤害加成", "暴击伤害"));
 
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("薙草之稻光"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素精通", "伤害加成", "暴击率"));
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("薙草之稻光"), find_artifact_by_name("炽烈的炎之魔女"), find_artifact_by_name("炽烈的炎之魔女"), "元素精通", "伤害加成", "暴击率"));
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("薙草之稻光"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素精通", "伤害加成", "暴击率"));
-
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("匣里灭辰"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击率"));
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("匣里灭辰"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素充能效率", "伤害加成", "暴击率"));
-
         build_up_list.push_back(new Build_up(c, find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素精通", "伤害加成", "暴击率"));
         build_up_list.push_back(new Build_up(c, find_weapon_by_name("渔获"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素精通", "伤害加成", "暴击率"));
 
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击率"));
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素充能效率", "伤害加成", "暴击率"));
-
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("断浪长鳍"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击率"));
         build_up_list.push_back(new Build_up(c, find_weapon_by_name("断浪长鳍"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "元素精通", "暴击率"));
         build_up_list.push_back(new Build_up(c, find_weapon_by_name("断浪长鳍"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素充能效率", "伤害加成", "暴击率"));
     }
     else if (c->name == "行秋")
     {
         build_up_list.push_back(new Build_up(c, find_weapon_by_name("磐岩结绿"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "攻击力", "伤害加成", "暴击伤害"));
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("磐岩结绿"), find_artifact_by_name("沉沦之心"), find_artifact_by_name("昔日宗室之仪"), "攻击力", "伤害加成", "暴击伤害"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("磐岩结绿"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"), "元素充能效率", "伤害加成", "暴击伤害"));
         build_up_list.push_back(new Build_up(c, find_weapon_by_name("祭礼剑"), find_artifact_by_name("沉沦之心"), find_artifact_by_name("昔日宗室之仪"), "攻击力", "伤害加成", "暴击率"));
     }
     else if (c->name == "八重神子")
     {
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("神乐之真意"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "攻击力", "伤害加成", "暴击率"));
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("神乐之真意"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("流浪大地的乐团"), "攻击力", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("神乐之真意"), find_artifact_by_name("角斗士的终幕礼"), find_artifact_by_name("如雷的盛怒"), "攻击力", "伤害加成", "暴击率"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("神乐之真意"), find_artifact_by_name("角斗士的终幕礼"), find_artifact_by_name("追忆之注连"), "攻击力", "伤害加成", "暴击率"));
     }
     else if (c->name == "温迪")
     {
@@ -3347,8 +3389,8 @@ void get_build_up(Character *c, vector<Build_up *> &build_up_list)
     }
     else if (c->name == "钟离")
     {
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "生命值", "伤害加成", "暴击率"));
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("决斗之枪"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "生命值", "伤害加成", "暴击伤害"));
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "生命值", "伤害加成", "暴击率"));
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("决斗之枪"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "生命值", "伤害加成", "暴击伤害"));
         build_up_list.push_back(new Build_up(c, find_weapon_by_name("西风长枪"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "生命值", "生命值", "暴击率"));
 //        build_up_list.push_back(new Build_up(c, find_weapon_by_name("护摩之杖"), find_artifact_by_name("悠古的磐岩"), find_artifact_by_name("悠古的磐岩"), "生命值", "岩元素伤害加成", "暴击率"));
 //        build_up_list.push_back(new Build_up(c, find_weapon_by_name("决斗之枪"), find_artifact_by_name("悠古的磐岩"), find_artifact_by_name("悠古的磐岩"), "生命值", "岩元素伤害加成", "暴击伤害"));
@@ -3367,12 +3409,12 @@ void get_build_up(Character *c, vector<Build_up *> &build_up_list)
     else if (c->name == "久岐忍")
     {
         //苍古自由之誓 圣显之钥
-        build_up_list.push_back(new Build_up(c, find_weapon_by_name("东花坊时雨"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素精通", "元素精通", "治疗加成"));
-//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("东花坊时雨"), find_artifact_by_name("千岩牢固"), find_artifact_by_name("千岩牢固"), "元素精通", "元素精通", "治疗加成"));
+        build_up_list.push_back(new Build_up(c, find_weapon_by_name("东花坊时雨"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素精通", "元素精通", "元素精通"));
+//        build_up_list.push_back(new Build_up(c, find_weapon_by_name("东花坊时雨"), find_artifact_by_name("千岩牢固"), find_artifact_by_name("千岩牢固"), "元素精通", "元素精通", "元素精通"));
     }
 }
 
-void generate_gcsim_script(string filename)
+void generate_gcsim_script(string filename, string teamname)
 {
     int filecount = 0;
     vector<Build_up *> build_up_list_1;
@@ -3391,7 +3433,9 @@ void generate_gcsim_script(string filename)
                 {
                     outfile_result.open(filename.substr(0, filename.length() - 4) + "_" + to_string(filecount) + ".txt");
                     //head
-                    outfile_result << "options iteration=1000 duration=110 swap_delay=4;" << endl;
+                    outfile_result << "#./run_substat_optimizer_full.bat " << (teamname + "_" + to_string(filecount) + ".txt") << " > ./logs/" << (teamname + "_" + to_string(filecount) + ".txt") << endl;
+                    outfile_result << endl;
+                    outfile_result << "options iteration=1000 duration=120 swap_delay=4;" << endl;
                     outfile_result << "target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;" << endl;
                     //config
                     build_up_1->out();
@@ -3404,7 +3448,13 @@ void generate_gcsim_script(string filename)
                     //attack_list
                     outfile_result << "let x = 5;" << endl;
                     outfile_result << "while x {" << endl;
-                    for (auto &i: attack_list) outfile_result << "  " << i << ";" << endl;
+                    for (auto &i: attack_list)
+                    {
+                        if (i[i.length() - 1] == '{' || i[i.length() - 1] == '}')
+                            outfile_result << "  " << i << endl;
+                        else
+                            outfile_result << "  " << i << ";" << endl;
+                    }
                     outfile_result << "  x = x - 1;" << endl;
                     outfile_result << "}";
                     outfile_result.close();
@@ -3457,7 +3507,7 @@ int main()
         cin >> team_name;
 
         parse_file("./RESULTS/chinese_config/" + team_name + ".txt");
-        generate_gcsim_script("./RESULTS/config/" + team_name + ".txt");
+        generate_gcsim_script("./RESULTS/config/" + team_name + ".txt", team_name);
     }
     return 0;
 }
