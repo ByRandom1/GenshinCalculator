@@ -254,23 +254,23 @@ void init_character_data()
     temp.clear();
     //E护盾减抗20%(special get_team)
 
-    //TODO:NEW
+    //TODO:verify english name
     temp.push_back(nullptr);//重击或下落攻击命中敌人时，将产生一枚琢光镜。该效果每12秒至多触发一次。
     temp.push_back(nullptr);//(convert)
-    temp.push_back(nullptr);//光幕攻击命中敌人时，将使共相·理式摹写的冷却时间减少1秒。该效果每1秒至多触发一次。->e cd 12s
-    temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 160));//每1枚产生的琢光镜将使元素精通提升40点，持续8秒，最多4层。默认先Q，4层，8s
+    temp.push_back(nullptr);//光幕攻击命中敌人时，将使共相·理式摹写的冷却时间减少1.2秒。该效果每1秒至多触发一次。->e cd 12s
+    temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 150));//每1枚产生的琢光镜将使元素精通提升50点，4层，持续8秒，最多4层。默认3层，8s
     temp.push_back(new Set(new Condition("草", "ALL", "ALL"), "伤害加成", 0.3));//Q每消耗1枚琢光镜，使队伍中的其他角色元素精通提升30点，持续15秒，每产生1枚琢光镜，使艾尔海森获得10%草元素伤害加成，持续15秒。默认先Q，3层，15s
     temp.push_back(nullptr);//(special)产生琢光镜时，若琢光镜数量已达到上限，艾尔海森的暴击率提升10%，暴击伤害提升70%，持续6秒，默认触发
     character_list.push_back(new Character("艾尔海森", "alhaitham", "草", "单手剑", 13348, 313, 782, "伤害加成", 0.288,
-                                           10, "草", (1.108 + 1.124 + 0.736 + 0.736 + 1.453 + 1.908) / 6, (1.03 + 1.044 + 0.684 + 0.684 + 1.35 + 1.774) / 6,
-                                           "草", 1.408 + 1.408, 1.308 + 1.308, "草", 3.16, 2.93,
-                                           10, 3, false, 2.04, 1.92, 1.728, 1.632,
-                                           10, 70, false, 2.584, 2.432, 2.189, 2.067,
+                                           10, "草", (0.979 + 1.003 + 0.676 + 0.676 + 1.32 + 1.658) / 6, (0.91 + 0.932 + 0.628 + 0.628 + 1.227 + 1.541) / 6,
+                                           "草", 1.092 + 1.092, 1.015 + 1.015, "草", 3.16, 2.93,
+                                           10, 5, false, 1.482, 1.344, 1.21, 1.142,
+                                           10, 70, true, 2.584, 2.432, 2.189, 2.067,
                                            0, temp,
-                                           new weapon_artifact_related_arguments(false, false, 2, true, 1, false, true, 3,
+                                           new weapon_artifact_related_arguments(false, false, 2, true, 1, false, true, 2,
                                                                                  3, -1, -1, -1, false, false, -1, -1)));
     temp.clear();
-    //E默认1枚，EQ精通倍率(extra_rate)
+    //E默认1枚，EQ精通倍率(extra_rate)，天赋2转化
 
     //NO NEED TO CALCULATE
     //BUILD BASIC INFORMATION AND ARGS
@@ -472,7 +472,6 @@ bool Character::get_extra_special(Deployment *data) const
         if (data->c_point->constellation >= 2 && data->attack_config->react_type.find("激化") != string::npos)
             data->add_percentage("防御削弱", 0.3, (name + "_extra_special"));
     }
-        //TODO:NEW
     else if (data->c_point->name == "艾尔海森")
     {
         if (data->c_point->constellation >= 6)
@@ -535,7 +534,7 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("磐岩结绿", "primordialjadecutter", "单手剑", 542, "暴击率", 0.441, 1, temp));
     temp.clear();
 
-    //TODO:NEW
+    //TODO:verify english name
     //(convert)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "暴击率", 0.04));
     weapon_list.push_back(new Weapon("裁叶萃光", "lightoffoliarincision", "单手剑", 542, "暴击伤害", 0.882, 1, temp));
@@ -799,6 +798,11 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("天空之傲", "skywardpride", "双手剑", 674, "元素充能效率", 0.368, 1, temp));
     temp.clear();
 
+    //TODO:NEW
+    //(special)
+    weapon_list.push_back(new Weapon("苇海信标", "beaconofthereedsea", "双手剑", 608, "暴击率", 0.331, 1, temp));
+    temp.clear();
+
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.2));//默认不触发特效
     weapon_list.push_back(new Weapon("狼的末路", "wolfsgravestone", "双手剑", 608, "攻击力", 0.496, 1, temp));
     temp.clear();
@@ -825,6 +829,11 @@ void init_weapon_data()
 
     //(special) (get_team)
     weapon_list.push_back(new Weapon("森林王器", "forestregalia", "双手剑", 565, "元素充能效率", 0.306, 5, temp));
+    temp.clear();
+
+    //TODO:NEW
+    //(special)
+    weapon_list.push_back(new Weapon("饰铁之花", "mailedflower", "双手剑", 565, "元素精通", 110.0, 5, temp));
     temp.clear();
 
     //(special)
@@ -1085,7 +1094,7 @@ bool Weapon::get_extra_special(Deployment *data) const
                 data->add_percentage("伤害加成", (0.2 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
-        //TODO:流浪乐章默认无加成
+        //流浪乐章默认无加成
 //    else if (name == "流浪乐章")
 //    {
 //        //每个各取1/4
@@ -1171,6 +1180,14 @@ bool Weapon::get_extra_special(Deployment *data) const
             data->add_percentage("攻击力", (0.04 * 4 * (0.75 + level * 0.25)), (name + "_extra_special"));
     }
 
+        //TODO:NEW
+    else if (name == "苇海信标")
+    {
+        data->add_percentage("攻击力", (0.2 * (0.75 + level * 0.25)), (name + "_extra_special"));//E命中
+        data->add_percentage("攻击力", (0.2 * (0.75 + level * 0.25)), (name + "_extra_special"));//受伤
+        if (!data->c_point->args->shield_sustain && !data->team_config->teammate_1->args->shield_sustain && !data->team_config->teammate_2->args->shield_sustain && !data->team_config->teammate_3->args->shield_sustain)
+            data->add_percentage("生命值", (0.32 * (0.75 + level * 0.25)), (name + "_extra_special"));//不处于护盾下，条件弱
+    }
     else if (name == "无工之剑")
     {
 //        if (data->c_point->args->accumulate_attacks)
@@ -1185,6 +1202,13 @@ bool Weapon::get_extra_special(Deployment *data) const
     {
         if (data->attack_config->react_type.find("燃烧") != string::npos || data->attack_config->react_type.find("激化") != string::npos || data->attack_config->react_type.find("绽放") != string::npos)
             data->add_percentage("元素精通", (60.0 * (0.75 + level * 0.25)), (name + "_extra_special"));
+    }
+    //TODO:NEW
+    else if (name == "饰铁之花")
+    {
+        //E命中或元素反应
+        data->add_percentage("攻击力", (0.12 * (0.75 + level * 0.25)), (name + "_extra_special"));
+        data->add_percentage("元素精通", (48.0 * (0.75 + level * 0.25)), (name + "_extra_special"));
     }
     else if (name == "螭骨剑")
     {
@@ -1303,7 +1327,6 @@ bool Weapon::get_extra_special(Deployment *data) const
 void Weapon::modify_useful_attribute(Deployment *data)
 {
     if (data->w_point->name == "磐岩结绿" && data->data_list[1]->useful) data->data_list[0]->useful = true;
-        //TODO:NEW
     else if (data->w_point->name == "裁叶萃光" && (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "E")) data->data_list[4]->useful = true;
     else if (data->w_point->name == "圣显之钥" && data->c_point->args->sword_shengxian_level > 0 && data->data_list[4]->useful) data->data_list[0]->useful = true;
     else if (data->w_point->name == "辰砂之纺锤" && data->attack_config->condition->attack_way == "E") data->data_list[2]->useful = true;
@@ -1584,11 +1607,10 @@ void Deployment::check_useful_attribute()
         if ((data_list[0]->value_per_entry * 0.012 * (0.75 + w_point->level * 0.25) * base_life / base_atk) < data_list[1]->value_per_entry)
             data_list[0]->useful = attack_config->useful_attributes[0];
     }
-        //TODO:NEW
     else if (w_point->name == "裁叶萃光")
     {
         if (base_skillrate != 0)
-            if ((data_list[4]->value_per_entry * (1.7 + w_point->level * 0.3) / (base_skillrate * base_atk)) < data_list[1]->value_per_entry)
+            if ((data_list[4]->value_per_entry * 1.2 * (0.75 + w_point->level * 0.25) / (base_skillrate * base_atk)) < data_list[1]->value_per_entry)
                 data_list[4]->useful = attack_config->useful_attributes[4];
         if (attack_config->condition->attack_way != "平A" && attack_config->condition->attack_way != "E")
             data_list[4]->useful = attack_config->useful_attributes[4];
@@ -1897,7 +1919,10 @@ void Deployment::get_team_data()
             add_percentage("防御削弱", 0.3, "team_纳西妲");
         Dendro_num++;
     }
-    //TODO:NEW
+    if (team_config->teammate_all.find("久岐忍") != string::npos)
+    {
+        Electro_num++;
+    }
     if (team_config->teammate_all.find("艾尔海森") != string::npos)
     {
         //constellation>=4
@@ -2014,7 +2039,7 @@ void Deployment::satisfy_recharge_requirement()
     if (c_point->name == "胡桃")
     {
         //Q 60 E 5f 2E/Q
-        //通过歪充能词条和队友保证循环
+        //不需要一轮一Q
         energy = Q_energy_modify;
     }
     else if (c_point->name == "神里绫华")
@@ -2113,7 +2138,7 @@ void Deployment::satisfy_recharge_requirement()
 //
 //            if (w_point->name == "西风长枪") energy += 3 * front * white;
 //            if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
-        //通过歪充能词条和队友保证循环
+        //不需要一轮一Q
         energy = Q_energy_modify;
     }
     else if (c_point->name == "纳西妲")
@@ -2126,10 +2151,15 @@ void Deployment::satisfy_recharge_requirement()
         else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
         //"不灭月华" 0.6/A Q后12s内 不吃充能
     }
-        //TODO:NEW
     else if (c_point->name == "艾尔海森")
     {
-        energy = Q_energy_modify;
+        //Q 70 E 5f 1E/Q
+        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
+
+        if (w_point->name == "西风剑") energy += 3 * front * white;
+        else if (w_point->name == "祭礼剑") energy += 0;
+        else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
+        else if (w_point->name == "西福斯的月光") converted_recharge += data_list[4]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
     }
     else energy = Q_energy_modify;
 
@@ -2155,10 +2185,9 @@ void Deployment::get_convert_value(double &life, double &atk, double &def, doubl
         damplus_add += min((mastery + data_list[4]->converted_percentage - 200.0), 800.0) * 0.001;
         critrate_add += min((mastery + data_list[4]->converted_percentage - 200.0), 800.0) * 0.0003;
     }
-        //TODO:NEW
     else if (c_point->name == "艾尔海森" && (attack_config->condition->attack_way == "E" || attack_config->condition->attack_way == "Q"))//精通->EQ增伤
     {
-        damplus_add += min((mastery + data_list[4]->converted_percentage) * 0.0012, 1.0);
+        damplus_add += min((mastery + data_list[4]->converted_percentage) * 0.001, 1.0);
     }
 
     //weapon
@@ -2230,9 +2259,8 @@ void Deployment::get_extra_rate_value(double life, double atk, double def, doubl
 {
     //artifact
     //weapon
-    //TODO:NEW
     if (w_point->name == "裁叶萃光" && (attack_config->condition->attack_way == "平A" || attack_config->condition->attack_way == "E"))
-        extrarate += (1.7 + w_point->level * 0.3) * mastery;
+        extrarate += 1.2 * (0.75 + w_point->level * 0.25) * mastery;
     else if (w_point->name == "辰砂之纺锤" && attack_config->condition->attack_way == "E")
         extrarate += 0.4 * (0.75 + w_point->level * 0.25) * def * base_def;
     else if (w_point->name == "不灭月华" && attack_config->condition->attack_way == "平A")
@@ -2275,13 +2303,12 @@ void Deployment::get_extra_rate_value(double life, double atk, double def, doubl
         if (attack_config->condition->attack_way == "E")
             extrarate += 3.715 * mastery;//LV10
     }
-        //TODO:NEW
     else if (c_point->name == "艾尔海森")
     {
         if (attack_config->condition->attack_way == "E")
-            extrarate += 3.456 * mastery;//LV10
+            extrarate += 2.419 * mastery;//LV10
         else if (attack_config->condition->attack_way == "Q")
-            extrarate += 4.378 * mastery;//LV10
+            extrarate += 1.751 * mastery;//LV10
     }
 }
 
