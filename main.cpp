@@ -1,6 +1,7 @@
 #include <iostream>
 #include <queue>
-#include <ctime>
+#include <thread>
+#include <chrono>
 #include "Condition.h"
 #include "Character.h"
 #include "Weapon.h"
@@ -2863,7 +2864,7 @@ struct cmp
 
 void cal_deployment(string mode)
 {
-    clock_t total_start = clock();
+    auto total_start = chrono::system_clock::now();
     for (auto &c_index: character_list)
     {
         //没有武器和圣遗物更新则不用计算未更新角色的任何配置
@@ -2884,7 +2885,7 @@ void cal_deployment(string mode)
 
                 priority_queue<Group *, vector<Group *>, cmp> c_w_pair;
 
-                clock_t start = clock();
+                auto start = chrono::system_clock::now();
 
                 for (int a_index1 = 0; a_index1 < artifact_list.size(); a_index1++)
                 {
@@ -2963,8 +2964,7 @@ void cal_deployment(string mode)
                     NEXTARTIFACT1:;
                 }
 
-                clock_t end = clock();
-                double time = (double) (end - start) / CLOCKS_PER_SEC;
+                chrono::duration<double> time = chrono::system_clock::now() - start;
 
                 while (!c_w_pair.empty())
                 {
@@ -2973,7 +2973,7 @@ void cal_deployment(string mode)
                     c_w->out();
                     delete c_w;
                 }
-                cout << c_index->name << " " << w_index->name << " " << " time=" << time << "s" << ((time > 30) ? "!!!" : "") << " ";
+                cout << c_index->name << " " << w_index->name << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << " ";
                 for (auto &i: comb_index->attack_config_list)
                     cout << to_string(i->attack_time) + "*" + i->condition->attack_way + "_" + (i->background ? "后台" : "前台") + "_" + i->react_type + "/";
                 cout << " " << comb_index->team_config->teammate_all + "_" + comb_index->team_config->team_weapon_artifact << "\n";
@@ -2981,9 +2981,129 @@ void cal_deployment(string mode)
         }
         combination_list.clear();
     }
-    clock_t total_end = clock();
-    double total_time = (double) (total_end - total_start) / CLOCKS_PER_SEC;
-    cout << "total_time:" << total_time << "s" << endl;
+    chrono::duration<double> total_time = chrono::system_clock::now() - total_start;
+    cout << "total_time:" << total_time.count() << "s" << endl;
+}
+
+bool cmp_func(Group *a, Group *b)
+{
+    if (a->total_damage > b->total_damage) return true;
+    else return false;
+};
+
+void cal_deployment_with_multithread(string mode)
+{
+    auto total_start = chrono::system_clock::now();
+    for (auto &c_index: character_list)
+    {
+        //没有武器和圣遗物更新则不用计算未更新角色的任何配置
+        if (mode == "ADD" && add_weapon.empty() && add_artifact.empty() && add_character.find(c_index->name) == string::npos) continue;
+
+        vector<Combination *> combination_list;
+        get_all_config(c_index->name, combination_list, "cal_deployment");
+        for (auto &comb_index: combination_list)
+        {
+            for (auto &w_index: weapon_list)
+            {
+                //没有圣遗物更新则不用计算未更新武器的任何配置
+                if (mode == "ADD" && add_artifact.empty() && add_weapon.find(w_index->name) == string::npos) continue;
+
+                if (c_index->weapon_type != w_index->weapon_type) continue;
+
+                if (comb_index->w_point != nullptr && comb_index->w_point != w_index) continue;
+
+                vector<Group *> c_w_pair;
+                vector<thread> ths;
+
+                auto start = chrono::system_clock::now();
+
+                for (int a_index1 = 0; a_index1 < artifact_list.size(); a_index1++)
+                {
+                    if (comb_index->suit1 != nullptr && comb_index->suit1 != artifact_list[a_index1]) continue;
+
+                    for (int a_index2 = a_index1; a_index2 < artifact_list.size(); a_index2++)
+                    {
+                        if (comb_index->suit2 != nullptr && comb_index->suit2 != artifact_list[a_index2]) continue;
+
+                        for (int main3_index = 0; main3_index < 5; main3_index++)
+                        {
+                            if (!comb_index->a_main3.empty() && comb_index->a_main3 != a_main3[main3_index]) continue;
+
+                            for (int main4_index = (main3_index == 4) ? 0 : main3_index; main4_index < 5; main4_index++)
+                            {
+                                if (!comb_index->a_main4.empty() && comb_index->a_main4 != a_main4[main4_index]) continue;
+
+                                for (int main5_index = (main4_index == 4) ? ((main3_index == 4) ? 0 : main3_index) : main4_index; main5_index < 7; main5_index++)
+                                {
+                                    if (!comb_index->a_main5.empty() && comb_index->a_main5 != a_main5[main5_index]) continue;
+
+                                    auto *temp = new Group(c_index, w_index, artifact_list[a_index1], artifact_list[a_index2], a_main3[main3_index],
+                                                           a_main4[main4_index], a_main5[main5_index], comb_index->team_config, comb_index->attack_config_list, comb_index->need_to_satisfy_recharge);
+                                    int check_num = temp->init_check_data();
+                                    if (check_num == 0)//pass
+                                    {
+                                        c_w_pair.push_back(temp);
+                                        ths.emplace_back(&Group::cal_damage_entry_num, temp);
+                                    }
+                                    else if (check_num == 1)//error:suit1
+                                    {
+                                        delete temp;
+                                        goto NEXTARTIFACT1;
+                                    }
+                                    else if (check_num == 2)//error:suit2
+                                    {
+                                        delete temp;
+                                        goto NEXTARTIFACT2;
+                                    }
+                                    else if (check_num == 3)//error:main3
+                                    {
+                                        delete temp;
+                                        goto NEXTMAIN3;
+                                    }
+                                    else if (check_num == 4)//error:main4
+                                    {
+                                        delete temp;
+                                        goto NEXTMAIN4;
+                                    }
+                                    else if (check_num == 5)//error:main5
+                                    {
+                                        delete temp;
+                                        goto NEXTMAIN5;
+                                    }
+                                    else if (check_num == 6)//error:recharge
+                                    {
+                                        delete temp;
+                                        goto NEXTMAIN5;
+                                    }
+                                    NEXTMAIN5:;
+                                }
+                                NEXTMAIN4:;
+                            }
+                            NEXTMAIN3:;
+                        }
+                        NEXTARTIFACT2:;
+                    }
+                    NEXTARTIFACT1:;
+                }
+
+                for (auto &th: ths) th.join();
+
+                chrono::duration<double> time = chrono::system_clock::now() - start;
+
+                stable_sort(c_w_pair.begin(), c_w_pair.end(), cmp_func);
+                for (int i = 0; i < top_k; ++i) c_w_pair[i]->out();
+                for (auto &i: c_w_pair) delete i;
+
+                cout << c_index->name << " " << w_index->name << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << " ";
+                for (auto &i: comb_index->attack_config_list)
+                    cout << to_string(i->attack_time) + "*" + i->condition->attack_way + "_" + (i->background ? "后台" : "前台") + "_" + i->react_type + "/";
+                cout << " " << comb_index->team_config->teammate_all + "_" + comb_index->team_config->team_weapon_artifact << "\n";
+            }
+        }
+        combination_list.clear();
+    }
+    chrono::duration<double> total_time = chrono::system_clock::now() - total_start;
+    cout << "total_time:" << total_time.count() << "s" << endl;
 }
 
 //cal_optimal_artifact
@@ -3174,7 +3294,7 @@ void cal_optimal_artifact(string c_name)
     {
         priority_queue<Group *, vector<Group *>, cmp> c_w_pair;
 
-        clock_t start = clock();
+        auto start = chrono::system_clock::now();
 
         for (int pos1_index = 0; pos1_index < reinforced_artifact_list[0].size(); ++pos1_index)
         {
@@ -3261,8 +3381,7 @@ void cal_optimal_artifact(string c_name)
             }
         }
 
-        clock_t end = clock();
-        double time = (double) (end - start) / CLOCKS_PER_SEC;
+        chrono::duration<double> time = chrono::system_clock::now() - start;
 
         while (!c_w_pair.empty())
         {
@@ -3271,7 +3390,7 @@ void cal_optimal_artifact(string c_name)
             c_w->out_assigned_artifact();
             delete c_w;
         }
-        cout << c_point->name << " " << comb_index->w_point->name << " " << " time=" << time << "s" << ((time > 30) ? "!!!" : "") << " ";
+        cout << c_point->name << " " << comb_index->w_point->name << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << " ";
         for (auto &i: comb_index->attack_config_list)
             cout << to_string(i->attack_time) + "*" + i->condition->attack_way + "_" + (i->background ? "后台" : "前台") + "_" + i->react_type + "/";
         cout << " " << comb_index->team_config->teammate_all + "_" + comb_index->team_config->team_weapon_artifact << "\n";
@@ -3491,7 +3610,7 @@ int main()
     {
         outfile_result.open("./RESULTS/data.csv");
         outfile_debug.open("./RESULTS/log_data.csv");
-        cal_deployment("ALL");
+        cal_deployment_with_multithread("ALL");
         outfile_result.close();
         outfile_debug.close();
     }
@@ -3512,7 +3631,7 @@ int main()
     {
         outfile_result.open("./RESULTS/data_add.csv");
         outfile_debug.open("./RESULTS/log_data_add.csv");
-        cal_deployment("ADD");
+        cal_deployment_with_multithread("ADD");
         outfile_result.close();
         outfile_debug.close();
     }
