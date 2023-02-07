@@ -154,7 +154,6 @@ void init_character_data()
                                                                                  -1, -1, 3, 4, true, false, -1, -1)));
     temp.clear();
     //重A 生命倍率19.68% E 生命倍率38.4% Q 生命倍率(12.42+8.28*45)/46 (extra_rate)
-    //TODO:设定为2命
 
     temp.push_back(nullptr);//E喷火距离提高20%
     temp.push_back(nullptr);//E结束拾取辣椒提高10%攻击 (get_team)，不考虑
@@ -232,7 +231,7 @@ void init_character_data()
                                            "水", 2.69, 2.55, "水", 2.81, 2.61,
                                            9, 3, true, (0.68 * 4 + 2.82) / 5, (0.64 * 4 + 2.66) / 5, (0.576 * 4 + 2.39) / 5, (0.544 * 4 + 2.26) / 5,
                                            9 + 3, 60, false, 9.4, 8.85, 7.96, 7.52,
-                                           3, temp,
+                                           4, temp,
                                            new weapon_artifact_related_arguments(false, false, 2, false, 1, false, true, -1,
                                                                                  -1, 1, -1, -1, false, false, -1, -1)));
     temp.clear();
@@ -447,6 +446,7 @@ bool Character::get_extra_special(Deployment *data) const
     else if (data->c_point->name == "莫娜")
     {
         data->add_percentage("伤害加成", 0.6, (name + "_extra_special"));
+        data->add_percentage("暴击率", 0.15, (name + "_extra_special"));
     }
     else if (data->c_point->name == "钟离")
     {
@@ -1897,7 +1897,7 @@ void Deployment::get_team_data()
         //Q
         add_percentage("伤害加成", 0.6, "team_莫娜");
         //constellation>=4 Q
-//        add_percentage("暴击率", 0.15, "team_莫娜");
+        add_percentage("暴击率", 0.15, "team_莫娜");
         Hydro_num++;
     }
     if (team_config->teammate_all.find("钟离") != string::npos)
