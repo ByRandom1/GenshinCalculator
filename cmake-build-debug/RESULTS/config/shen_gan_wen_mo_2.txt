@@ -1,4 +1,4 @@
-#./run_substat_optimizer_full.bat shen_gan_wan_mo_0.txt > ./logs/shen_gan_wan_mo_0.txt
+#./run_substat_optimizer_full.bat shen_gan_wen_mo_2.txt > ./logs/shen_gan_wen_mo_2.txt
 
 options iteration=1000 duration=120 swap_delay=4;
 target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;
@@ -8,11 +8,11 @@ ganyu add weapon="thunderingpulse" refine=1 lvl=90/90;
 ganyu add set="blizzardstrayer" count=4;
 ganyu add stats hp=4780 atk=311 atk%=0.466 cryo%=0.466 cd=0.622;
 
-#枫原万叶 东花坊时雨 翠绿之影 翠绿之影 元素精通 元素精通 元素精通
-kazuha char lvl=90/90 cons=0 talent=6,9,9;
-kazuha add weapon="toukaboushigure" refine=5 lvl=90/90;
-kazuha add set="viridescentvenerer" count=4;
-kazuha add stats hp=4780 atk=311 em=187 em=187 em=187;
+#温迪 终末嗟叹之诗 翠绿之影 翠绿之影 元素精通 元素精通 元素精通
+venti char lvl=90/90 cons=0 talent=6,9,9;
+venti add weapon="elegyfortheend" refine=1 lvl=90/90;
+venti add set="viridescentvenerer" count=4;
+venti add stats hp=4780 atk=311 em=187 em=187 em=187;
 
 #莫娜 试作金珀 昔日宗室之仪 昔日宗室之仪 元素充能效率 攻击力 暴击率
 mona char lvl=90/90 cons=4 talent=6,9,9;
@@ -31,11 +31,11 @@ active ganyu;
 let x = 5;
 while x {
   ganyu skill, burst;
-  kazuha skill, high_plunge, burst;
+  venti skill, burst;
   mona skill, burst;
   ayaka dash, skill, attack, burst;
   ganyu skill, aim, aim;
-  kazuha skill, high_plunge;
-  ayaka dash, attack, charge, skill, attack, charge;
+  venti skill, attack;
+  ayaka dash, attack, charge, skill, attack:3, charge;
   x = x - 1;
 }
