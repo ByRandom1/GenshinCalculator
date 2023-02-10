@@ -3433,6 +3433,8 @@ void generate_gcsim_script(string filename, string teamname)
             for (auto &build_up_3: build_up_list_3)
                 for (auto &build_up_4: build_up_list_4)
                 {
+                    outfile_debug << "./run_substat_optimizer_full.bat " << (teamname + "_" + to_string(filecount) + ".txt") << " > ./logs/" << (teamname + "_" + to_string(filecount) + ".txt") << endl;
+
                     outfile_result.open(filename.substr(0, filename.length() - 4) + "_" + to_string(filecount) + ".txt");
                     //head
                     outfile_result << "#./run_substat_optimizer_full.bat " << (teamname + "_" + to_string(filecount) + ".txt") << " > ./logs/" << (teamname + "_" + to_string(filecount) + ".txt") << endl;
@@ -3504,12 +3506,30 @@ int main()
     }
     else if (mode == 4)
     {
+        vector<string> team_list;
         string team_name;
-        cout << "team_name:";
-        cin >> team_name;
+        getline(cin, team_name);
+        while (true)
+        {
+            cout << "输入中文配置文件名(ENTER结束):";
+            getline(cin, team_name);
+            if (team_name.empty()) break;
+            team_list.push_back(team_name);
+        }
 
-        parse_file("./RESULTS/chinese_config/" + team_name + ".txt");
-        generate_gcsim_script("./RESULTS/config/" + team_name + ".txt", team_name);
+        outfile_debug.open("./RESULTS/calculate_all.ps1");
+        for (auto &i: team_list)
+        {
+            ifstream infile("./RESULTS/chinese_config/" + i + ".txt");
+            if (infile.good())
+            {
+                infile.close();
+                parse_file("./RESULTS/chinese_config/" + i + ".txt");
+                generate_gcsim_script("./RESULTS/config/" + i + ".txt", i);
+                attack_list.clear();
+            }
+        }
+        outfile_debug.close();
     }
     return 0;
 }
