@@ -1,4 +1,4 @@
-#./run_substat_optimizer_full.bat shen_gan_wan_mo_0.txt > ./logs/shen_gan_wan_mo_0.txt
+#./run_substat_optimizer_full.bat shen_gan_wan_mo_1.txt > ./logs/shen_gan_wan_mo_1.txt
 
 options iteration=1000 duration=120 swap_delay=4;
 target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;

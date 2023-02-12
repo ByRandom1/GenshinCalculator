@@ -23,9 +23,11 @@ extern ofstream outfile_debug;
 extern bool out_header;
 extern string double_E_per_round;
 extern int max_up_num_per_base;
-extern int max_attribute_num_per_pos;
+extern double max_attribute_num_per_pos;
 extern int max_entry_num;
 extern int artifact_2_2_max_entry_bonus;
+
+extern bool out_debug;
 
 struct Team_config
 {
@@ -200,7 +202,7 @@ public:
 
     int entry[7];
 
-    Reinforced_Artifact* data[5];
+    Reinforced_Artifact *data[5];
 
     double *temp_damage;
     double *damage;
@@ -219,13 +221,11 @@ public:
 
     ~Group();
 
-    int init_check_data();
+    int init_check_data(int recharge_restriction_num);
 
     void cal_damage_entry_num();
 
     void out();
-
-    int init_check_assigned_artifact();
 
     void cal_assigned_artifact_damage();
 

@@ -21,11 +21,11 @@ yelan add weapon="elegyfortheend" refine=1 lvl=90/90;
 yelan add set="emblemofseveredfate" count=4;
 yelan add stats hp=4780 atk=311 hp%=0.466 hydro%=0.466 cr=0.311;
 
-#胡桃 护摩之杖 追忆之注连 追忆之注连 元素精通 伤害加成 暴击率
+#胡桃 护摩之杖 炽烈的炎之魔女 炽烈的炎之魔女 生命值 伤害加成 暴击率
 hutao char lvl=90/90 cons=1 talent=10,10,10;
 hutao add weapon="staffofhoma" refine=1 lvl=90/90;
-hutao add set="shimenawasreminiscence" count=4;
-hutao add stats hp=4780 atk=311 em=187 pyro%=0.466 cr=0.311;
+hutao add set="crimsonwitchofflames" count=4;
+hutao add stats hp=4780 atk=311 hp%=0.466 pyro%=0.466 cr=0.311;
 
 active zhongli;
 

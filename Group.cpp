@@ -3,6 +3,7 @@
 //
 
 #include "Group.h"
+#include <cmath>
 
 int str2index(string type_)
 {
@@ -331,10 +332,9 @@ Group::~Group()
     delete damage;
 }
 
-int Group::init_check_data()
+int Group::init_check_data(int recharge_restriction_num)
 {
-    outfile_debug << (c_point->name + "_" + w_point->name + "_" + suit1->name + "_" + suit2->name + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_")
-                  << (team_config->teammate_all + "_" + team_config->team_weapon_artifact) + ",";
+    if (out_debug) outfile_debug << (c_point->name + "_" + w_point->name + "_" + suit1->name + "_" + suit2->name + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_") << (team_config->teammate_all + "_" + team_config->team_weapon_artifact) + ",";
 
     bool suit1_valid = false;
     bool suit2_valid = false;
@@ -364,48 +364,48 @@ int Group::init_check_data()
         {
             if (suit1 == suit2)
             {
-                outfile_debug << suit1->name + "--piece4_failure\n";
+                if (out_debug) outfile_debug << suit1->name + "--piece4_failure\n";
                 return 2;
             }
             else
             {
-                outfile_debug << suit1->name + "--piece2_failure\n";
+                if (out_debug) outfile_debug << suit1->name + "--piece2_failure\n";
                 return 1;
             }
         }
         else if (!suit1_valid)
         {
-            outfile_debug << suit1->name + "--piece2_failure\n";
+            if (out_debug) outfile_debug << suit1->name + "--piece2_failure\n";
             return 1;
         }
         else
         {
-            outfile_debug << suit2->name + "--piece2_failure\n";
+            if (out_debug) outfile_debug << suit2->name + "--piece2_failure\n";
             return 2;
         }
     }
     else if (!main3_valid)
     {
-        outfile_debug << "main3--failure\n";
+        if (out_debug) outfile_debug << "main3--failure\n";
         return 3;
     }
     else if (!main4_valid)
     {
-        outfile_debug << "main4--failure\n";
+        if (out_debug) outfile_debug << "main4--failure\n";
         return 4;
     }
     else if (!main5_valid)
     {
-        outfile_debug << "main5--failure\n";
+        if (out_debug) outfile_debug << "main5--failure\n";
         return 5;
     }
 
-    outfile_debug << "success!\n";
+    if (out_debug) outfile_debug << "success!\n";
 
     for (auto &i: combination)
     {
         i->init_data();
-        outfile_debug << i->get_data_info;
+        if (out_debug) outfile_debug << i->get_data_info;
         useful[0] = useful[0] || i->data_list[0]->useful;
         useful[1] = useful[1] || i->data_list[1]->useful;
         useful[2] = useful[2] || i->data_list[2]->useful;
@@ -415,8 +415,8 @@ int Group::init_check_data()
         useful[6] = useful[6] || i->data_list[7]->useful;
         if (need_to_satisfy_recharge) entry[4] = max(entry[4], i->min_recharge_num);
     }
-    //TODO:设定充能容许标准
-    if (entry[4] > 9) return 6;
+
+    if (entry[4] > recharge_restriction_num) return 6;
     return 0;
 }
 
@@ -452,7 +452,7 @@ void Group::cal_damage_entry_num()
     int critdam_base = (useful[6]) ? critdam_pos : min(critdam_num, critdam_pos);
 
     for (int lifebase = life_base; lifebase >= 0; lifebase--)
-        for (int lifeup = min(max_attribute_num_per_pos * life_pos - lifebase, max_up_num_per_base * lifebase); lifeup >= 0; lifeup--)
+        for (int lifeup = min((int) round(max_attribute_num_per_pos * life_pos) - lifebase, max_up_num_per_base * lifebase); lifeup >= 0; lifeup--)
         {
             if (!useful[0] && (lifebase + lifeup != life_num)) continue;
             if (lifebase + lifeup < life_num) continue;
@@ -462,7 +462,7 @@ void Group::cal_damage_entry_num()
             if (leftbase1 < 0 || leftup1 < 0 || leftnum1 < 0) continue;
 
             for (int atkbase = atk_base; atkbase >= 0; atkbase--)
-                for (int atkup = min(max_attribute_num_per_pos * atk_pos - atkbase, max_up_num_per_base * atkbase); atkup >= 0; atkup--)
+                for (int atkup = min((int) round(max_attribute_num_per_pos * atk_pos) - atkbase, max_up_num_per_base * atkbase); atkup >= 0; atkup--)
                 {
                     if (!useful[1] && (atkbase + atkup != atk_num)) continue;
                     if (atkbase + atkup < atk_num) continue;
@@ -472,7 +472,7 @@ void Group::cal_damage_entry_num()
                     if (leftbase2 < 0 || leftup2 < 0 || leftnum2 < 0) continue;
 
                     for (int defbase = def_base; defbase >= 0; defbase--)
-                        for (int defup = min(max_attribute_num_per_pos * def_pos - defbase, max_up_num_per_base * defbase); defup >= 0; defup--)
+                        for (int defup = min((int) round(max_attribute_num_per_pos * def_pos) - defbase, max_up_num_per_base * defbase); defup >= 0; defup--)
                         {
                             if (!useful[2] && (defbase + defup != def_num)) continue;
                             if (defbase + defup < def_num) continue;
@@ -482,7 +482,7 @@ void Group::cal_damage_entry_num()
                             if (leftbase3 < 0 || leftup3 < 0 || leftnum3 < 0) continue;
 
                             for (int masterybase = mastery_base; masterybase >= 0; masterybase--)
-                                for (int masteryup = min(max_attribute_num_per_pos * mastery_pos - masterybase, max_up_num_per_base * masterybase); masteryup >= 0; masteryup--)
+                                for (int masteryup = min((int) round(max_attribute_num_per_pos * mastery_pos) - masterybase, max_up_num_per_base * masterybase); masteryup >= 0; masteryup--)
                                 {
                                     if (!useful[3] && (masterybase + masteryup != mastery_num)) continue;
                                     if (masterybase + masteryup < mastery_num) continue;
@@ -492,7 +492,7 @@ void Group::cal_damage_entry_num()
                                     if (leftbase4 < 0 || leftup4 < 0 || leftnum4 < 0) continue;
 
                                     for (int rechargebase = recharge_base; rechargebase >= 0; rechargebase--)
-                                        for (int rechargeup = min(max_attribute_num_per_pos * recharge_pos - rechargebase, max_up_num_per_base * rechargebase);
+                                        for (int rechargeup = min((int) round(max_attribute_num_per_pos * recharge_pos) - rechargebase, max_up_num_per_base * rechargebase);
                                              rechargeup >= 0; rechargeup--)
                                         {
                                             if (!useful[4] && (rechargebase + rechargeup != recharge_num)) continue;
@@ -503,7 +503,7 @@ void Group::cal_damage_entry_num()
                                             if (leftbase5 < 0 || leftup5 < 0 || leftnum5 < 0) continue;
 
                                             for (int critratebase = critrate_base; critratebase >= 0; critratebase--)
-                                                for (int critrateup = min(max_attribute_num_per_pos * critrate_pos - critratebase, max_up_num_per_base * critratebase);
+                                                for (int critrateup = min((int) round(max_attribute_num_per_pos * critrate_pos) - critratebase, max_up_num_per_base * critratebase);
                                                      critrateup >= 0; critrateup--)
                                                 {
                                                     if (!useful[5] && (critratebase + critrateup != critrate_num)) continue;
@@ -514,7 +514,7 @@ void Group::cal_damage_entry_num()
                                                     if (leftbase6 < 0 || leftup6 < 0 || leftnum6 < 0) continue;
 
                                                     for (int critdambase = critdam_base; critdambase >= 0; critdambase--)
-                                                        for (int critdamup = min(max_attribute_num_per_pos * critdam_pos - critdambase, max_up_num_per_base * critdambase);
+                                                        for (int critdamup = min((int) round(max_attribute_num_per_pos * critdam_pos) - critdambase, max_up_num_per_base * critdambase);
                                                              critdamup >= 0; critdamup--)
                                                         {
                                                             if (!useful[6] && (critdambase + critdamup != critdam_num)) continue;
@@ -596,62 +596,6 @@ void Group::out()
                    << entry[4] << ","
                    << entry[5] << ","
                    << entry[6] << "\n";
-}
-
-int Group::init_check_assigned_artifact()
-{
-//    outfile_debug << (c_point->name + "_" + w_point->name + "_" + suit1->name + "_" + suit2->name + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_")
-//                  << (team_config->teammate_all + "_" + team_config->team_weapon_artifact) + ",";
-
-    bool suit1_valid = false;
-    bool suit2_valid = false;
-    bool main3_valid = false;
-    bool main4_valid = false;
-    bool main5_valid = false;
-
-    bool suit1_valid_;
-    bool suit2_valid_;
-    bool main3_valid_;
-    bool main4_valid_;
-    bool main5_valid_;
-
-    for (auto &i: combination)
-    {
-        i->check_data(suit1_valid_, suit2_valid_, main3_valid_, main4_valid_, main5_valid_);
-        suit1_valid = suit1_valid || suit1_valid_;
-        suit2_valid = suit2_valid || suit2_valid_;
-        main3_valid = main3_valid || main3_valid_;
-        main4_valid = main4_valid || main4_valid_;
-        main5_valid = main5_valid || main5_valid_;
-    }
-
-    if (!main3_valid)
-    {
-        outfile_debug << "main3--failure\n";
-        return 3;
-    }
-    else if (!main4_valid)
-    {
-        outfile_debug << "main4--failure\n";
-        return 4;
-    }
-    else if (!main5_valid)
-    {
-        outfile_debug << "main5--failure\n";
-        return 5;
-    }
-
-//    outfile_debug << "success!\n";
-
-    for (auto &i: combination)
-    {
-        i->init_data();
-//        outfile_debug << i->get_data_info;
-        if (need_to_satisfy_recharge) entry[4] = max(entry[4], i->min_recharge_num);
-    }
-    //TODO:设定充能容许标准
-    if (entry[4] > 2) return 6;
-    return 0;
 }
 
 void Group::cal_assigned_artifact_damage()

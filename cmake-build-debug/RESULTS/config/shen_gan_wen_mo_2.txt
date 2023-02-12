@@ -8,11 +8,11 @@ ganyu add weapon="thunderingpulse" refine=1 lvl=90/90;
 ganyu add set="blizzardstrayer" count=4;
 ganyu add stats hp=4780 atk=311 atk%=0.466 cryo%=0.466 cd=0.622;
 
-#温迪 终末嗟叹之诗 翠绿之影 翠绿之影 元素精通 元素精通 元素精通
+#温迪 天空之翼 翠绿之影 翠绿之影 攻击力 伤害加成 暴击率
 venti char lvl=90/90 cons=0 talent=6,9,9;
-venti add weapon="elegyfortheend" refine=1 lvl=90/90;
+venti add weapon="skywardharp" refine=1 lvl=90/90;
 venti add set="viridescentvenerer" count=4;
-venti add stats hp=4780 atk=311 em=187 em=187 em=187;
+venti add stats hp=4780 atk=311 atk%=0.466 anemo%=0.466 cr=0.311;
 
 #莫娜 试作金珀 昔日宗室之仪 昔日宗室之仪 元素充能效率 攻击力 暴击率
 mona char lvl=90/90 cons=4 talent=6,9,9;
