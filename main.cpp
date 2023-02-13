@@ -1690,7 +1690,7 @@ void Deployment::check_useful_attribute()
     //character
     if (c_point->name == "胡桃") data_list[1]->useful = false;//生命>攻击，除非有攻击转什么
     if (c_point->name == "钟离") data_list[1]->useful = false;//考虑盾
-    if (c_point->name == "艾尔海森") data_list[1]->useful = false;//精通>攻击，除非有攻击转什么
+//    if (c_point->name == "艾尔海森") data_list[1]->useful = false;//精通>攻击，除非有攻击转什么
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
@@ -2482,7 +2482,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
     //"胡桃" "夜兰" "行秋" "钟离" "终末嗟叹之诗_昔日宗室之仪" "水" "水"
     //"胡桃" "夜兰" "冰_test" "枫原万叶" "终末嗟叹之诗_翠绿之影" "水冰" "水冰"
     //"神里绫华" "甘雨" "莫娜" "温迪"/"枫原万叶" "昔日宗室之仪_翠绿之影" "冰水" "冰水"
-    //"甘雨" "钟离" "香菱" "班尼特" "昔日宗室之仪" "冰火" "冰火"
+    //"甘雨" "钟离" "香菱" "班尼特" "昔日宗室之仪" "火" "冰火"
     //"雷电将军" "行秋" "香菱" "班尼特" "昔日宗室之仪" "水雷" "水雷火"
     //"艾尔海森" "八重神子" "纳西妲" "钟离"/"久岐忍" "千夜浮梦_深林的记忆_昔日宗室之仪" "草" ""
 
@@ -2619,7 +2619,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                     "昔日宗室之仪_翠绿之影", "冰水", "冰水");
 
         auto *tc3 = new Team_config(find_character_by_name("钟离"), find_character_by_name("香菱"), find_character_by_name("班尼特"),
-                                    "昔日宗室之仪", "冰火", "冰火");
+                                    "昔日宗室之仪", "火", "冰火");
 
         vector<Attack_config *> ac1;//Q EZ EZ
         ac1.push_back(new Attack_config(new Condition("冰", "弓", "重A"), false, false, "冻结",
@@ -2858,7 +2858,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                     "昔日宗室之仪", "水雷", "水雷火");
 
         auto *tc2 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("班尼特"), find_character_by_name("钟离"),
-                                    "昔日宗室之仪", "冰火", "冰火");
+                                    "昔日宗室之仪", "火", "冰火");
 
         vector<Attack_config *> ac1;
         ac1.push_back(new Attack_config(new Condition("火", "长柄武器", "E"), true, true, "蒸发",
