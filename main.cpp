@@ -3094,7 +3094,10 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
             //苍古自由之誓 圣显之钥
             combination_list.push_back(new Combination(find_weapon_by_name("原木刀"), find_artifact_by_name("千岩牢固"), find_artifact_by_name("千岩牢固"),
                                                        "生命值", "生命值", "治疗加成", nullptr, vector<Attack_config *>(), false));
-//            combination_list.push_back(new Combination(find_weapon_by_name("东花坊时雨"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"), "元素精通", "元素精通", "元素精通"));
+//            combination_list.push_back(new Combination(find_weapon_by_name("铁锋刺"), find_artifact_by_name("千岩牢固"), find_artifact_by_name("千岩牢固"),
+//                                                       "元素精通", "元素精通", "元素精通", nullptr, vector<Attack_config *>(), false));
+//            combination_list.push_back(new Combination(find_weapon_by_name("铁锋刺"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"),
+//                                                       "元素精通", "元素精通", "元素精通", nullptr, vector<Attack_config *>(), false));
         }
     }
 }
