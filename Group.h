@@ -225,7 +225,7 @@ public:
 
     void cal_damage_entry_num();
 
-    void out();
+    void out(double total_damage_baseline);
 
     void cal_assigned_artifact_damage();
 

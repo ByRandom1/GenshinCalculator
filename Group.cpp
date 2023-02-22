@@ -565,12 +565,12 @@ void Group::cal_damage_entry_num()
         }
 }
 
-void Group::out()
+void Group::out(double total_damage_baseline)
 {
     if (out_header)
     {
         outfile_result << "人物名称" << "," << "攻击序列" << "," << "队友信息" << ","
-                       << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位" << "," << "4号位" << "," << "5号位" << "," << "期望伤害" << "," << "伤害占比" << ","
+                       << "武器名称" << "," << "圣遗物1" << "," << "圣遗物2" << "," << "3号位" << "," << "4号位" << "," << "5号位" << "," << "期望伤害" << "," << "RATIO" << "," << "伤害占比" << ","
                        << "lifenum" << "," << "atknum" << "," << "defnum" << "," << "masterynum" << "," << "rechargenum" << "," << "critratenum" << "," << "critdamnum" << "\n";
         out_header = false;
     }
@@ -585,7 +585,8 @@ void Group::out()
                    << a_main3 << ","
                    << a_main4 << ","
                    << a_main5 << ","
-                   << total_damage << ",";
+                   << total_damage << ","
+                   << total_damage / total_damage_baseline << ",";
     for (int i = 0; i < combination.size(); i++)
         outfile_result << combination[i]->attack_config->condition->attack_way + "_" + combination[i]->attack_config->react_type + "(" + to_string((int) (100.0 * damage[i] / total_damage)) + "%)";
     outfile_result << ","

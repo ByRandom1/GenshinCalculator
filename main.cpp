@@ -2465,7 +2465,7 @@ struct Combination
 };
 
 bool out_debug = false;
-int top_k = 5;
+double out_filter_percentage = 0.95;//0.95*(1+2.5%)*(1+2.5%)=1 2词条
 string config_cal_enable = "ALL";//ALL全部启用
 string add_character = "";
 string add_weapon = "";
@@ -3122,6 +3122,8 @@ void cal_deployment(string mode)
         get_all_config(c_index->name, combination_list, "cal_deployment");
         for (auto &comb_index: combination_list)
         {
+            vector<Group *> comb_out_data;
+
             for (auto &w_index: weapon_list)
             {
                 //没有圣遗物更新则不用计算未更新武器的任何配置
@@ -3210,15 +3212,37 @@ void cal_deployment(string mode)
 
                 chrono::duration<double> time = chrono::system_clock::now() - start;
 
-                stable_sort(c_w_pair.begin(), c_w_pair.end(), cmp_func);
-                for (int i = 0; i < ((top_k < c_w_pair.size()) ? top_k : c_w_pair.size()); ++i) c_w_pair[i]->out();
-                for (auto &i: c_w_pair) delete i;
+                if (!c_w_pair.empty())
+                {
+                    Group *optimal = c_w_pair[0];
+                    for (auto &i: c_w_pair)
+                        if (i->total_damage > optimal->total_damage)
+                            optimal = i;
+                    for (auto &i: c_w_pair)
+                    {
+                        if (i->total_damage / optimal->total_damage >= out_filter_percentage) comb_out_data.push_back(i);
+                        else delete i;
+                    }
+                }
+                c_w_pair.clear();
 
                 cout << c_index->name << " " << w_index->name << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << " ";
                 for (auto &i: comb_index->attack_config_list)
                     cout << to_string(i->attack_time) + "*" + i->condition->attack_way + "_" + (i->background ? "后台" : "前台") + "_" + i->react_type + "/";
                 cout << " " << comb_index->team_config->teammate_all + "_" + comb_index->team_config->team_weapon_artifact << "\n";
             }
+
+            if (!comb_out_data.empty())
+            {
+                stable_sort(comb_out_data.begin(), comb_out_data.end(), cmp_func);
+                double total_damage_baseline = comb_out_data[0]->total_damage;
+                for (auto &i: comb_out_data)
+                {
+                    i->out(total_damage_baseline);
+                    delete i;
+                }
+            }
+            comb_out_data.clear();
         }
         combination_list.clear();
     }
@@ -3421,6 +3445,7 @@ void cal_optimal_artifact(string c_name)
     Character *c_point = find_character_by_name(c_name);
     for (auto &comb_index: combination_list)
     {
+        Group *optimal = nullptr;
         priority_queue<Group *, vector<Group *>, cmp> c_w_pair;
 
         auto start = chrono::system_clock::now();
@@ -3471,15 +3496,19 @@ void cal_optimal_artifact(string c_name)
                             if (check_num == 0)//pass
                             {
                                 temp->cal_assigned_artifact_damage();
-                                if (c_w_pair.size() < top_k) c_w_pair.push(temp);
-                                else if (temp->total_damage > c_w_pair.top()->total_damage)
+                                c_w_pair.push(temp);
+
+                                if (optimal == nullptr || optimal->total_damage < temp->total_damage) optimal = temp;
+                                while (!c_w_pair.empty())
                                 {
-                                    Group *smallest = c_w_pair.top();
-                                    c_w_pair.pop();
-                                    delete smallest;
-                                    c_w_pair.push(temp);
+                                    Group *c_w = c_w_pair.top();
+                                    if (c_w->total_damage / optimal->total_damage < out_filter_percentage)
+                                    {
+                                        c_w_pair.pop();
+                                        delete c_w;
+                                    }
+                                    else break;
                                 }
-                                else delete temp;
                             }
                             else if (check_num == 1)//error:suit1
                             {
