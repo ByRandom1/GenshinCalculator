@@ -271,6 +271,23 @@ void init_character_data()
     temp.clear();
     //E默认1枚，EQ精通倍率(extra_rate)，天赋2转化
 
+    temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 50));
+    temp.push_back(nullptr);//(get_convert)
+    temp.push_back(new Set(new Condition("ALL", "ALL", "重A"), "暴击率", 0.15));
+    temp.push_back(new Set(new Condition("草", "ALL", "ALL"), "伤害加成", 0.2));
+    temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 120));//(get_team)
+    temp.push_back(nullptr);//花筥箭所需的蓄力时间减少0.9秒，并在命中后能产生1枚额外的藏蕴花矢，能造成提纳里攻击力150%的伤害。
+    character_list.push_back(new Character("提纳里", "tighnari", "草", "弓", 10850, 268, 630, "伤害加成", 0.288,
+                                           9, "物理", (0.882 + 0.83 + 0.523 + 0.523 + 1.357) / 5, (0.82 + 0.771 + 0.486 + 0.486 + 1.261) / 5,
+                                           "草", (1.57 + 0.695 * 4) / 5, (1.482 + 0.656 * 4) / 5, "物理", 2.81, 2.61,
+                                           9, 3.5, false, 3.179, 2.992, 2.693, 2.543,
+                                           9, 40, false, (1.182 + 1.445) / 2, (1.112 + 1.36) / 2, (1.001 + 1.224) / 2, (0.946 + 1.156) / 2,
+                                           0, temp,
+                                           new weapon_artifact_related_arguments(false, false, 1, false, 1, false, false, -1,
+                                                                                 -1, -1, 2, 3, true, false, -1, -1)));
+    temp.clear();
+    //天赋2转化
+
     //NO NEED TO CALCULATE
     //BUILD BASIC INFORMATION AND ARGS
     temp.push_back(nullptr);
@@ -1929,6 +1946,12 @@ void Deployment::get_team_data()
 //        add_percentage("元素精通", 90, "team_艾尔海森");
         Dendro_num++;
     }
+    if (team_config->teammate_all.find("提纳里") != string::npos)
+    {
+        //constellation>=4
+//        add_percentage("元素精通", 120, "team_提纳里");
+        Dendro_num++;
+    }
 
     if (team_config->teammate_1->name == "冰_test") Cryo_num++;
     else if (team_config->teammate_1->name == "火_test") Pyro_num++;
@@ -2159,6 +2182,14 @@ void Deployment::satisfy_recharge_requirement()
         else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
         else if (w_point->name == "西福斯的月光") converted_recharge += data_list[4]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
     }
+    else if (c_point->name == "提纳里")
+    {
+        //Q 40 E 3f 1E/Q
+        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
+
+        if (w_point->name == "西风猎弓") energy += 3 * front * white;
+        else if (w_point->name == "祭礼弓") energy += c_point->E_energy * front * same;
+    }
     else energy = Q_energy_modify;
 
     min_recharge_num = max(0, (int) ((Q_energy_modify / energy - data_list[5]->percentage - data_list[5]->converted_percentage - converted_recharge) / data_list[5]->value_per_entry));
@@ -2186,6 +2217,10 @@ void Deployment::get_convert_value(double &life, double &atk, double &def, doubl
     else if (c_point->name == "艾尔海森" && (attack_config->condition->attack_way == "E" || attack_config->condition->attack_way == "Q"))//精通->EQ增伤
     {
         damplus_add += min((mastery + data_list[4]->converted_percentage) * 0.001, 1.0);
+    }
+    else if (c_point->name == "提纳里" && (attack_config->condition->attack_way == "重A" || attack_config->condition->attack_way == "Q"))//精通->重AQ增伤
+    {
+        damplus_add += min((mastery + data_list[4]->converted_percentage) * 0.0006, 0.6);
     }
 
     //weapon
@@ -2487,6 +2522,48 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
     //"艾尔海森" "八重神子" "纳西妲" "钟离"/"久岐忍" "千夜浮梦_深林的记忆_昔日宗室之仪" "草" ""
 
     if (config_cal_enable.find(c_name) == string::npos && config_cal_enable != "ALL") return;
+
+    if (c_name == "提纳里")
+    {
+        auto *tc1 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("八重神子"), find_character_by_name("钟离"),
+                                    "千夜浮梦_深林的记忆_昔日宗室之仪", "草", "");
+
+        vector<Attack_config *> ac1;//EZZZQ
+        ac1.push_back(new Attack_config(new Condition("草", "弓", "重A"), false, false, "蔓激化_no_add_damage",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 9));
+        ac1.push_back(new Attack_config(new Condition("草", "弓", "重A"), false, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 6));
+        ac1.push_back(new Attack_config(new Condition("草", "弓", "E"), false, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 1));
+        ac1.push_back(new Attack_config(new Condition("草", "弓", "Q"), false, false, "蔓激化_no_add_damage",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 8));
+        ac1.push_back(new Attack_config(new Condition("草", "弓", "Q"), false, false, "蔓激化",
+                                        false, true, false, true, false,
+                                        true, true, true, false, false, 4));
+
+        if (mode == "cal_deployment")
+        {
+            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                       "", "", "", tc1, ac1, true));
+        }
+        else if (mode == "cal_optimal_artifact")
+        {
+            combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                       "", "", "", tc1, ac1, true));
+        }
+        else if (mode == "generate_gcsim_script")
+        {
+            //猎人之径
+            combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"),
+                                                       "元素精通", "伤害加成", "暴击率", tc1, ac1, true));
+            combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name("流浪大地的乐团"), find_artifact_by_name("饰金之梦"),
+                                                       "元素精通", "伤害加成", "暴击率", tc1, ac1, true));
+        }
+    }
 
     if (c_name == "胡桃")
     {
