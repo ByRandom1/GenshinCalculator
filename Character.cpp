@@ -15,12 +15,13 @@ Character::Character(string name_,
                      string break_type_,
                      double break_value_,
                      int A_level_,
+                     vector<bool> A_useful_attributes_,
                      string normal_A_ele_type_,
-                     double normal_A_10, double normal_A_9,
+                     vector<double> normal_A_10, vector<double> normal_A_9,
                      string heavy_A_ele_type_,
-                     double heavy_A_10, double heavy_A_9,
+                     vector<double> heavy_A_10, vector<double> heavy_A_9,
                      string down_A_ele_type_,
-                     double down_A_10, double down_A_9,
+                     vector<double> down_A_10, vector<double> down_A_9,
                      int E_level_,
                      double E_energy_,
 //                     double E_release_times_,
@@ -28,7 +29,8 @@ Character::Character(string name_,
 //                     double E_hit_times_,
 //                     double E_hit_interval_,
                      bool E_lockface_,
-                     double E_13, double E_12, double E_10, double E_9,
+                     vector<bool> E_useful_attributes_,
+                     vector<double> E_13, vector<double> E_12, vector<double> E_10, vector<double> E_9,
                      int Q_level_,
                      int Q_energy_,
 //                     double Q_release_times_,
@@ -36,10 +38,13 @@ Character::Character(string name_,
 //                     double Q_hit_times_,
 //                     double Q_hit_interval_,
                      bool Q_lockface_,
-                     double Q_13, double Q_12, double Q_10, double Q_9,
+                     vector<bool> Q_useful_attributes_,
+                     vector<double> Q_13, vector<double> Q_12, vector<double> Q_10, vector<double> Q_9,
                      int constellation_,
                      vector<Set *> extra_value_,
-                     weapon_artifact_related_arguments *args_)
+                     bool shield_sustain_,
+                     bool heal_sustain_,
+                     bool E_sustain_)
 {
     name = name_;
     english_name = english_name_;
@@ -51,6 +56,7 @@ Character::Character(string name_,
     break_type = break_type_;
     break_value = break_value_;
     A_level = A_level_;
+    A_useful_attributes = A_useful_attributes_;
     normal_A_ele_type = normal_A_ele_type_;
     normal_A.push_back(normal_A_10);
     normal_A.push_back(normal_A_9);
@@ -67,6 +73,7 @@ Character::Character(string name_,
 //    E_hit_times = E_hit_times_;
 //    E_hit_interval = E_hit_interval_;
     E_lockface = E_lockface_;
+    E_useful_attributes = E_useful_attributes_;
     E.push_back(E_13);
     E.push_back(E_12);
     E.push_back(E_10);
@@ -78,13 +85,16 @@ Character::Character(string name_,
 //    Q_hit_times = Q_hit_times_;
 //    Q_hit_interval = Q_hit_interval_;
     Q_lockface = Q_lockface_;
+    Q_useful_attributes = Q_useful_attributes_;
     Q.push_back(Q_13);
     Q.push_back(Q_12);
     Q.push_back(Q_10);
     Q.push_back(Q_9);
     constellation = constellation_;
     extra_value = extra_value_;
-    args = args_;
+    shield_sustain = shield_sustain_;
+    heal_sustain = heal_sustain_;
+    E_sustain = E_sustain_;
 }
 
 int Character::get_life()
@@ -102,48 +112,38 @@ bool Character::get_break(Deployment *data)
     return true;
 }
 
-double Character::get_normal_A(int A_level_)
+double Character::get_normal_A(int rate_pos)
 {
-    int target = (A_level_ == 0) ? A_level : A_level_;
-    if (target == 10) return normal_A[0];
-    else if (target == 9) return normal_A[1];
-    else return normal_A[1];
+    if (A_level == 10) return normal_A[0][rate_pos];
+    else return normal_A[1][rate_pos];
 }
 
-double Character::get_heavy_A(int A_level_)
+double Character::get_heavy_A(int rate_pos)
 {
-    int target = (A_level_ == 0) ? A_level : A_level_;
-    if (target == 10) return heavy_A[0];
-    else if (target == 9) return heavy_A[1];
-    else return heavy_A[1];
+    if (A_level == 10) return heavy_A[0][rate_pos];
+    else return heavy_A[1][rate_pos];
 }
 
-double Character::get_down_A(int A_level_)
+double Character::get_down_A(int rate_pos)
 {
-    int target = (A_level_ == 0) ? A_level : A_level_;
-    if (target == 10) return down_A[0];
-    else if (target == 9) return down_A[1];
-    else return down_A[1];
+    if (A_level == 10) return down_A[0][rate_pos];
+    else return down_A[1][rate_pos];
 }
 
-double Character::get_E(int E_level_)
+double Character::get_E(int rate_pos)
 {
-    int target = (E_level_ == 0) ? E_level : E_level_;
-    if (target == 13) return E[0];
-    else if (target == 12) return E[1];
-    else if (target == 10) return E[2];
-    else if (target == 9) return E[3];
-    else return E[3];
+    if (E_level == 13) return E[0][rate_pos];
+    else if (E_level == 12) return E[1][rate_pos];
+    else if (E_level == 10) return E[2][rate_pos];
+    else return E[3][rate_pos];
 }
 
-double Character::get_Q(int Q_level_)
+double Character::get_Q(int rate_pos)
 {
-    int target = (Q_level_ == 0) ? Q_level : Q_level_;
-    if (target == 13) return Q[0];
-    else if (target == 12) return Q[1];
-    else if (target == 10) return Q[2];
-    else if (target == 9) return Q[3];
-    else return Q[3];
+    if (Q_level == 13) return Q[0][rate_pos];
+    else if (Q_level == 12) return Q[1][rate_pos];
+    else if (Q_level == 10) return Q[2][rate_pos];
+    else return Q[3][rate_pos];
 }
 
 bool Character::get_extra(Deployment *data)

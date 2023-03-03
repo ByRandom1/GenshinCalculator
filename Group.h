@@ -29,6 +29,12 @@ extern int artifact_2_2_max_entry_bonus;
 
 extern bool out_debug;
 
+int str2index_full(string type_);
+
+int str2index_part(string type_);
+
+class weapon_artifact_related_arguments;
+
 struct Team_config
 {
     Character *teammate_1;
@@ -60,47 +66,132 @@ struct Attack_config
 {
     //config
     Condition *condition;
+    int rate_pos;
     bool background;
     bool lockface;
     string react_type;//扩散（风+水火雷冰），结晶（岩+水火雷冰），绽放（草水+火雷），激化（草雷），燃烧（草火），蒸发（水火），融化（火冰），冻结（水冰），感电（雷水），超载（雷火），超导（雷冰）FIND
     bool useful_attributes[14];
     int attack_time;
+    weapon_artifact_related_arguments *args;
 
-    Attack_config(Condition *condition_,
+    Attack_config(Character *c_point,
+                  string attack_way_,
+                  int rate_pos_,
                   bool background_,
-                  bool lockface_,
                   string react_type_,
-                  bool if_life_useful,
-                  bool if_atk_useful,
-                  bool if_def_useful,
-                  bool if_mastery_useful,
-                  bool if_recharge_useful,
-                  bool if_critrate_useful,
-                  bool if_critdam_useful,
-                  bool if_damplus_useful,
-                  bool if_heal_useful,
-                  bool if_shield_useful,
-                  int attack_time_)
+                  int attack_time_,
+                  weapon_artifact_related_arguments *args_)
     {
-        condition = condition_;
+        condition = new Condition("", "", attack_way_);
+        rate_pos = rate_pos_;
         background = background_;
-        lockface = lockface_;
         react_type = react_type_;
-        useful_attributes[0] = if_life_useful;
-        useful_attributes[1] = if_atk_useful;
-        useful_attributes[2] = if_def_useful;
-        useful_attributes[3] = true;
-        useful_attributes[4] = if_mastery_useful;
-        useful_attributes[5] = if_recharge_useful;
-        useful_attributes[6] = if_critrate_useful;
-        useful_attributes[7] = if_critdam_useful;
-        useful_attributes[8] = if_damplus_useful;
-        useful_attributes[9] = true;
-        useful_attributes[10] = true;
-        useful_attributes[11] = true;
-        useful_attributes[12] = if_heal_useful;
-        useful_attributes[13] = if_shield_useful;
         attack_time = attack_time_;
+        args = args_;
+
+        if (condition->attack_way == "平A")
+        {
+            condition->ele_type = c_point->normal_A_ele_type;
+            condition->weapon_type = c_point->weapon_type;
+            lockface = false;
+            useful_attributes[str2index_full("生命值")] = c_point->A_useful_attributes[str2index_part("生命值")];
+            useful_attributes[str2index_full("攻击力")] = c_point->A_useful_attributes[str2index_part("攻击力")];
+            useful_attributes[str2index_full("防御力")] = c_point->A_useful_attributes[str2index_part("防御力")];
+            useful_attributes[str2index_full("额外倍率")] = true;
+            useful_attributes[str2index_full("元素精通")] = c_point->A_useful_attributes[str2index_part("元素精通")];
+            useful_attributes[str2index_full("元素充能效率")] = c_point->A_useful_attributes[str2index_part("元素充能效率")];
+            useful_attributes[str2index_full("暴击率")] = c_point->A_useful_attributes[str2index_part("暴击率")];
+            useful_attributes[str2index_full("暴击伤害")] = c_point->A_useful_attributes[str2index_part("暴击伤害")];
+            useful_attributes[str2index_full("伤害加成")] = c_point->A_useful_attributes[str2index_part("伤害加成")];
+            useful_attributes[str2index_full("抗性削弱")] = true;
+            useful_attributes[str2index_full("防御削弱")] = true;
+            useful_attributes[str2index_full("防御无视")] = true;
+            useful_attributes[str2index_full("治疗加成")] = c_point->heal_sustain;
+            useful_attributes[str2index_full("护盾强效")] = c_point->shield_sustain;
+        }
+        else if (condition->attack_way == "重A")
+        {
+            condition->ele_type = c_point->heavy_A_ele_type;
+            condition->weapon_type = c_point->weapon_type;
+            lockface = false;
+            useful_attributes[str2index_full("生命值")] = c_point->A_useful_attributes[str2index_part("生命值")];
+            useful_attributes[str2index_full("攻击力")] = c_point->A_useful_attributes[str2index_part("攻击力")];
+            useful_attributes[str2index_full("防御力")] = c_point->A_useful_attributes[str2index_part("防御力")];
+            useful_attributes[str2index_full("额外倍率")] = true;
+            useful_attributes[str2index_full("元素精通")] = c_point->A_useful_attributes[str2index_part("元素精通")];
+            useful_attributes[str2index_full("元素充能效率")] = c_point->A_useful_attributes[str2index_part("元素充能效率")];
+            useful_attributes[str2index_full("暴击率")] = c_point->A_useful_attributes[str2index_part("暴击率")];
+            useful_attributes[str2index_full("暴击伤害")] = c_point->A_useful_attributes[str2index_part("暴击伤害")];
+            useful_attributes[str2index_full("伤害加成")] = c_point->A_useful_attributes[str2index_part("伤害加成")];
+            useful_attributes[str2index_full("抗性削弱")] = true;
+            useful_attributes[str2index_full("防御削弱")] = true;
+            useful_attributes[str2index_full("防御无视")] = true;
+            useful_attributes[str2index_full("治疗加成")] = c_point->heal_sustain;
+            useful_attributes[str2index_full("护盾强效")] = c_point->shield_sustain;
+        }
+        else if (condition->attack_way == "下落A")
+        {
+            condition->ele_type = c_point->down_A_ele_type;
+            condition->weapon_type = c_point->weapon_type;
+            lockface = false;
+            useful_attributes[str2index_full("生命值")] = c_point->A_useful_attributes[str2index_part("生命值")];
+            useful_attributes[str2index_full("攻击力")] = c_point->A_useful_attributes[str2index_part("攻击力")];
+            useful_attributes[str2index_full("防御力")] = c_point->A_useful_attributes[str2index_part("防御力")];
+            useful_attributes[str2index_full("额外倍率")] = true;
+            useful_attributes[str2index_full("元素精通")] = c_point->A_useful_attributes[str2index_part("元素精通")];
+            useful_attributes[str2index_full("元素充能效率")] = c_point->A_useful_attributes[str2index_part("元素充能效率")];
+            useful_attributes[str2index_full("暴击率")] = c_point->A_useful_attributes[str2index_part("暴击率")];
+            useful_attributes[str2index_full("暴击伤害")] = c_point->A_useful_attributes[str2index_part("暴击伤害")];
+            useful_attributes[str2index_full("伤害加成")] = c_point->A_useful_attributes[str2index_part("伤害加成")];
+            useful_attributes[str2index_full("抗性削弱")] = true;
+            useful_attributes[str2index_full("防御削弱")] = true;
+            useful_attributes[str2index_full("防御无视")] = true;
+            useful_attributes[str2index_full("治疗加成")] = c_point->heal_sustain;
+            useful_attributes[str2index_full("护盾强效")] = c_point->shield_sustain;
+        }
+        else if (condition->attack_way == "E")
+        {
+            condition->ele_type = c_point->ele_type;
+            condition->weapon_type = c_point->weapon_type;
+            lockface = c_point->E_lockface;
+            useful_attributes[str2index_full("生命值")] = c_point->E_useful_attributes[str2index_part("生命值")];
+            useful_attributes[str2index_full("攻击力")] = c_point->E_useful_attributes[str2index_part("攻击力")];
+            useful_attributes[str2index_full("防御力")] = c_point->E_useful_attributes[str2index_part("防御力")];
+            useful_attributes[str2index_full("额外倍率")] = true;
+            useful_attributes[str2index_full("元素精通")] = c_point->E_useful_attributes[str2index_part("元素精通")];
+            useful_attributes[str2index_full("元素充能效率")] = c_point->E_useful_attributes[str2index_part("元素充能效率")];
+            useful_attributes[str2index_full("暴击率")] = c_point->E_useful_attributes[str2index_part("暴击率")];
+            useful_attributes[str2index_full("暴击伤害")] = c_point->E_useful_attributes[str2index_part("暴击伤害")];
+            useful_attributes[str2index_full("伤害加成")] = c_point->E_useful_attributes[str2index_part("伤害加成")];
+            useful_attributes[str2index_full("抗性削弱")] = true;
+            useful_attributes[str2index_full("防御削弱")] = true;
+            useful_attributes[str2index_full("防御无视")] = true;
+            useful_attributes[str2index_full("治疗加成")] = c_point->heal_sustain;
+            useful_attributes[str2index_full("护盾强效")] = c_point->shield_sustain;
+        }
+        else if (condition->attack_way == "Q")
+        {
+            condition->ele_type = c_point->ele_type;
+            condition->weapon_type = c_point->weapon_type;
+            lockface = c_point->Q_lockface;
+            useful_attributes[str2index_full("生命值")] = c_point->Q_useful_attributes[str2index_part("生命值")];
+            useful_attributes[str2index_full("攻击力")] = c_point->Q_useful_attributes[str2index_part("攻击力")];
+            useful_attributes[str2index_full("防御力")] = c_point->Q_useful_attributes[str2index_part("防御力")];
+            useful_attributes[str2index_full("额外倍率")] = true;
+            useful_attributes[str2index_full("元素精通")] = c_point->Q_useful_attributes[str2index_part("元素精通")];
+            useful_attributes[str2index_full("元素充能效率")] = c_point->Q_useful_attributes[str2index_part("元素充能效率")];
+            useful_attributes[str2index_full("暴击率")] = c_point->Q_useful_attributes[str2index_part("暴击率")];
+            useful_attributes[str2index_full("暴击伤害")] = c_point->Q_useful_attributes[str2index_part("暴击伤害")];
+            useful_attributes[str2index_full("伤害加成")] = c_point->Q_useful_attributes[str2index_part("伤害加成")];
+            useful_attributes[str2index_full("抗性削弱")] = true;
+            useful_attributes[str2index_full("防御削弱")] = true;
+            useful_attributes[str2index_full("防御无视")] = true;
+            useful_attributes[str2index_full("治疗加成")] = c_point->heal_sustain;
+            useful_attributes[str2index_full("护盾强效")] = c_point->shield_sustain;
+        }
+        //TODO:TEST
+        if (react_type != "NONE" && react_type.find("no_add_damage") == string::npos && react_type.find("冻结") == string::npos && react_type.find("结晶") == string::npos)
+            useful_attributes[str2index_full("元素精通")] = true;
     }
 };
 
