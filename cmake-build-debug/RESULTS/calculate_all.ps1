@@ -25,6 +25,6 @@
 ./run_substat_optimizer_full.bat lei_xing_xiang_ban_10.txt > ./logs/lei_xing_xiang_ban_10.txt
 ./run_substat_optimizer_full.bat lei_xing_xiang_ban_11.txt > ./logs/lei_xing_xiang_ban_11.txt
 ./run_substat_optimizer_full.bat lei_xing_xiang_ban_12.txt > ./logs/lei_xing_xiang_ban_12.txt
+./run_substat_optimizer_full.bat shen_gan_wan_mo_1.txt > ./logs/shen_gan_wan_mo_1.txt
 ./run_substat_optimizer_full.bat shen_gan_wen_mo_1.txt > ./logs/shen_gan_wen_mo_1.txt
 ./run_substat_optimizer_full.bat shen_gan_wen_mo_2.txt > ./logs/shen_gan_wen_mo_2.txt
-./run_substat_optimizer_full.bat shen_gan_wan_mo_1.txt > ./logs/shen_gan_wan_mo_1.txt

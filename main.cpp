@@ -1704,6 +1704,7 @@ void Deployment::check_useful_attribute()
 
     //character
     if (c_point->name == "胡桃") data_list[str2index_full("攻击力")]->useful = false;//生命>攻击，除非有攻击转什么
+    if (c_point->name == "艾尔海森") data_list[str2index_full("攻击力")]->useful = false;//TODO:加速计算
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all)
@@ -2671,7 +2672,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         auto *tc2 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("枫原万叶"),
                                     "昔日宗室之仪_翠绿之影", "冰水", "冰水");
 
-        //EAQ EAZAZ
+        //EAQ EAZAA
         vector<Attack_config *> ac1{
                 new Attack_config(find_character_by_name(c_name), "E", 0, false, "冻结", 1,
                                   new weapon_artifact_related_arguments(0, false, 1, false, false, 2,
@@ -2688,10 +2689,10 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                 new Attack_config(find_character_by_name(c_name), "E", 0, false, "冻结", 1,
                                   new weapon_artifact_related_arguments(0, false, 1, false, false, 2,
                                                                         "单手剑", 2, 2, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "冻结", 2,
+                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "冻结", 3,
                                   new weapon_artifact_related_arguments(1, false, 1, false, false, 3,
                                                                         "单手剑", 2, 2, -1)),
-                new Attack_config(find_character_by_name(c_name), "重A", 0, false, "冻结", 6,
+                new Attack_config(find_character_by_name(c_name), "重A", 0, false, "冻结", 3,
                                   new weapon_artifact_related_arguments(1, false, 1, false, false, 3,
                                                                         "单手剑", 2, 2, -1))
         };
@@ -2884,7 +2885,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
 
         //QE
         vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "蒸发_超载", 1,
+                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "蒸发_超载_no_add_damage", 1,
                                   new weapon_artifact_related_arguments(0, false, 0, false, true, 1,
                                                                         "长柄武器", 0, 0, 0)),
                 new Attack_config(find_character_by_name(c_name), "Q", 1, false, "蒸发_超载_no_add_damage", 1,
@@ -2916,7 +2917,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
             //赤沙之杖
             combination_list.push_back(new Combination(find_weapon_by_name("断浪长鳍"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
                                                        "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("断浪长鳍"), find_artifact_by_name("炽烈的炎之魔女"), find_artifact_by_name("炽烈的炎之魔女"),
+            combination_list.push_back(new Combination(find_weapon_by_name("断浪长鳍"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("流浪大地的乐团"),
                                                        "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
             combination_list.push_back(new Combination(find_weapon_by_name("断浪长鳍"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"),
                                                        "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
@@ -3501,7 +3502,15 @@ void cal_optimal_artifact(string c_name)
 
 //generate_gcsim_script
 
-pair<vector<Character *>, vector<string>> team_script;
+class gcsim_script
+{
+public:
+    vector<Character *> character_list;
+    int cycle_time;
+    vector<string> attack_list;
+};
+
+gcsim_script *team_script;
 
 size_t replace_all(string &inout, string_view what, string_view with)
 {
@@ -3516,24 +3525,26 @@ void read_team_script(string filename)
     ifstream infile;
     infile.open(filename);
 
-    team_script.first.clear();
     string c_name;
     for (int i = 0; i < 4; ++i)
     {
         infile >> c_name;
-        team_script.first.push_back(find_character_by_name(c_name));
+        team_script->character_list.push_back(find_character_by_name(c_name));
     }
 
-    team_script.second.clear();
+    int cycle_time;
+    infile >> cycle_time;
+    team_script->cycle_time = cycle_time;
+
     string info;
     getline(infile, info);
     while (!infile.eof())
     {
         getline(infile, info);
-        replace_all(info, team_script.first[0]->name, team_script.first[0]->english_name);
-        replace_all(info, team_script.first[1]->name, team_script.first[1]->english_name);
-        replace_all(info, team_script.first[2]->name, team_script.first[2]->english_name);
-        replace_all(info, team_script.first[3]->name, team_script.first[3]->english_name);
+        replace_all(info, team_script->character_list[0]->name, team_script->character_list[0]->english_name);
+        replace_all(info, team_script->character_list[1]->name, team_script->character_list[1]->english_name);
+        replace_all(info, team_script->character_list[2]->name, team_script->character_list[2]->english_name);
+        replace_all(info, team_script->character_list[3]->name, team_script->character_list[3]->english_name);
         replace_all(info, "平A", "attack");
         replace_all(info, "重A", "charge");
         replace_all(info, "下落A", "plunge");
@@ -3541,7 +3552,7 @@ void read_team_script(string filename)
         replace_all(info, "Q", "burst");
         replace_all(info, "冲刺", "dash");
         replace_all(info, "跳跃", "jump");
-        team_script.second.push_back(info);
+        team_script->attack_list.push_back(info);
     }
 
     infile.close();
@@ -3571,35 +3582,35 @@ pair<string, string> main_convert(string ele_type, string main)
 void generate_gcsim_script(string filepath, string teamname)
 {
     vector<Combination *> combination_list_1;
-    get_all_config(team_script.first[0]->name, combination_list_1, "generate_gcsim_script");
+    get_all_config(team_script->character_list[0]->name, combination_list_1, "generate_gcsim_script");
     vector<Combination *> combination_list_2;
-    get_all_config(team_script.first[1]->name, combination_list_2, "generate_gcsim_script");
+    get_all_config(team_script->character_list[1]->name, combination_list_2, "generate_gcsim_script");
     vector<Combination *> combination_list_3;
-    get_all_config(team_script.first[2]->name, combination_list_3, "generate_gcsim_script");
+    get_all_config(team_script->character_list[2]->name, combination_list_3, "generate_gcsim_script");
     vector<Combination *> combination_list_4;
-    get_all_config(team_script.first[3]->name, combination_list_4, "generate_gcsim_script");
+    get_all_config(team_script->character_list[3]->name, combination_list_4, "generate_gcsim_script");
 
     int filecount = 1;
     for (auto &combination_1: combination_list_1)
         if (combination_1->team_config == nullptr ||
-            (combination_1->team_config->teammate_all.find(team_script.first[1]->name) != string::npos &&
-             combination_1->team_config->teammate_all.find(team_script.first[2]->name) != string::npos &&
-             combination_1->team_config->teammate_all.find(team_script.first[3]->name) != string::npos))
+            (combination_1->team_config->teammate_all.find(team_script->character_list[1]->name) != string::npos &&
+             combination_1->team_config->teammate_all.find(team_script->character_list[2]->name) != string::npos &&
+             combination_1->team_config->teammate_all.find(team_script->character_list[3]->name) != string::npos))
             for (auto &combination_2: combination_list_2)
                 if (combination_2->team_config == nullptr ||
-                    (combination_2->team_config->teammate_all.find(team_script.first[0]->name) != string::npos &&
-                     combination_2->team_config->teammate_all.find(team_script.first[2]->name) != string::npos &&
-                     combination_2->team_config->teammate_all.find(team_script.first[3]->name) != string::npos))
+                    (combination_2->team_config->teammate_all.find(team_script->character_list[0]->name) != string::npos &&
+                     combination_2->team_config->teammate_all.find(team_script->character_list[2]->name) != string::npos &&
+                     combination_2->team_config->teammate_all.find(team_script->character_list[3]->name) != string::npos))
                     for (auto &combination_3: combination_list_3)
                         if (combination_3->team_config == nullptr ||
-                            (combination_3->team_config->teammate_all.find(team_script.first[1]->name) != string::npos &&
-                             combination_3->team_config->teammate_all.find(team_script.first[0]->name) != string::npos &&
-                             combination_3->team_config->teammate_all.find(team_script.first[3]->name) != string::npos))
+                            (combination_3->team_config->teammate_all.find(team_script->character_list[1]->name) != string::npos &&
+                             combination_3->team_config->teammate_all.find(team_script->character_list[0]->name) != string::npos &&
+                             combination_3->team_config->teammate_all.find(team_script->character_list[3]->name) != string::npos))
                             for (auto &combination_4: combination_list_4)
                                 if (combination_4->team_config == nullptr ||
-                                    (combination_4->team_config->teammate_all.find(team_script.first[1]->name) != string::npos &&
-                                     combination_4->team_config->teammate_all.find(team_script.first[2]->name) != string::npos &&
-                                     combination_4->team_config->teammate_all.find(team_script.first[0]->name) != string::npos))
+                                    (combination_4->team_config->teammate_all.find(team_script->character_list[1]->name) != string::npos &&
+                                     combination_4->team_config->teammate_all.find(team_script->character_list[2]->name) != string::npos &&
+                                     combination_4->team_config->teammate_all.find(team_script->character_list[0]->name) != string::npos))
                                 {
                                     //ps1
                                     outfile_debug << "./run_substat_optimizer_full.bat " << (teamname + "_" + to_string(filecount) + ".txt") << " > ./logs/" << (teamname + "_" + to_string(filecount) + ".txt") << endl;
@@ -3610,113 +3621,113 @@ void generate_gcsim_script(string filepath, string teamname)
                                     outfile_result << endl;
 
                                     //head
-                                    outfile_result << "options iteration=1000 duration=120 swap_delay=4;" << endl;
+                                    outfile_result << "options iteration=1000 duration=" << to_string(team_script->cycle_time) << " swap_delay=4;" << endl;
                                     outfile_result << "target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;" << endl;
 
                                     //character1
-                                    outfile_result << "#" << team_script.first[0]->name << " " << combination_1->w_point->name << " " << combination_1->suit1->name << " " << combination_1->suit2->name << " "
+                                    outfile_result << "#" << team_script->character_list[0]->name << " " << combination_1->w_point->name << " " << combination_1->suit1->name << " " << combination_1->suit2->name << " "
                                                    << combination_1->a_main3 << " " << combination_1->a_main4 << " " << combination_1->a_main5 << endl;
 
-                                    outfile_result << team_script.first[0]->english_name << " char lvl=90/90 cons=" << to_string(team_script.first[0]->constellation)
-                                                   << " talent=" << to_string(team_script.first[0]->A_level) << ","
-                                                   << to_string((team_script.first[0]->E_level > 10) ? (team_script.first[0]->E_level - 3) : team_script.first[0]->E_level) << ","
-                                                   << to_string((team_script.first[0]->Q_level > 10) ? (team_script.first[0]->Q_level - 3) : team_script.first[0]->Q_level) << ";" << endl;
-                                    outfile_result << team_script.first[0]->english_name << " add weapon=\"" << combination_1->w_point->english_name << "\" refine=" << to_string(combination_1->w_point->level) << " lvl=90/90;" << endl;
+                                    outfile_result << team_script->character_list[0]->english_name << " char lvl=90/90 cons=" << to_string(team_script->character_list[0]->constellation)
+                                                   << " talent=" << to_string(team_script->character_list[0]->A_level) << ","
+                                                   << to_string((team_script->character_list[0]->E_level > 10) ? (team_script->character_list[0]->E_level - 3) : team_script->character_list[0]->E_level) << ","
+                                                   << to_string((team_script->character_list[0]->Q_level > 10) ? (team_script->character_list[0]->Q_level - 3) : team_script->character_list[0]->Q_level) << ";" << endl;
+                                    outfile_result << team_script->character_list[0]->english_name << " add weapon=\"" << combination_1->w_point->english_name << "\" refine=" << to_string(combination_1->w_point->level) << " lvl=90/90;" << endl;
                                     if (combination_1->suit1 == combination_1->suit2)
                                     {
-                                        outfile_result << team_script.first[0]->english_name << " add set=\"" << combination_1->suit1->english_name << "\" count=4;" << endl;
+                                        outfile_result << team_script->character_list[0]->english_name << " add set=\"" << combination_1->suit1->english_name << "\" count=4;" << endl;
                                     }
                                     else
                                     {
-                                        outfile_result << team_script.first[0]->english_name << " add set=\"" << combination_1->suit1->english_name << "\" count=2;" << endl;
-                                        outfile_result << team_script.first[0]->english_name << " add set=\"" << combination_1->suit2->english_name << "\" count=2;" << endl;
+                                        outfile_result << team_script->character_list[0]->english_name << " add set=\"" << combination_1->suit1->english_name << "\" count=2;" << endl;
+                                        outfile_result << team_script->character_list[0]->english_name << " add set=\"" << combination_1->suit2->english_name << "\" count=2;" << endl;
                                     }
-                                    outfile_result << team_script.first[0]->english_name << " add stats hp=4780 atk=311 "
-                                                   << main_convert(team_script.first[0]->ele_type, combination_1->a_main3).first << "=" << main_convert(team_script.first[0]->ele_type, combination_1->a_main3).second << " "
-                                                   << main_convert(team_script.first[0]->ele_type, combination_1->a_main4).first << "=" << main_convert(team_script.first[0]->ele_type, combination_1->a_main4).second << " "
-                                                   << main_convert(team_script.first[0]->ele_type, combination_1->a_main5).first << "=" << main_convert(team_script.first[0]->ele_type, combination_1->a_main5).second << ";" << endl;
+                                    outfile_result << team_script->character_list[0]->english_name << " add stats hp=4780 atk=311 "
+                                                   << main_convert(team_script->character_list[0]->ele_type, combination_1->a_main3).first << "=" << main_convert(team_script->character_list[0]->ele_type, combination_1->a_main3).second << " "
+                                                   << main_convert(team_script->character_list[0]->ele_type, combination_1->a_main4).first << "=" << main_convert(team_script->character_list[0]->ele_type, combination_1->a_main4).second << " "
+                                                   << main_convert(team_script->character_list[0]->ele_type, combination_1->a_main5).first << "=" << main_convert(team_script->character_list[0]->ele_type, combination_1->a_main5).second << ";" << endl;
                                     outfile_result << endl;
 
                                     //character2
-                                    outfile_result << "#" << team_script.first[1]->name << " " << combination_2->w_point->name << " " << combination_2->suit1->name << " " << combination_2->suit2->name << " "
+                                    outfile_result << "#" << team_script->character_list[1]->name << " " << combination_2->w_point->name << " " << combination_2->suit1->name << " " << combination_2->suit2->name << " "
                                                    << combination_2->a_main3 << " " << combination_2->a_main4 << " " << combination_2->a_main5 << endl;
 
-                                    outfile_result << team_script.first[1]->english_name << " char lvl=90/90 cons=" << to_string(team_script.first[1]->constellation)
-                                                   << " talent=" << to_string(team_script.first[1]->A_level) << ","
-                                                   << to_string((team_script.first[1]->E_level > 10) ? (team_script.first[1]->E_level - 3) : team_script.first[1]->E_level) << ","
-                                                   << to_string((team_script.first[1]->Q_level > 10) ? (team_script.first[1]->Q_level - 3) : team_script.first[1]->Q_level) << ";" << endl;
-                                    outfile_result << team_script.first[1]->english_name << " add weapon=\"" << combination_2->w_point->english_name << "\" refine=" << to_string(combination_2->w_point->level) << " lvl=90/90;" << endl;
+                                    outfile_result << team_script->character_list[1]->english_name << " char lvl=90/90 cons=" << to_string(team_script->character_list[1]->constellation)
+                                                   << " talent=" << to_string(team_script->character_list[1]->A_level) << ","
+                                                   << to_string((team_script->character_list[1]->E_level > 10) ? (team_script->character_list[1]->E_level - 3) : team_script->character_list[1]->E_level) << ","
+                                                   << to_string((team_script->character_list[1]->Q_level > 10) ? (team_script->character_list[1]->Q_level - 3) : team_script->character_list[1]->Q_level) << ";" << endl;
+                                    outfile_result << team_script->character_list[1]->english_name << " add weapon=\"" << combination_2->w_point->english_name << "\" refine=" << to_string(combination_2->w_point->level) << " lvl=90/90;" << endl;
                                     if (combination_2->suit1 == combination_2->suit2)
                                     {
-                                        outfile_result << team_script.first[1]->english_name << " add set=\"" << combination_2->suit1->english_name << "\" count=4;" << endl;
+                                        outfile_result << team_script->character_list[1]->english_name << " add set=\"" << combination_2->suit1->english_name << "\" count=4;" << endl;
                                     }
                                     else
                                     {
-                                        outfile_result << team_script.first[1]->english_name << " add set=\"" << combination_2->suit1->english_name << "\" count=2;" << endl;
-                                        outfile_result << team_script.first[1]->english_name << " add set=\"" << combination_2->suit2->english_name << "\" count=2;" << endl;
+                                        outfile_result << team_script->character_list[1]->english_name << " add set=\"" << combination_2->suit1->english_name << "\" count=2;" << endl;
+                                        outfile_result << team_script->character_list[1]->english_name << " add set=\"" << combination_2->suit2->english_name << "\" count=2;" << endl;
                                     }
-                                    outfile_result << team_script.first[1]->english_name << " add stats hp=4780 atk=311 "
-                                                   << main_convert(team_script.first[1]->ele_type, combination_2->a_main3).first << "=" << main_convert(team_script.first[1]->ele_type, combination_2->a_main3).second << " "
-                                                   << main_convert(team_script.first[1]->ele_type, combination_2->a_main4).first << "=" << main_convert(team_script.first[1]->ele_type, combination_2->a_main4).second << " "
-                                                   << main_convert(team_script.first[1]->ele_type, combination_2->a_main5).first << "=" << main_convert(team_script.first[1]->ele_type, combination_2->a_main5).second << ";" << endl;
+                                    outfile_result << team_script->character_list[1]->english_name << " add stats hp=4780 atk=311 "
+                                                   << main_convert(team_script->character_list[1]->ele_type, combination_2->a_main3).first << "=" << main_convert(team_script->character_list[1]->ele_type, combination_2->a_main3).second << " "
+                                                   << main_convert(team_script->character_list[1]->ele_type, combination_2->a_main4).first << "=" << main_convert(team_script->character_list[1]->ele_type, combination_2->a_main4).second << " "
+                                                   << main_convert(team_script->character_list[1]->ele_type, combination_2->a_main5).first << "=" << main_convert(team_script->character_list[1]->ele_type, combination_2->a_main5).second << ";" << endl;
                                     outfile_result << endl;
 
                                     //character3
-                                    outfile_result << "#" << team_script.first[2]->name << " " << combination_3->w_point->name << " " << combination_3->suit1->name << " " << combination_3->suit2->name << " "
+                                    outfile_result << "#" << team_script->character_list[2]->name << " " << combination_3->w_point->name << " " << combination_3->suit1->name << " " << combination_3->suit2->name << " "
                                                    << combination_3->a_main3 << " " << combination_3->a_main4 << " " << combination_3->a_main5 << endl;
 
-                                    outfile_result << team_script.first[2]->english_name << " char lvl=90/90 cons=" << to_string(team_script.first[2]->constellation)
-                                                   << " talent=" << to_string(team_script.first[2]->A_level) << ","
-                                                   << to_string((team_script.first[2]->E_level > 10) ? (team_script.first[2]->E_level - 3) : team_script.first[2]->E_level) << ","
-                                                   << to_string((team_script.first[2]->Q_level > 10) ? (team_script.first[2]->Q_level - 3) : team_script.first[2]->Q_level) << ";" << endl;
-                                    outfile_result << team_script.first[2]->english_name << " add weapon=\"" << combination_3->w_point->english_name << "\" refine=" << to_string(combination_3->w_point->level) << " lvl=90/90;" << endl;
+                                    outfile_result << team_script->character_list[2]->english_name << " char lvl=90/90 cons=" << to_string(team_script->character_list[2]->constellation)
+                                                   << " talent=" << to_string(team_script->character_list[2]->A_level) << ","
+                                                   << to_string((team_script->character_list[2]->E_level > 10) ? (team_script->character_list[2]->E_level - 3) : team_script->character_list[2]->E_level) << ","
+                                                   << to_string((team_script->character_list[2]->Q_level > 10) ? (team_script->character_list[2]->Q_level - 3) : team_script->character_list[2]->Q_level) << ";" << endl;
+                                    outfile_result << team_script->character_list[2]->english_name << " add weapon=\"" << combination_3->w_point->english_name << "\" refine=" << to_string(combination_3->w_point->level) << " lvl=90/90;" << endl;
                                     if (combination_3->suit1 == combination_3->suit2)
                                     {
-                                        outfile_result << team_script.first[2]->english_name << " add set=\"" << combination_3->suit1->english_name << "\" count=4;" << endl;
+                                        outfile_result << team_script->character_list[2]->english_name << " add set=\"" << combination_3->suit1->english_name << "\" count=4;" << endl;
                                     }
                                     else
                                     {
-                                        outfile_result << team_script.first[2]->english_name << " add set=\"" << combination_3->suit1->english_name << "\" count=2;" << endl;
-                                        outfile_result << team_script.first[2]->english_name << " add set=\"" << combination_3->suit2->english_name << "\" count=2;" << endl;
+                                        outfile_result << team_script->character_list[2]->english_name << " add set=\"" << combination_3->suit1->english_name << "\" count=2;" << endl;
+                                        outfile_result << team_script->character_list[2]->english_name << " add set=\"" << combination_3->suit2->english_name << "\" count=2;" << endl;
                                     }
-                                    outfile_result << team_script.first[2]->english_name << " add stats hp=4780 atk=311 "
-                                                   << main_convert(team_script.first[2]->ele_type, combination_3->a_main3).first << "=" << main_convert(team_script.first[2]->ele_type, combination_3->a_main3).second << " "
-                                                   << main_convert(team_script.first[2]->ele_type, combination_3->a_main4).first << "=" << main_convert(team_script.first[2]->ele_type, combination_3->a_main4).second << " "
-                                                   << main_convert(team_script.first[2]->ele_type, combination_3->a_main5).first << "=" << main_convert(team_script.first[2]->ele_type, combination_3->a_main5).second << ";" << endl;
+                                    outfile_result << team_script->character_list[2]->english_name << " add stats hp=4780 atk=311 "
+                                                   << main_convert(team_script->character_list[2]->ele_type, combination_3->a_main3).first << "=" << main_convert(team_script->character_list[2]->ele_type, combination_3->a_main3).second << " "
+                                                   << main_convert(team_script->character_list[2]->ele_type, combination_3->a_main4).first << "=" << main_convert(team_script->character_list[2]->ele_type, combination_3->a_main4).second << " "
+                                                   << main_convert(team_script->character_list[2]->ele_type, combination_3->a_main5).first << "=" << main_convert(team_script->character_list[2]->ele_type, combination_3->a_main5).second << ";" << endl;
                                     outfile_result << endl;
 
                                     //character4
-                                    outfile_result << "#" << team_script.first[3]->name << " " << combination_4->w_point->name << " " << combination_4->suit1->name << " " << combination_4->suit2->name << " "
+                                    outfile_result << "#" << team_script->character_list[3]->name << " " << combination_4->w_point->name << " " << combination_4->suit1->name << " " << combination_4->suit2->name << " "
                                                    << combination_4->a_main3 << " " << combination_4->a_main4 << " " << combination_4->a_main5 << endl;
 
-                                    outfile_result << team_script.first[3]->english_name << " char lvl=90/90 cons=" << to_string(team_script.first[3]->constellation)
-                                                   << " talent=" << to_string(team_script.first[3]->A_level) << ","
-                                                   << to_string((team_script.first[3]->E_level > 10) ? (team_script.first[3]->E_level - 3) : team_script.first[3]->E_level) << ","
-                                                   << to_string((team_script.first[3]->Q_level > 10) ? (team_script.first[3]->Q_level - 3) : team_script.first[3]->Q_level) << ";" << endl;
-                                    outfile_result << team_script.first[3]->english_name << " add weapon=\"" << combination_4->w_point->english_name << "\" refine=" << to_string(combination_4->w_point->level) << " lvl=90/90;" << endl;
+                                    outfile_result << team_script->character_list[3]->english_name << " char lvl=90/90 cons=" << to_string(team_script->character_list[3]->constellation)
+                                                   << " talent=" << to_string(team_script->character_list[3]->A_level) << ","
+                                                   << to_string((team_script->character_list[3]->E_level > 10) ? (team_script->character_list[3]->E_level - 3) : team_script->character_list[3]->E_level) << ","
+                                                   << to_string((team_script->character_list[3]->Q_level > 10) ? (team_script->character_list[3]->Q_level - 3) : team_script->character_list[3]->Q_level) << ";" << endl;
+                                    outfile_result << team_script->character_list[3]->english_name << " add weapon=\"" << combination_4->w_point->english_name << "\" refine=" << to_string(combination_4->w_point->level) << " lvl=90/90;" << endl;
                                     if (combination_4->suit1 == combination_4->suit2)
                                     {
-                                        outfile_result << team_script.first[3]->english_name << " add set=\"" << combination_4->suit1->english_name << "\" count=4;" << endl;
+                                        outfile_result << team_script->character_list[3]->english_name << " add set=\"" << combination_4->suit1->english_name << "\" count=4;" << endl;
                                     }
                                     else
                                     {
-                                        outfile_result << team_script.first[3]->english_name << " add set=\"" << combination_4->suit1->english_name << "\" count=2;" << endl;
-                                        outfile_result << team_script.first[3]->english_name << " add set=\"" << combination_4->suit2->english_name << "\" count=2;" << endl;
+                                        outfile_result << team_script->character_list[3]->english_name << " add set=\"" << combination_4->suit1->english_name << "\" count=2;" << endl;
+                                        outfile_result << team_script->character_list[3]->english_name << " add set=\"" << combination_4->suit2->english_name << "\" count=2;" << endl;
                                     }
-                                    outfile_result << team_script.first[3]->english_name << " add stats hp=4780 atk=311 "
-                                                   << main_convert(team_script.first[3]->ele_type, combination_4->a_main3).first << "=" << main_convert(team_script.first[3]->ele_type, combination_4->a_main3).second << " "
-                                                   << main_convert(team_script.first[3]->ele_type, combination_4->a_main4).first << "=" << main_convert(team_script.first[3]->ele_type, combination_4->a_main4).second << " "
-                                                   << main_convert(team_script.first[3]->ele_type, combination_4->a_main5).first << "=" << main_convert(team_script.first[3]->ele_type, combination_4->a_main5).second << ";" << endl;
+                                    outfile_result << team_script->character_list[3]->english_name << " add stats hp=4780 atk=311 "
+                                                   << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main3).first << "=" << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main3).second << " "
+                                                   << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main4).first << "=" << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main4).second << " "
+                                                   << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main5).first << "=" << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main5).second << ";" << endl;
                                     outfile_result << endl;
 
                                     //active
-                                    outfile_result << "active " << team_script.second[0].substr(0, team_script.second[0].find_first_of(' ')) << ";" << endl;
+                                    outfile_result << "active " << team_script->attack_list[0].substr(0, team_script->attack_list[0].find_first_of(' ')) << ";" << endl;
                                     outfile_result << endl;
 
                                     //attack_list
                                     outfile_result << "let x = 5;" << endl;
                                     outfile_result << "while x {" << endl;
-                                    for (auto &i: team_script.second)
+                                    for (auto &i: team_script->attack_list)
                                     {
                                         if (i[i.length() - 1] == '{' || i[i.length() - 1] == '}')
                                             outfile_result << "  " << i << endl;
@@ -3785,8 +3796,10 @@ int main()
         outfile_debug.open("./RESULTS/calculate_all.ps1");
         for (auto &i: team_list)
         {
+            team_script = new gcsim_script();
             read_team_script("./RESULTS/chinese_config/" + i + ".txt");
             generate_gcsim_script("./RESULTS/config/", i);
+            delete team_script;
         }
         outfile_debug.close();
     }

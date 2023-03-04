@@ -1,6 +1,6 @@
 #./run_substat_optimizer_full.bat shen_gan_wen_mo_2.txt > ./logs/shen_gan_wen_mo_2.txt
 
-options iteration=1000 duration=120 swap_delay=4;
+options iteration=1000 duration=105 swap_delay=4;
 target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;
 #甘雨 飞雷之弦振 冰风迷途的勇士 冰风迷途的勇士 攻击力 伤害加成 暴击伤害
 ganyu char lvl=90/90 cons=0 talent=10,10,10;
@@ -32,10 +32,11 @@ let x = 5;
 while x {
   ganyu skill, burst;
   venti skill, burst;
-  mona skill, burst;
+  mona burst;
   ayaka dash, skill, attack, burst;
   ganyu skill, aim, aim;
   venti skill, attack;
-  ayaka dash, attack, charge, skill, attack:3, charge;
+  mona skill;
+  ayaka dash, skill, attack, charge, attack:2;
   x = x - 1;
 }

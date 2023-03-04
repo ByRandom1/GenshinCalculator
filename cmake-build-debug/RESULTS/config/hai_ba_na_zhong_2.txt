@@ -1,6 +1,6 @@
 #./run_substat_optimizer_full.bat hai_ba_na_zhong_2.txt > ./logs/hai_ba_na_zhong_2.txt
 
-options iteration=1000 duration=120 swap_delay=4;
+options iteration=1000 duration=110 swap_delay=4;
 target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;
 #艾尔海森 雾切之回光 饰金之梦 饰金之梦 元素精通 伤害加成 暴击率
 alhaitham char lvl=90/90 cons=0 talent=10,10,10;
@@ -27,18 +27,12 @@ zhongli add weapon="favoniuslance" refine=5 lvl=90/90;
 zhongli add set="noblesseoblige" count=4;
 zhongli add stats hp=4780 atk=311 hp%=0.466 hp%=0.466 cr=0.311;
 
-active nahida;
+active zhongli;
 
 let x = 5;
 while x {
+  zhongli skill[hold=1], burst;
   nahida burst, skill;
-  zhongli skill[hold=1];
-  if .zhongli.burst.ready {
-    zhongli burst;
-  }
-  else {
-    zhongli attack:2;
-  }
   yaemiko skill, skill, skill;
   alhaitham burst, skill, attack:3, dash, attack:3, dash, attack:3, charge, attack:3, dash, attack:3, dash, attack:3;
   if .yaemiko.burst.ready {

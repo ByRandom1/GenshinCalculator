@@ -1,6 +1,6 @@
 #./run_substat_optimizer_full.bat lei_xing_xiang_ban_2.txt > ./logs/lei_xing_xiang_ban_2.txt
 
-options iteration=1000 duration=120 swap_delay=4;
+options iteration=1000 duration=113 swap_delay=4;
 target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;
 #雷电将军 渔获 绝缘之旗印 绝缘之旗印 元素充能效率 伤害加成 暴击率
 raiden char lvl=90/90 cons=0 talent=6,10,10;
@@ -21,10 +21,11 @@ bennett add weapon="skywardblade" refine=1 lvl=90/90;
 bennett add set="noblesseoblige" count=4;
 bennett add stats hp=4780 atk=311 er=0.518 hp%=0.466 heal=0.359;
 
-#香菱 断浪长鳍 炽烈的炎之魔女 炽烈的炎之魔女 元素充能效率 伤害加成 暴击率
+#香菱 断浪长鳍 饰金之梦 流浪大地的乐团 元素充能效率 伤害加成 暴击率
 xiangling char lvl=90/90 cons=6 talent=6,9,9;
 xiangling add weapon="wavebreakersfin" refine=4 lvl=90/90;
-xiangling add set="crimsonwitchofflames" count=4;
+xiangling add set="gildeddreams" count=2;
+xiangling add set="wandererstroupe" count=2;
 xiangling add stats hp=4780 atk=311 er=0.518 pyro%=0.466 cr=0.311;
 
 active raiden;

@@ -1,6 +1,6 @@
 #./run_substat_optimizer_full.bat hu_ye_zhong_xing_3.txt > ./logs/hu_ye_zhong_xing_3.txt
 
-options iteration=1000 duration=120 swap_delay=4;
+options iteration=1000 duration=113 swap_delay=4;
 target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;
 #钟离 西风长枪 昔日宗室之仪 昔日宗室之仪 生命值 生命值 暴击率
 zhongli char lvl=90/90 cons=0 talent=6,9,9;
@@ -31,15 +31,12 @@ active zhongli;
 
 let x = 5;
 while x {
-  zhongli skill[hold=1], attack:2;
+  zhongli skill[hold=1], burst;
   xingqiu burst, attack;
   yelan burst, attack, skill, attack, skill, attack;
   xingqiu skill, attack;
   if .xingqiu.skill.ready {
-    xingqiu skill, attack:2;
-  }
-  else {
-    xingqiu attack;
+    xingqiu skill, attack;
   }
   hutao skill;
   hutao attack, charge, dash;
@@ -51,7 +48,5 @@ while x {
   hutao attack, charge, dash;
   hutao attack, charge, dash;
   hutao attack, charge, dash;
-  hutao attack, charge, dash;
-  zhongli burst, attack:4;
   x = x - 1;
 }
