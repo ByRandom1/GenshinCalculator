@@ -87,8 +87,7 @@ void init_character_data()
     character_list.push_back(new Character("艾尔海森", "alhaitham", "草", "单手剑", 13348, 313, 782, "伤害加成", 0.288,
                                            10, vector<bool>{false, true, false, false, false, true, true, true}, "草", vector<double>{0.979, 1.003, 0.676, 0.676, 1.32, 1.658}, vector<double>{0.91, 0.932, 0.628, 0.628, 1.227, 1.541},
                                            "草", vector<double>{1.092, 1.092}, vector<double>{1.015, 1.015}, "草", vector<double>{3.16}, vector<double>{2.93},
-                                           10, 8, false, vector<bool>{false, true, false, true, false, true, true, true}, vector<double>{4.114, 1.482, 1.482 * 2, 1.482 * 3}, vector<double>{3.872, 1.344, 1.344 * 2, 1.344 * 3},
-                                           vector<double>{3.485, 1.21, 1.21 * 2, 1.21 * 3}, vector<double>{3.291, 1.142, 1.142 * 2, 1.142 * 3},
+                                           10, 8, false, vector<bool>{false, true, false, true, false, true, true, true}, vector<double>{4.114, 1.482}, vector<double>{3.872, 1.344}, vector<double>{3.485, 1.21}, vector<double>{3.291, 1.142},
                                            10, 70, true, vector<bool>{false, true, false, true, false, true, true, true}, vector<double>{2.584}, vector<double>{2.432}, vector<double>{2.189}, vector<double>{2.067},
                                            0, temp, false, false, true));//A2、3连续，Z0、1连续，E突进、1层、2层、3层，Q单次
     temp.clear();
@@ -2253,29 +2252,21 @@ void Deployment::get_extra_rate_value(double life, double atk, double def, doubl
             {
                 if (attack_config->rate_pos == 0) extrarate += 3.291 * mastery;
                 else if (attack_config->rate_pos == 1) extrarate += 2.856 * mastery;
-                else if (attack_config->rate_pos == 2) extrarate += 2.856 * 2 * mastery;
-                else if (attack_config->rate_pos == 3) extrarate += 2.856 * 3 * mastery;
             }
             else if (c_point->E_level == 12)
             {
                 if (attack_config->rate_pos == 0) extrarate += 3.098 * mastery;
                 else if (attack_config->rate_pos == 1) extrarate += 2.688 * mastery;
-                else if (attack_config->rate_pos == 2) extrarate += 2.688 * 2 * mastery;
-                else if (attack_config->rate_pos == 3) extrarate += 2.688 * 3 * mastery;
             }
             else if (c_point->E_level == 10)
             {
                 if (attack_config->rate_pos == 0) extrarate += 2.788 * mastery;
                 else if (attack_config->rate_pos == 1) extrarate += 2.419 * mastery;
-                else if (attack_config->rate_pos == 2) extrarate += 2.419 * 2 * mastery;
-                else if (attack_config->rate_pos == 3) extrarate += 2.419 * 3 * mastery;
             }
             else if (c_point->E_level == 9)
             {
                 if (attack_config->rate_pos == 0) extrarate += 2.633 * mastery;
                 else if (attack_config->rate_pos == 1) extrarate += 2.285 * mastery;
-                else if (attack_config->rate_pos == 2) extrarate += 2.285 * 2 * mastery;
-                else if (attack_config->rate_pos == 3) extrarate += 2.285 * 3 * mastery;
             }
         }
         else if (attack_config->condition->attack_way == "Q")
@@ -2512,17 +2503,20 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         auto *tc1 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("夜兰"),
                                     "终末嗟叹之诗_昔日宗室之仪", "水", "水");
 
-        //9AZ 忽略E
+        //9AZ 4E
         vector<Attack_config *> ac1{
                 new Attack_config(find_character_by_name(c_name), "平A", 0, false, "蒸发_no_add_damage", 6,
-                                  new weapon_artifact_related_arguments(0, false, 1, false, false, 2,
-                                                                        "长柄武器", 1, 0, 1)),
+                                  new weapon_artifact_related_arguments(1, true, 1, false, true, 3,
+                                                                        "长柄武器", 1, 1, 1)),
                 new Attack_config(find_character_by_name(c_name), "平A", 0, false, "蒸发", 3,
-                                  new weapon_artifact_related_arguments(0, false, 1, false, false, 2,
-                                                                        "长柄武器", 1, 0, 1)),
+                                  new weapon_artifact_related_arguments(1, true, 1, false, true, 3,
+                                                                        "长柄武器", 1, 1, 1)),
                 new Attack_config(find_character_by_name(c_name), "重A", 0, false, "蒸发", 9,
-                                  new weapon_artifact_related_arguments(0, false, 1, false, false, 2,
-                                                                        "长柄武器", 1, 0, 1))
+                                  new weapon_artifact_related_arguments(1, true, 1, false, true, 3,
+                                                                        "长柄武器", 1, 1, 1)),
+                new Attack_config(find_character_by_name(c_name), "E", 0, false, "蒸发", 4,
+                                  new weapon_artifact_related_arguments(1, true, 1, false, true, 3,
+                                                                        "长柄武器", 1, 1, 1))
         };
 
         if (mode == "cal_deployment")
@@ -2550,7 +2544,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         auto *tc1 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("八重神子"), find_character_by_name("钟离"),
                                     "千夜浮梦_深林的记忆_昔日宗室之仪", "草", "");
 
-        //4Q 23333332E AAA AAA AAA Z AAA AAA AAA
+        //4Q 233332E AAA AAA AAA Z AAA AAA AAA
         vector<Attack_config *> ac1{
                 new Attack_config(find_character_by_name(c_name), "Q", 0, false, "蔓激化", 2,
                                   new weapon_artifact_related_arguments(0, false, 0, false, true, 3,
@@ -2562,29 +2556,32 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                 new Attack_config(find_character_by_name(c_name), "E", 0, false, "蔓激化", 1,
                                   new weapon_artifact_related_arguments(0, false, 1, false, true, 3,
                                                                         "单手剑", 2, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "E", 2, false, "蔓激化", 1,
-                                  new weapon_artifact_related_arguments(1, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "E", 2, false, "蔓激化_no_add_damage", 1,
+                new Attack_config(find_character_by_name(c_name), "E", 1, false, "蔓激化", 8,
                                   new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
                                                                         "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "E", 3, false, "蔓激化", 3,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "E", 3, false, "蔓激化_no_add_damage", 3,
+                new Attack_config(find_character_by_name(c_name), "E", 1, false, "蔓激化_no_add_damage", 8,
                                   new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
                                                                         "单手剑", 3, 3, -1)),
 
-                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "蔓激化", 6,
+                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "蔓激化", 2,
+                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
+                                                                        "单手剑", 3, 3, -1)),
+                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "蔓激化_no_add_damage", 4,
                                   new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
                                                                         "单手剑", 3, 3, -1)),
                 new Attack_config(find_character_by_name(c_name), "平A", 1, false, "蔓激化_no_add_damage", 6,
                                   new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
                                                                         "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 2, false, "蔓激化_no_add_damage", 6,
+                new Attack_config(find_character_by_name(c_name), "平A", 2, false, "蔓激化", 3,
                                   new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
                                                                         "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 3, false, "蔓激化_no_add_damage", 6,
+                new Attack_config(find_character_by_name(c_name), "平A", 2, false, "蔓激化_no_add_damage", 3,
+                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
+                                                                        "单手剑", 3, 3, -1)),
+                new Attack_config(find_character_by_name(c_name), "平A", 3, false, "蔓激化", 4,
+                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
+                                                                        "单手剑", 3, 3, -1)),
+                new Attack_config(find_character_by_name(c_name), "平A", 3, false, "蔓激化_no_add_damage", 2,
                                   new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
                                                                         "单手剑", 3, 3, -1)),
 
@@ -2621,7 +2618,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                     "昔日宗室之仪", "水雷", "水雷火");
 
         //无法准确得知感电反应次数和触发关系
-        //Q AAAAA AAAAA AAAAA 忽略E
+        //Q AAAAA AAAAA AAAAA 18+1E
         vector<Attack_config *> ac1{
                 new Attack_config(find_character_by_name(c_name), "Q", 0, false, "感电_no_add_damage", 1,
                                   new weapon_artifact_related_arguments(2, true, 0, false, true, 1,
@@ -2642,6 +2639,12 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                   new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
                                                                         "长柄武器", 0, 3, 0)),
                 new Attack_config(find_character_by_name(c_name), "Q", 6, false, "感电_no_add_damage", 3,
+                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
+                                                                        "长柄武器", 0, 3, 0)),
+                new Attack_config(find_character_by_name(c_name), "E", 0, false, "感电_no_add_damage", 1,
+                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 2,
+                                                                        "长柄武器", 0, 3, 1)),
+                new Attack_config(find_character_by_name(c_name), "E", 1, false, "感电_no_add_damage", 18,
                                   new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
                                                                         "长柄武器", 0, 3, 0))
         };
@@ -2689,7 +2692,10 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                 new Attack_config(find_character_by_name(c_name), "E", 0, false, "冻结", 1,
                                   new weapon_artifact_related_arguments(0, false, 1, false, false, 2,
                                                                         "单手剑", 2, 2, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "冻结", 3,
+                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "冻结", 2,
+                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 3,
+                                                                        "单手剑", 2, 2, -1)),
+                new Attack_config(find_character_by_name(c_name), "平A", 1, false, "冻结", 1,
                                   new weapon_artifact_related_arguments(1, false, 1, false, false, 3,
                                                                         "单手剑", 2, 2, -1)),
                 new Attack_config(find_character_by_name(c_name), "重A", 0, false, "冻结", 3,
@@ -2729,14 +2735,14 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
 
         //EQ EZZ
         vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "Q", 0, true, "冻结", 17,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, true, 3,
-                                                                        "弓", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "冻结", 2,
+                new Attack_config(find_character_by_name(c_name), "Q", 0, true, "冻结", 15,
                                   new weapon_artifact_related_arguments(1, false, 1, false, true, 2,
                                                                         "弓", 1, 2, 0)),
+                new Attack_config(find_character_by_name(c_name), "E", 0, false, "冻结", 2,
+                                  new weapon_artifact_related_arguments(0, false, 1, false, true, 2,
+                                                                        "弓", 1, 2, 0)),
                 new Attack_config(find_character_by_name(c_name), "E", 1, true, "冻结", 2,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, true, 2,
+                                  new weapon_artifact_related_arguments(0, false, 1, false, true, 2,
                                                                         "弓", 1, 2, 0)),
                 new Attack_config(find_character_by_name(c_name), "重A", 0, false, "冻结", 2,
                                   new weapon_artifact_related_arguments(2, false, 1, false, true, 3,
@@ -2777,7 +2783,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                 new Attack_config(find_character_by_name(c_name), "E", 0, false, "蔓激化", 1,
                                   new weapon_artifact_related_arguments(2, true, 1, false, true, 1,
                                                                         "法器", 0, 0, 1)),
-                new Attack_config(find_character_by_name(c_name), "E", 1, true, "蔓激化", 8,
+                new Attack_config(find_character_by_name(c_name), "E", 1, true, "蔓激化", 7,
                                   new weapon_artifact_related_arguments(2, true, 1, false, true, 1,
                                                                         "法器", 1, 0, 0))
         };
@@ -2845,16 +2851,16 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
 
         vector<Attack_config *> ac1{
                 new Attack_config(find_character_by_name(c_name), "E", 0, true, "超激化", 10,
-                                  new weapon_artifact_related_arguments(2, true, 3, false, true, 2,
+                                  new weapon_artifact_related_arguments(2, true, 3, false, true, 1,
                                                                         "法器", 3, 0, 0)),
                 new Attack_config(find_character_by_name(c_name), "E", 0, true, "超激化_no_add_damage", 18,
-                                  new weapon_artifact_related_arguments(2, true, 3, false, true, 2,
+                                  new weapon_artifact_related_arguments(2, true, 3, false, true, 1,
                                                                         "法器", 3, 0, 0)),
                 new Attack_config(find_character_by_name(c_name), "Q", 0, false, "超激化", 1,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
+                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 1,
                                                                         "法器", 3, 0, 1)),
                 new Attack_config(find_character_by_name(c_name), "Q", 1, false, "超激化", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 1,
+                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
                                                                         "法器", 3, 0, 1))
         };
 
@@ -2886,7 +2892,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         //QE
         vector<Attack_config *> ac1{
                 new Attack_config(find_character_by_name(c_name), "Q", 0, false, "蒸发_超载_no_add_damage", 1,
-                                  new weapon_artifact_related_arguments(0, false, 0, false, true, 1,
+                                  new weapon_artifact_related_arguments(0, false, 0, false, true, 0,
                                                                         "长柄武器", 0, 0, 0)),
                 new Attack_config(find_character_by_name(c_name), "Q", 1, false, "蒸发_超载_no_add_damage", 1,
                                   new weapon_artifact_related_arguments(0, false, 0, false, true, 1,
@@ -2894,7 +2900,10 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                 new Attack_config(find_character_by_name(c_name), "Q", 2, false, "蒸发_超载_no_add_damage", 1,
                                   new weapon_artifact_related_arguments(0, false, 0, false, true, 1,
                                                                         "长柄武器", 0, 0, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 3, true, "蒸发_超载", 12,
+                new Attack_config(find_character_by_name(c_name), "Q", 3, true, "蒸发_超载_no_add_damage", 4,
+                                  new weapon_artifact_related_arguments(0, false, 0, false, true, 1,
+                                                                        "长柄武器", 0, 0, 0)),
+                new Attack_config(find_character_by_name(c_name), "Q", 3, true, "蒸发_超载", 8,
                                   new weapon_artifact_related_arguments(0, false, 0, false, true, 1,
                                                                         "长柄武器", 0, 0, 0)),
                 new Attack_config(find_character_by_name(c_name), "E", 0, true, "蒸发", 4,
@@ -2946,7 +2955,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                 new Attack_config(find_character_by_name(c_name), "E", 1, false, "NONE", 1,
                                   new weapon_artifact_related_arguments(1, false, 1, false, true, 3,
                                                                         "单手剑", 2, 1, -1)),
-                new Attack_config(find_character_by_name(c_name), "Q", 0, true, "NONE", 45,
+                new Attack_config(find_character_by_name(c_name), "Q", 0, true, "NONE", 42,
                                   new weapon_artifact_related_arguments(1, false, 1, false, true, 3,
                                                                         "单手剑", 2, 1, -1))
         };
