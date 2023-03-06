@@ -8,16 +8,15 @@ zhongli add weapon="favoniuslance" refine=5 lvl=90/90;
 zhongli add set="noblesseoblige" count=4;
 zhongli add stats hp=4780 atk=311 hp%=0.466 hp%=0.466 cr=0.311;
 
-#行秋 祭礼剑 沉沦之心 昔日宗室之仪 攻击力 伤害加成 暴击率
+#行秋 磐岩结绿 绝缘之旗印 绝缘之旗印 攻击力 伤害加成 暴击伤害
 xingqiu char lvl=90/90 cons=6 talent=6,9,9;
-xingqiu add weapon="sacrificialsword" refine=5 lvl=90/90;
-xingqiu add set="heartofdepth" count=2;
-xingqiu add set="noblesseoblige" count=2;
-xingqiu add stats hp=4780 atk=311 atk%=0.466 hydro%=0.466 cr=0.311;
+xingqiu add weapon="primordialjadecutter" refine=1 lvl=90/90;
+xingqiu add set="emblemofseveredfate" count=4;
+xingqiu add stats hp=4780 atk=311 atk%=0.466 hydro%=0.466 cd=0.622;
 
-#夜兰 终末嗟叹之诗 绝缘之旗印 绝缘之旗印 生命值 伤害加成 暴击率
+#夜兰 若水 绝缘之旗印 绝缘之旗印 生命值 伤害加成 暴击率
 yelan char lvl=90/90 cons=2 talent=6,10,10;
-yelan add weapon="elegyfortheend" refine=1 lvl=90/90;
+yelan add weapon="aquasimulacra" refine=1 lvl=90/90;
 yelan add set="emblemofseveredfate" count=4;
 yelan add stats hp=4780 atk=311 hp%=0.466 hydro%=0.466 cr=0.311;
 

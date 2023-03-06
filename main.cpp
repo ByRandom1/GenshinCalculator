@@ -581,11 +581,11 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("不灭月华", "everlastingmoonglow", "法器", 608, "生命值", 0.496, 1, temp));
     temp.clear();
 
-    //TODO:NEW
-    //(recharge)
-    //(convert)
-    weapon_list.push_back(new Weapon("碧落之珑", "jadefallssplendor", "法器", 608, "生命值", 0.496, 1, temp));
-    temp.clear();
+//    //TODO:NEW
+//    //(recharge)
+//    //(convert)
+//    weapon_list.push_back(new Weapon("碧落之珑", "jadefallssplendor", "法器", 608, "生命值", 0.496, 1, temp));
+//    temp.clear();
 
     //(special)
     //(get_team)
@@ -1278,9 +1278,9 @@ void Weapon::modify_useful_attribute(Deployment *data)
         data->data_list[str2index_full("元素精通")]->useful = true;
     else if (data->w_point->name == "不灭月华" && data->attack_config->condition->attack_way == "平A")
         data->data_list[str2index_full("生命值")]->useful = true;
-        //TODO:NEW
-    else if (data->w_point->name == "碧落之珑" && data->attack_config->args->catalyst_biluo_enable)
-        data->data_list[str2index_full("生命值")]->useful = true;
+//        //TODO:NEW
+//    else if (data->w_point->name == "碧落之珑" && data->attack_config->args->catalyst_biluo_enable)
+//        data->data_list[str2index_full("生命值")]->useful = true;
     else if (data->w_point->name == "流浪的晚星" && data->data_list[str2index_full("攻击力")]->useful)
         data->data_list[str2index_full("元素精通")]->useful = true;
     else if (data->w_point->name == "猎人之径" && data->attack_config->condition->attack_way == "重A")
@@ -1352,11 +1352,11 @@ void init_artifact_data()
                                          nullptr));
     artifact_list.push_back(new Artifact("乐园遗落之花", "flowerofparadiselost", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
                                          nullptr));//(react)
-    //TODO:NEW
-    artifact_list.push_back(new Artifact("水仙之梦", "nymphsdream", new Set(new Condition("水", "ALL", "ALL"), "伤害加成", 0.15),
-                                         nullptr));//(special)
-    artifact_list.push_back(new Artifact("花海甘露之光", "dewflowersglow", new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2),
-                                         nullptr));//(special)
+//    //TODO:NEW
+//    artifact_list.push_back(new Artifact("水仙之梦", "nymphsdream", new Set(new Condition("水", "ALL", "ALL"), "伤害加成", 0.15),
+//                                         nullptr));//(special)
+//    artifact_list.push_back(new Artifact("花海甘露之光", "dewflowersglow", new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2),
+//                                         nullptr));//(special)
 }
 
 //build new artifact(all) 保证二件套效果和四件套效果分开
@@ -1456,35 +1456,35 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
             if (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "重A" || data->attack_config->condition->attack_way == "下落A")
                 data->add_percentage("伤害加成", 0.4, (name + "_extra_special"));
     }
-        //TODO:NEW
-    else if (if_4_piece && name == "水仙之梦")
-    {
-        if (data->attack_config->args->shuixian_level == 1)
-        {
-            data->add_percentage("攻击力", 0.07, (name + "_extra_special"));
-            if (data->attack_config->condition->ele_type == "水") data->add_percentage("伤害加成", 0.04, (name + "_extra_special"));
-        }
-        else if (data->attack_config->args->shuixian_level == 2)
-        {
-            data->add_percentage("攻击力", 0.16, (name + "_extra_special"));
-            if (data->attack_config->condition->ele_type == "水") data->add_percentage("伤害加成", 0.09, (name + "_extra_special"));
-        }
-        else if (data->attack_config->args->shuixian_level >= 3)
-        {
-            data->add_percentage("攻击力", 0.25, (name + "_extra_special"));
-            if (data->attack_config->condition->ele_type == "水") data->add_percentage("伤害加成", 0.15, (name + "_extra_special"));
-        }
-    }
-    else if (if_4_piece && name == "花海甘露之光")
-    {
-        if (data->attack_config->condition->attack_way == "E" || data->attack_config->condition->attack_way == "Q")
-        {
-            if (!data->attack_config->background && !data->c_point->shield_sustain && !data->team_config->teammate_1->shield_sustain && !data->team_config->teammate_2->shield_sustain && !data->team_config->teammate_3->shield_sustain)
-                data->add_percentage("伤害加成", 0.5, (name + "_extra_special"));
-            else
-                data->add_percentage("伤害加成", 0.1, (name + "_extra_special"));
-        }
-    }
+//        //TODO:NEW
+//    else if (if_4_piece && name == "水仙之梦")
+//    {
+//        if (data->attack_config->args->shuixian_level == 1)
+//        {
+//            data->add_percentage("攻击力", 0.07, (name + "_extra_special"));
+//            if (data->attack_config->condition->ele_type == "水") data->add_percentage("伤害加成", 0.04, (name + "_extra_special"));
+//        }
+//        else if (data->attack_config->args->shuixian_level == 2)
+//        {
+//            data->add_percentage("攻击力", 0.16, (name + "_extra_special"));
+//            if (data->attack_config->condition->ele_type == "水") data->add_percentage("伤害加成", 0.09, (name + "_extra_special"));
+//        }
+//        else if (data->attack_config->args->shuixian_level >= 3)
+//        {
+//            data->add_percentage("攻击力", 0.25, (name + "_extra_special"));
+//            if (data->attack_config->condition->ele_type == "水") data->add_percentage("伤害加成", 0.15, (name + "_extra_special"));
+//        }
+//    }
+//    else if (if_4_piece && name == "花海甘露之光")
+//    {
+//        if (data->attack_config->condition->attack_way == "E" || data->attack_config->condition->attack_way == "Q")
+//        {
+//            if (!data->attack_config->background && !data->c_point->shield_sustain && !data->team_config->teammate_1->shield_sustain && !data->team_config->teammate_2->shield_sustain && !data->team_config->teammate_3->shield_sustain)
+//                data->add_percentage("伤害加成", 0.5, (name + "_extra_special"));
+//            else
+//                data->add_percentage("伤害加成", 0.1, (name + "_extra_special"));
+//        }
+//    }
     return true;
 }
 
@@ -1562,18 +1562,18 @@ void Artifact::check_artifact_special(Deployment *data, bool &suit1_valid, bool 
         if (data->suit1->name == "海染砗磲" && data->suit2->name != "被怜爱的少女") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if ((data->suit1->name == "饰金之梦" && data->suit2->name != "流浪大地的乐团") || data->suit1->name == "乐园遗落之花") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit1->name == "沙上楼阁史话" && data->suit2->name != "翠绿之影") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        //TODO:NEW
-        if (data->suit1->name == "水仙之梦" && data->suit2->name != "沉沦之心") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (data->suit1->name == "花海甘露之光" && data->suit2->name != "千岩牢固") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+//        //TODO:NEW
+//        if (data->suit1->name == "水仙之梦" && data->suit2->name != "沉沦之心") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+//        if (data->suit1->name == "花海甘露之光" && data->suit2->name != "千岩牢固") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         //suit2
         if ((data->suit2->name == "追忆之注连" && data->suit1->name != "角斗士的终幕礼") || data->suit2->name == "辰砂往生录" || data->suit2->name == "来歆余响") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit2->name == "苍白之火" && data->suit1->name != "染血的骑士道") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit2->name == "海染砗磲" && data->suit1->name != "被怜爱的少女") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if ((data->suit2->name == "饰金之梦" && data->suit1->name != "流浪大地的乐团") || data->suit2->name == "乐园遗落之花") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (data->suit2->name == "沙上楼阁史话" && data->suit1->name != "翠绿之影") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        //TODO:NEW
-        if (data->suit2->name == "水仙之梦" && data->suit1->name != "沉沦之心") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (data->suit2->name == "花海甘露之光" && data->suit1->name != "千岩牢固") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+//        //TODO:NEW
+//        if (data->suit2->name == "水仙之梦" && data->suit1->name != "沉沦之心") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+//        if (data->suit2->name == "花海甘露之光" && data->suit1->name != "千岩牢固") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
     }
 }
 
@@ -2094,8 +2094,8 @@ void Deployment::satisfy_recharge_requirement()
         else if (w_point->name == "祭礼残章") energy += 0;
         else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
         else if (w_point->name == "不灭月华") Q_energy_modify -= 0;
-            //TODO:NEW
-        else if (w_point->name == "碧落之珑") Q_energy_modify -= 4;
+//            //TODO:NEW
+//        else if (w_point->name == "碧落之珑") Q_energy_modify -= 4;
     }
     else if (c_point->name == "夜兰")
     {
@@ -2115,8 +2115,8 @@ void Deployment::satisfy_recharge_requirement()
         else if (w_point->name == "祭礼残章") energy += 0;
         else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
         else if (w_point->name == "不灭月华") Q_energy_modify -= 0;
-            //TODO:NEW
-        else if (w_point->name == "碧落之珑") Q_energy_modify -= 4;
+//            //TODO:NEW
+//        else if (w_point->name == "碧落之珑") Q_energy_modify -= 4;
     }
     else if (c_point->name == "香菱")
     {
@@ -2183,9 +2183,9 @@ void Deployment::get_convert_value(double &life, double &atk, double &def, doubl
     }
     else if (w_point->name == "西福斯的月光")//精通->充能
         recharge_add += mastery * 0.00036 * (0.75 + w_point->level * 0.25);//精通->充能
-        //TODO:NEW
-    else if (w_point->name == "碧落之珑" && attack_config->args->catalyst_biluo_enable)//生命->增伤
-        damplus_add += min(life * (0.0015 + w_point->level * 0.0015) * base_life / 1000, 0.06 + w_point->level * 0.06);//生命->增伤
+//        //TODO:NEW
+//    else if (w_point->name == "碧落之珑" && attack_config->args->catalyst_biluo_enable)//生命->增伤
+//        damplus_add += min(life * (0.0015 + w_point->level * 0.0015) * base_life / 1000, 0.06 + w_point->level * 0.06);//生命->增伤
     else if (w_point->name == "流浪的晚星")//精通->攻击
         atk_add += mastery * 0.24 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
     else if (w_point->name == "玛海菈的水色")//精通->攻击
@@ -2839,7 +2839,8 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         }
         else if (mode == "generate_gcsim_script")
         {
-            //若水
+            combination_list.push_back(new Combination(find_weapon_by_name("若水"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
+                                                       "生命值", "伤害加成", "暴击率", tc1, ac1, true));//准备提升
             combination_list.push_back(new Combination(find_weapon_by_name("终末嗟叹之诗"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
                                                        "生命值", "伤害加成", "暴击率", tc1, ac1, true));
         }
@@ -2876,6 +2877,8 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         }
         else if (mode == "generate_gcsim_script")
         {
+            combination_list.push_back(new Combination(find_weapon_by_name("神乐之真意"), find_artifact_by_name("追忆之注连"), find_artifact_by_name("角斗士的终幕礼"),
+                                                       "攻击力", "伤害加成", "暴击率", tc1, ac1, false));//两轮一大
             combination_list.push_back(new Combination(find_weapon_by_name("神乐之真意"), find_artifact_by_name("流浪大地的乐团"), find_artifact_by_name("角斗士的终幕礼"),
                                                        "攻击力", "伤害加成", "暴击率", tc1, ac1, false));//两轮一大
             combination_list.push_back(new Combination(find_weapon_by_name("神乐之真意"), find_artifact_by_name("流浪大地的乐团"), find_artifact_by_name("饰金之梦"),
@@ -2920,22 +2923,16 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         {
             combination_list.push_back(new Combination(find_weapon_by_name("断浪长鳍"), find_artifact_by_name(""), find_artifact_by_name(""),
                                                        "", "", "", tc1, ac1, true));
+            combination_list.push_back(new Combination(find_weapon_by_name("决斗之枪"), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                       "", "", "", tc1, ac1, true));
+            combination_list.push_back(new Combination(find_weapon_by_name("匣里灭辰"), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                       "", "", "", tc1, ac1, true));
         }
         else if (mode == "generate_gcsim_script")
         {
-            //赤沙之杖
             combination_list.push_back(new Combination(find_weapon_by_name("断浪长鳍"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
                                                        "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("断浪长鳍"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("流浪大地的乐团"),
-                                                       "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
             combination_list.push_back(new Combination(find_weapon_by_name("断浪长鳍"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"),
-                                                       "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
-
-            combination_list.push_back(new Combination(find_weapon_by_name("匣里灭辰"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
-                                                       "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("匣里灭辰"), find_artifact_by_name("炽烈的炎之魔女"), find_artifact_by_name("炽烈的炎之魔女"),
-                                                       "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("匣里灭辰"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"),
                                                        "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
         }
     }
@@ -2988,7 +2985,10 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         }
         else if (mode == "generate_gcsim_script")
         {
-            //磐岩结绿
+            combination_list.push_back(new Combination(find_weapon_by_name("磐岩结绿"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
+                                                       "攻击力", "伤害加成", "暴击伤害", tc1, ac1, true));//准备提升
+            combination_list.push_back(new Combination(find_weapon_by_name("磐岩结绿"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
+                                                       "攻击力", "伤害加成", "暴击伤害", tc2, ac2, true));//准备提升
             combination_list.push_back(new Combination(find_weapon_by_name("祭礼剑"), find_artifact_by_name("沉沦之心"), find_artifact_by_name("昔日宗室之仪"),
                                                        "攻击力", "伤害加成", "暴击率", tc1, ac1, true));
             combination_list.push_back(new Combination(find_weapon_by_name("祭礼剑"), find_artifact_by_name("沉沦之心"), find_artifact_by_name("昔日宗室之仪"),
@@ -3000,7 +3000,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         if (mode == "generate_gcsim_script")
         {
             //终末嗟叹之诗
-            combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
+            combination_list.push_back(new Combination(find_weapon_by_name("终末嗟叹之诗"), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
                                                        "元素精通", "元素精通", "元素精通", nullptr, vector<Attack_config *>{}, true));
             combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
                                                        "攻击力", "伤害加成", "暴击率", nullptr, vector<Attack_config *>{}, true));
@@ -3030,7 +3030,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         if (mode == "generate_gcsim_script")
         {
             //苍古自由之誓
-            combination_list.push_back(new Combination(find_weapon_by_name("东花坊时雨"), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
+            combination_list.push_back(new Combination(find_weapon_by_name("铁蜂刺"), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
                                                        "元素精通", "元素精通", "元素精通", nullptr, vector<Attack_config *>{}, true));
         }
     }

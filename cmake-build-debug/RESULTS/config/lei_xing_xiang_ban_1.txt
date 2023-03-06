@@ -8,12 +8,11 @@ raiden add weapon="thecatch" refine=5 lvl=90/90;
 raiden add set="emblemofseveredfate" count=4;
 raiden add stats hp=4780 atk=311 er=0.518 electro%=0.466 cr=0.311;
 
-#行秋 祭礼剑 沉沦之心 昔日宗室之仪 攻击力 伤害加成 暴击率
+#行秋 磐岩结绿 绝缘之旗印 绝缘之旗印 攻击力 伤害加成 暴击伤害
 xingqiu char lvl=90/90 cons=6 talent=6,9,9;
-xingqiu add weapon="sacrificialsword" refine=5 lvl=90/90;
-xingqiu add set="heartofdepth" count=2;
-xingqiu add set="noblesseoblige" count=2;
-xingqiu add stats hp=4780 atk=311 atk%=0.466 hydro%=0.466 cr=0.311;
+xingqiu add weapon="primordialjadecutter" refine=1 lvl=90/90;
+xingqiu add set="emblemofseveredfate" count=4;
+xingqiu add stats hp=4780 atk=311 atk%=0.466 hydro%=0.466 cd=0.622;
 
 #班尼特 天空之刃 昔日宗室之仪 昔日宗室之仪 元素充能效率 生命值 治疗加成
 bennett char lvl=90/90 cons=6 talent=6,9,9;
