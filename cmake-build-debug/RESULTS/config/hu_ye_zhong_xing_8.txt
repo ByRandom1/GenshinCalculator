@@ -1,7 +1,5 @@
 #./run_substat_optimizer_full.bat hu_ye_zhong_xing_8.txt > ./logs/hu_ye_zhong_xing_8.txt
 
-options iteration=1000 duration=113 swap_delay=4;
-target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;
 #钟离 西风长枪 昔日宗室之仪 昔日宗室之仪 生命值 生命值 暴击率
 zhongli char lvl=90/90 cons=0 talent=6,9,9;
 zhongli add weapon="favoniuslance" refine=5 lvl=90/90;
@@ -15,29 +13,27 @@ xingqiu add set="heartofdepth" count=2;
 xingqiu add set="noblesseoblige" count=2;
 xingqiu add stats hp=4780 atk=311 atk%=0.466 hydro%=0.466 cr=0.311;
 
-#夜兰 若水 绝缘之旗印 绝缘之旗印 生命值 伤害加成 暴击率
+#夜兰 终末嗟叹之诗 绝缘之旗印 绝缘之旗印 生命值 伤害加成 暴击率
 yelan char lvl=90/90 cons=2 talent=6,10,10;
-yelan add weapon="aquasimulacra" refine=1 lvl=90/90;
+yelan add weapon="elegyfortheend" refine=1 lvl=90/90;
 yelan add set="emblemofseveredfate" count=4;
 yelan add stats hp=4780 atk=311 hp%=0.466 hydro%=0.466 cr=0.311;
 
-#胡桃 护摩之杖 炽烈的炎之魔女 炽烈的炎之魔女 生命值 伤害加成 暴击率
+#胡桃 护摩之杖 追忆之注连 追忆之注连 元素精通 伤害加成 暴击率
 hutao char lvl=90/90 cons=1 talent=10,10,10;
 hutao add weapon="staffofhoma" refine=1 lvl=90/90;
-hutao add set="crimsonwitchofflames" count=4;
-hutao add stats hp=4780 atk=311 hp%=0.466 pyro%=0.466 cr=0.311;
+hutao add set="shimenawasreminiscence" count=4;
+hutao add stats hp=4780 atk=311 em=187 pyro%=0.466 cr=0.311;
+
+options iteration=1000 swap_delay=4 duration=105;
+target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;
 
 active zhongli;
 
-let x = 5;
-while x {
+for let x=0; x<5; x=x+1 {
   zhongli skill[hold=1], burst;
-  xingqiu burst, attack;
   yelan burst, attack, skill, attack, skill, attack;
-  xingqiu skill, attack;
-  if .xingqiu.skill.ready {
-    xingqiu skill, attack;
-  }
+  xingqiu burst, attack, skill, attack;
   hutao skill;
   hutao attack, charge, dash;
   hutao attack, charge, dash;
@@ -48,5 +44,4 @@ while x {
   hutao attack, charge, dash;
   hutao attack, charge, dash;
   hutao attack, charge, dash;
-  x = x - 1;
 }

@@ -1,4 +1,6 @@
-甘雨 温迪 莫娜 神里绫华 105
+甘雨 温迪 莫娜 神里绫华
+options duration=105
+start:
 甘雨 E, Q
 温迪 E, Q
 莫娜 Q

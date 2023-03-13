@@ -216,6 +216,21 @@ void init_character_data()
     temp.clear();
     //默认Q后E，触发4命
 
+    temp.push_back(nullptr);//E后蓄力减少
+    temp.push_back(nullptr);//E后全队回能
+    temp.push_back(nullptr);//Ecd9s
+    temp.push_back(nullptr);//E原地30%伤害
+    temp.push_back(nullptr);//Q6道雷
+    temp.push_back(new Set(new Condition("雷", "ALL", "ALL"), "暴击伤害", 0.6));//E增攻下(get_team)
+    character_list.push_back(new Character("九条裟罗", "sara", "雷", "弓", 9570, 195, 628, "攻击力", 0.24,
+                                           6, vector<bool>{false, true, false, false, false, true, true, true}, "物理", vector<double>{0.729, 0.765, 0.959, 0.996, 1.148}, vector<double>{0.678, 0.711, 0.891, 0.926, 1.067},
+                                           "雷", vector<double>{2.23}, vector<double>{2.11}, "物理", vector<double>{2.81}, vector<double>{2.61},
+                                           9 + 3, 3, true, vector<bool>{false, true, false, false, false, true, true, true}, vector<double>{2.672}, vector<double>{2.515}, vector<double>{2.264}, vector<double>{2.138},
+                                           9 + 3, 80, false, vector<bool>{false, true, false, false, false, true, true, true}, vector<double>{8.704, 0.725}, vector<double>{8.192, 0.682}, vector<double>{7.373, 0.614}, vector<double>{6.963, 0.58},
+                                           6, temp, false, false, false));//A2、3连续5、6连续，Z0、1连续，E0、1连续
+    temp.clear();
+    //E攻击力加成(special) (get_team) 全队回能(recharge)
+
     //NO NEED TO CALCULATE
     //BUILD BASIC INFORMATION AND GET_TEAM
     character_list.push_back(new Character("温迪", "venti", "风", "弓", 10531, 263, 669, "元素充能效率", 0.32,
@@ -367,6 +382,13 @@ bool Character::get_extra_special(Deployment *data) const
     {
         if (!data->attack_config->background)
             data->add_percentage("伤害加成", 0.25, (name + "_extra_special"));
+    }
+    else if (data->c_point->name == "九条裟罗")
+    {
+        if (data->c_point->E_level == 13) data->add_percentage("攻击力", 0.91, (name + "_extra_special"));
+        else if (data->c_point->E_level == 12) data->add_percentage("攻击力", 0.86, (name + "_extra_special"));
+        else if (data->c_point->E_level == 10) data->add_percentage("攻击力", 0.77, (name + "_extra_special"));
+        else if (data->c_point->E_level == 9) data->add_percentage("攻击力", 0.73, (name + "_extra_special"));
     }
     return true;
 }
@@ -786,7 +808,6 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("森林王器", "forestregalia", "双手剑", 565, "元素充能效率", 0.306, 5, temp));
     temp.clear();
 
-    //TODO:NEW
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.12));//E命中或元素反应
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 48.0));//E命中或元素反应
     weapon_list.push_back(new Weapon("饰铁之花", "mailedflower", "双手剑", 565, "元素精通", 110.0, 5, temp));
@@ -1930,6 +1951,16 @@ void Deployment::get_team_data()
             add_percentage("伤害加成", 0.15, "team_班尼特");
         Pyro_num++;
     }
+    if (team_config->teammate_all.find("九条裟罗") != string::npos)
+    {
+        //E
+        if (!(attack_config->background && !attack_config->lockface))
+            add_percentage("攻击力", (195 + 674) * 0.86 / base_atk, "team_九条裟罗");
+        //constellation>=6 E下
+        if (attack_config->condition->ele_type == "雷" && (!(attack_config->background && !attack_config->lockface)))
+            add_percentage("暴击伤害", 0.6, "team_九条裟罗");
+        Pyro_num++;
+    }
 
     if (team_config->teammate_1->name == "冰_test") Cryo_num++;
     else if (team_config->teammate_1->name == "火_test") Pyro_num++;
@@ -2003,6 +2034,7 @@ void Deployment::satisfy_recharge_requirement()
     if (team_config->teammate_all.find("雷电将军") != string::npos) Q_energy_modify -= 24;
     //扩散与元素附着
     if (team_config->teammate_all.find("温迪") != string::npos && team_config->ele_allow_spread.find(attack_config->condition->ele_type) != string::npos) Q_energy_modify -= 15;
+    if (team_config->teammate_all.find("九条裟罗") != string::npos) Q_energy_modify -= 2.4;
 
     double energy = monster_drop;
     energy += team_config->teammate_1->E_energy * back * ((team_config->teammate_1->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_1->name) != string::npos) ? 2 : 1);
@@ -2494,6 +2526,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
     //"胡桃" "夜兰" "行秋" "钟离" "终末嗟叹之诗_昔日宗室之仪" "水" "水"
     //"神里绫华" "甘雨" "莫娜" "温迪"/"枫原万叶" "昔日宗室之仪_翠绿之影" "冰水" "冰水"
     //"雷电将军" "行秋" "香菱" "班尼特" "昔日宗室之仪" "水雷" "水雷火"
+    //"雷电将军" "九条裟罗" "枫原万叶" "班尼特" "昔日宗室之仪_翠绿之影" "雷火" "雷火"
     //"艾尔海森" "八重神子" "纳西妲" "钟离" "千夜浮梦_深林的记忆_昔日宗室之仪" "草" ""
 
     if (config_cal_enable.find(c_name) == string::npos && config_cal_enable != "ALL") return;
@@ -2531,8 +2564,6 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         }
         else if (mode == "generate_gcsim_script")
         {
-            combination_list.push_back(new Combination(find_weapon_by_name("护摩之杖"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"),
-                                                       "生命值", "伤害加成", "暴击率", tc1, ac1, false));
             combination_list.push_back(new Combination(find_weapon_by_name("护摩之杖"), find_artifact_by_name("炽烈的炎之魔女"), find_artifact_by_name("炽烈的炎之魔女"),
                                                        "生命值", "伤害加成", "暴击率", tc1, ac1, false));
             combination_list.push_back(new Combination(find_weapon_by_name("护摩之杖"), find_artifact_by_name("追忆之注连"), find_artifact_by_name("追忆之注连"),
@@ -2616,6 +2647,8 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
     {
         auto *tc1 = new Team_config(find_character_by_name("香菱"), find_character_by_name("班尼特"), find_character_by_name("行秋"),
                                     "昔日宗室之仪", "水雷", "水雷火");
+        auto *tc2 = new Team_config(find_character_by_name("九条裟罗"), find_character_by_name("枫原万叶"), find_character_by_name("班尼特"),
+                                    "昔日宗室之仪_翠绿之影", "雷火", "雷火");
 
         //无法准确得知感电反应次数和触发关系
         //Q AAAAA AAAAA AAAAA 18+1E
@@ -2649,15 +2682,49 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                                                         "长柄武器", 0, 3, 0))
         };
 
+        vector<Attack_config *> ac2{
+                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "NONE", 1,
+                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 1,
+                                                                        "长柄武器", 0, 3, 0)),
+                new Attack_config(find_character_by_name(c_name), "Q", 1, false, "NONE", 3,
+                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
+                                                                        "长柄武器", 0, 3, 0)),
+                new Attack_config(find_character_by_name(c_name), "Q", 2, false, "NONE", 3,
+                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
+                                                                        "长柄武器", 0, 3, 0)),
+                new Attack_config(find_character_by_name(c_name), "Q", 3, false, "NONE", 3,
+                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
+                                                                        "长柄武器", 0, 3, 0)),
+                new Attack_config(find_character_by_name(c_name), "Q", 4, false, "NONE", 3,
+                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
+                                                                        "长柄武器", 0, 3, 0)),
+                new Attack_config(find_character_by_name(c_name), "Q", 5, false, "NONE", 3,
+                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
+                                                                        "长柄武器", 0, 3, 0)),
+                new Attack_config(find_character_by_name(c_name), "Q", 6, false, "NONE", 3,
+                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
+                                                                        "长柄武器", 0, 3, 0)),
+                new Attack_config(find_character_by_name(c_name), "E", 0, false, "NONE", 1,
+                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 2,
+                                                                        "长柄武器", 0, 3, 1)),
+                new Attack_config(find_character_by_name(c_name), "E", 1, false, "NONE", 18,
+                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
+                                                                        "长柄武器", 0, 3, 0))
+        };
+
         if (mode == "cal_deployment")
         {
             combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
                                                        "", "", "", tc1, ac1, true));
+            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                       "", "", "", tc2, ac2, true));
         }
         else if (mode == "cal_optimal_artifact")
         {
             combination_list.push_back(new Combination(find_weapon_by_name("渔获"), find_artifact_by_name(""), find_artifact_by_name(""),
                                                        "", "", "", tc1, ac1, true));
+            combination_list.push_back(new Combination(find_weapon_by_name("渔获"), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                       "", "", "", tc2, ac2, true));
         }
         else if (mode == "generate_gcsim_script")
         {
@@ -2666,6 +2733,10 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                                        "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
             combination_list.push_back(new Combination(find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
                                                        "元素充能效率", "攻击力", "暴击率", tc1, ac1, true));
+            combination_list.push_back(new Combination(find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
+                                                       "元素充能效率", "伤害加成", "暴击率", tc2, ac2, true));
+            combination_list.push_back(new Combination(find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
+                                                       "元素充能效率", "攻击力", "暴击率", tc2, ac2, true));
         }
     }
     if (c_name == "神里绫华")
@@ -2877,11 +2948,7 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
         }
         else if (mode == "generate_gcsim_script")
         {
-            combination_list.push_back(new Combination(find_weapon_by_name("神乐之真意"), find_artifact_by_name("追忆之注连"), find_artifact_by_name("角斗士的终幕礼"),
-                                                       "攻击力", "伤害加成", "暴击率", tc1, ac1, false));//两轮一大
             combination_list.push_back(new Combination(find_weapon_by_name("神乐之真意"), find_artifact_by_name("流浪大地的乐团"), find_artifact_by_name("角斗士的终幕礼"),
-                                                       "攻击力", "伤害加成", "暴击率", tc1, ac1, false));//两轮一大
-            combination_list.push_back(new Combination(find_weapon_by_name("神乐之真意"), find_artifact_by_name("流浪大地的乐团"), find_artifact_by_name("饰金之梦"),
                                                        "攻击力", "伤害加成", "暴击率", tc1, ac1, false));//两轮一大
             combination_list.push_back(new Combination(find_weapon_by_name("神乐之真意"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"),
                                                        "攻击力", "伤害加成", "暴击率", tc1, ac1, false));//两轮一大
@@ -2993,6 +3060,15 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
                                                        "攻击力", "伤害加成", "暴击率", tc1, ac1, true));
             combination_list.push_back(new Combination(find_weapon_by_name("祭礼剑"), find_artifact_by_name("沉沦之心"), find_artifact_by_name("昔日宗室之仪"),
                                                        "攻击力", "伤害加成", "暴击率", tc2, ac2, true));
+        }
+    }
+    if (c_name == "九条裟罗")
+    {
+        //TODO:完成配置编写
+        if (mode == "generate_gcsim_script")
+        {
+            combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
+                                                       "元素充能效率", "伤害加成", "暴击率", nullptr, vector<Attack_config *>{}, true));
         }
     }
     if (c_name == "温迪")
@@ -3515,7 +3591,8 @@ class gcsim_script
 {
 public:
     vector<Character *> character_list;
-    int cycle_time;
+    string option_modify;
+    string target_modify;
     vector<string> attack_list;
 };
 
@@ -3541,27 +3618,30 @@ void read_team_script(string filename)
         team_script->character_list.push_back(find_character_by_name(c_name));
     }
 
-    int cycle_time;
-    infile >> cycle_time;
-    team_script->cycle_time = cycle_time;
-
     string info;
     getline(infile, info);
     while (!infile.eof())
     {
         getline(infile, info);
-        replace_all(info, team_script->character_list[0]->name, team_script->character_list[0]->english_name);
-        replace_all(info, team_script->character_list[1]->name, team_script->character_list[1]->english_name);
-        replace_all(info, team_script->character_list[2]->name, team_script->character_list[2]->english_name);
-        replace_all(info, team_script->character_list[3]->name, team_script->character_list[3]->english_name);
-        replace_all(info, "平A", "attack");
-        replace_all(info, "重A", "charge");
-        replace_all(info, "下落A", "plunge");
-        replace_all(info, "E", "skill");
-        replace_all(info, "Q", "burst");
-        replace_all(info, "冲刺", "dash");
-        replace_all(info, "跳跃", "jump");
-        team_script->attack_list.push_back(info);
+        if (info.empty()) continue;
+        else if (info.find("options") != string::npos) team_script->option_modify = info.substr(info.find_first_of(' ') + 1);
+        else if (info.find("target") != string::npos) team_script->target_modify = info.substr(info.find_first_of(' ') + 1);
+        else
+        {
+            replace_all(info, team_script->character_list[0]->name, team_script->character_list[0]->english_name);
+            replace_all(info, team_script->character_list[1]->name, team_script->character_list[1]->english_name);
+            replace_all(info, team_script->character_list[2]->name, team_script->character_list[2]->english_name);
+            replace_all(info, team_script->character_list[3]->name, team_script->character_list[3]->english_name);
+            replace_all(info, "平A", "attack");
+            replace_all(info, "重A", "charge");
+            replace_all(info, "下落A", "high_plunge");
+            replace_all(info, "长E", "skill[hold=1]");
+            replace_all(info, "E", "skill");
+            replace_all(info, "Q", "burst");
+            replace_all(info, "冲刺", "dash");
+            replace_all(info, "跳跃", "jump");
+            team_script->attack_list.push_back(info);
+        }
     }
 
     infile.close();
@@ -3628,10 +3708,6 @@ void generate_gcsim_script(string filepath, string teamname)
                                     outfile_result.open(filepath + teamname + "_" + to_string(filecount) + ".txt");
                                     outfile_result << "#./run_substat_optimizer_full.bat " << (teamname + "_" + to_string(filecount) + ".txt") << " > ./logs/" << (teamname + "_" + to_string(filecount) + ".txt") << endl;
                                     outfile_result << endl;
-
-                                    //head
-                                    outfile_result << "options iteration=1000 duration=" << to_string(team_script->cycle_time) << " swap_delay=4;" << endl;
-                                    outfile_result << "target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;" << endl;
 
                                     //character1
                                     outfile_result << "#" << team_script->character_list[0]->name << " " << combination_1->w_point->name << " " << combination_1->suit1->name << " " << combination_1->suit2->name << " "
@@ -3729,21 +3805,43 @@ void generate_gcsim_script(string filepath, string teamname)
                                                    << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main5).first << "=" << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main5).second << ";" << endl;
                                     outfile_result << endl;
 
+                                    //options
+                                    outfile_result << "options";
+                                    if (team_script->option_modify.find("iteration") == string::npos) outfile_result << " iteration=1000";
+                                    if (team_script->option_modify.find("duration") == string::npos) outfile_result << " duration=105";
+                                    if (team_script->option_modify.find("swap_delay") == string::npos) outfile_result << " swap_delay=4";
+                                    if (!team_script->option_modify.empty()) outfile_result << " " << team_script->option_modify;
+                                    outfile_result << ";" << endl;
+
+                                    //target
+                                    outfile_result << "target";
+                                    if (team_script->target_modify.find("lvl") == string::npos) outfile_result << " lvl=95";
+                                    if (team_script->target_modify.find("resist") == string::npos) outfile_result << " resist=0.1";
+                                    if (team_script->target_modify.find("particle_threshold") == string::npos) outfile_result << " particle_threshold=150000";
+                                    if (team_script->target_modify.find("particle_drop_count") == string::npos) outfile_result << " particle_drop_count=1";
+                                    if (!team_script->target_modify.empty()) outfile_result << " " << team_script->target_modify;
+                                    outfile_result << ";" << endl;
+
+                                    outfile_result << endl;
+
                                     //active
-                                    outfile_result << "active " << team_script->attack_list[0].substr(0, team_script->attack_list[0].find_first_of(' ')) << ";" << endl;
+                                    if (team_script->attack_list[0] == "start:") outfile_result << "active " << team_script->attack_list[1].substr(0, team_script->attack_list[1].find_first_of(' ')) << ";" << endl;
+                                    else outfile_result << "active " << team_script->attack_list[0].substr(0, team_script->attack_list[0].find_first_of(' ')) << ";" << endl;
                                     outfile_result << endl;
 
                                     //attack_list
-                                    outfile_result << "let x = 5;" << endl;
-                                    outfile_result << "while x {" << endl;
                                     for (auto &i: team_script->attack_list)
                                     {
+                                        if (i == "start:")
+                                        {
+                                            outfile_result << "for let x=0; x<5; x=x+1 {" << endl;
+                                            continue;
+                                        }
                                         if (i[i.length() - 1] == '{' || i[i.length() - 1] == '}')
                                             outfile_result << "  " << i << endl;
                                         else
                                             outfile_result << "  " << i << ";" << endl;
                                     }
-                                    outfile_result << "  x = x - 1;" << endl;
                                     outfile_result << "}";
                                     outfile_result.close();
 

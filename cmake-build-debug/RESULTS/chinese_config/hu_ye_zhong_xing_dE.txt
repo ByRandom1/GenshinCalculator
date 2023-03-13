@@ -1,9 +1,11 @@
-钟离 行秋 夜兰 胡桃
-options duration=105
-start:
-钟离 长E, Q
+钟离 行秋 夜兰 胡桃 113
+钟离 E[hold=1], Q
+行秋 Q, 平A
 夜兰 Q, 平A, E, 平A, E, 平A
-行秋 Q, 平A, E, 平A
+行秋 E, 平A
+if .行秋.E.ready {
+  行秋 E, 平A
+}
 胡桃 E
 胡桃 平A, 重A, 冲刺
 胡桃 平A, 重A, 冲刺

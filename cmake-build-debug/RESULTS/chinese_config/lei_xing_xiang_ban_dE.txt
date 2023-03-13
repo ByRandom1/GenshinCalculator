@@ -1,8 +1,12 @@
-雷电将军 行秋 班尼特 香菱
-options duration=105
-start:
+雷电将军 行秋 班尼特 香菱 113
 雷电将军 E
 行秋 Q, 平A, E, 平A
+if .行秋.E.ready {
+  行秋 E, 平A:2
+}
+else {
+  行秋 平A
+}
 班尼特 Q, 平A, E
 香菱 Q, 平A, E, 平A
 雷电将军 Q, 平A:15
