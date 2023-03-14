@@ -1,4 +1,5 @@
-#./run_substat_optimizer_full.bat hai_ba_na_zhong_3.txt > ./logs/hai_ba_na_zhong_3.txt
+#./run_substat_optimizer_full.bat hai_ba_na_zhong_3.txt
+#./rerun_optimized_config.bat hai_ba_na_zhong_3.txt > ./logs/hai_ba_na_zhong_3.txt
 
 #艾尔海森 雾切之回光 饰金之梦 饰金之梦 元素精通 伤害加成 暴击率
 alhaitham char lvl=90/90 cons=0 talent=10,10,10;

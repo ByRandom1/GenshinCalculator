@@ -1,4 +1,5 @@
-#./run_substat_optimizer_full.bat hu_ye_zhong_xing_1.txt > ./logs/hu_ye_zhong_xing_1.txt
+#./run_substat_optimizer_full.bat hu_ye_zhong_xing_1.txt
+#./rerun_optimized_config.bat hu_ye_zhong_xing_1.txt > ./logs/hu_ye_zhong_xing_1.txt
 
 #钟离 西风长枪 昔日宗室之仪 昔日宗室之仪 生命值 生命值 暴击率
 zhongli char lvl=90/90 cons=0 talent=6,9,9;

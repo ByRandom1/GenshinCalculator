@@ -1,4 +1,5 @@
-#./run_substat_optimizer_full.bat shen_gan_wan_mo_1.txt > ./logs/shen_gan_wan_mo_1.txt
+#./run_substat_optimizer_full.bat shen_gan_wan_mo_1.txt
+#./rerun_optimized_config.bat shen_gan_wan_mo_1.txt > ./logs/shen_gan_wan_mo_1.txt
 
 #甘雨 飞雷之弦振 冰风迷途的勇士 冰风迷途的勇士 攻击力 伤害加成 暴击伤害
 ganyu char lvl=90/90 cons=0 talent=10,10,10;

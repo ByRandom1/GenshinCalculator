@@ -3623,6 +3623,8 @@ public:
 };
 
 gcsim_script *team_script;
+ofstream outfile_run_substat_optimizer_full;
+ofstream outfile_rerun_optimized_config;
 
 size_t replace_all(string &inout, string_view what, string_view with)
 {
@@ -3728,11 +3730,13 @@ void generate_gcsim_script(string filepath, string teamname)
                                      combination_4->team_config->teammate_all.find(team_script->character_list[0]->name) != string::npos))
                                 {
                                     //ps1
-                                    outfile_debug << "./run_substat_optimizer_full.bat " << (teamname + "_" + to_string(filecount) + ".txt") << " > ./logs/" << (teamname + "_" + to_string(filecount) + ".txt") << endl;
+                                    outfile_run_substat_optimizer_full << "./run_substat_optimizer_full.bat " << (teamname + "_" + to_string(filecount) + ".txt") << endl;
+                                    outfile_rerun_optimized_config << "./rerun_optimized_config.bat " << (teamname + "_" + to_string(filecount) + ".txt") << " > ./logs/" << (teamname + "_" + to_string(filecount) + ".txt") << endl;
 
                                     //config
                                     outfile_result.open(filepath + teamname + "_" + to_string(filecount) + ".txt");
-                                    outfile_result << "#./run_substat_optimizer_full.bat " << (teamname + "_" + to_string(filecount) + ".txt") << " > ./logs/" << (teamname + "_" + to_string(filecount) + ".txt") << endl;
+                                    outfile_result << "#./run_substat_optimizer_full.bat " << (teamname + "_" + to_string(filecount) + ".txt") << endl;
+                                    outfile_result << "#./rerun_optimized_config.bat " << (teamname + "_" + to_string(filecount) + ".txt") << " > ./logs/" << (teamname + "_" + to_string(filecount) + ".txt") << endl;
                                     outfile_result << endl;
 
                                     //character1
@@ -3926,7 +3930,8 @@ int main()
             team_list.push_back(team_name);
         }
 
-        outfile_debug.open("./RESULTS/calculate_all.ps1");
+        outfile_run_substat_optimizer_full.open("./RESULTS/calculate_all_substat_optimizer.ps1");
+        outfile_rerun_optimized_config.open("./RESULTS/calculate_all_optimized_config.ps1");
         for (auto &i: team_list)
         {
             team_script = new gcsim_script();
@@ -3934,7 +3939,8 @@ int main()
             generate_gcsim_script("./RESULTS/config/", i);
             delete team_script;
         }
-        outfile_debug.close();
+        outfile_run_substat_optimizer_full.close();
+        outfile_rerun_optimized_config.close();
     }
     return 0;
 }
