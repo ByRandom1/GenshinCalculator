@@ -24,7 +24,7 @@ hutao add weapon="staffofhoma" refine=1 lvl=90/90;
 hutao add set="crimsonwitchofflames" count=4;
 hutao add stats hp=4780 atk=311 hp%=0.466 pyro%=0.466 cr=0.311;
 
-options iteration=1000 swap_delay=4 duration=105;
+options iteration=10000 swap_delay=4 duration=105;
 target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;
 
 active zhongli;

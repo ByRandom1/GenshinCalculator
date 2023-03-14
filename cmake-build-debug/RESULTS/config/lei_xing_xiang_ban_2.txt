@@ -1,7 +1,7 @@
 #./run_substat_optimizer_full.bat lei_xing_xiang_ban_2.txt > ./logs/lei_xing_xiang_ban_2.txt
 
 #雷电将军 渔获 绝缘之旗印 绝缘之旗印 元素充能效率 伤害加成 暴击率
-raiden char lvl=90/90 cons=0 talent=6,10,10;
+raiden char lvl=90/90 cons=2 talent=6,10,10;
 raiden add weapon="thecatch" refine=5 lvl=90/90;
 raiden add set="emblemofseveredfate" count=4;
 raiden add stats hp=4780 atk=311 er=0.518 electro%=0.466 cr=0.311;
@@ -24,7 +24,7 @@ xiangling add weapon="wavebreakersfin" refine=4 lvl=90/90;
 xiangling add set="gildeddreams" count=4;
 xiangling add stats hp=4780 atk=311 er=0.518 pyro%=0.466 cr=0.311;
 
-options iteration=1000 swap_delay=4 duration=105;
+options iteration=10000 swap_delay=4 duration=105;
 target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;
 
 active raiden;

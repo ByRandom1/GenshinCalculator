@@ -108,9 +108,10 @@ void init_character_data()
                                            vector<double>{8.02 + 0.0778 * 60, 0.89 + 0.0145 * 60, 0.874 + 0.0145 * 60, 1.07 + 0.0145 * 60, 0.614 + 0.0145 * 60, 0.614 + 0.0145 * 60, 1.471 + 0.0145 * 60, 1.225 + 0.0145 * 60, 1.479 + 0.0145 * 60},
                                            vector<double>{7.21 + 0.07 * 60, 0.798 + 0.0131 * 60, 0.784 + 0.0131 * 60, 0.96 + 0.0131 * 60, 0.551 + 0.0131 * 60, 0.551 + 0.0131 * 60, 1.319 + 0.0131 * 60, 1.099 + 0.0131 * 60, 1.327 + 0.0131 * 60},
                                            vector<double>{6.81 + 0.0661 * 60, 0.752 + 0.0123 * 60, 0.739 + 0.0123 * 60, 0.905 + 0.0123 * 60, 0.52 + 0.0123 * 60, 0.52 + 0.0123 * 60, 1.244 + 0.0123 * 60, 1.036 + 0.0123 * 60, 1.251 + 0.0123 * 60},
-                                           0, temp, false, false, true));//A3、4连续，E释放、协同，Q一刀，后续平A1-6，4、5连续，重A7-8连续
+                                           2, temp, false, false, true));//A3、4连续，E释放、协同，Q一刀，后续平A1-6，4、5连续，重A7-8连续
     temp.clear();
     //E 全体大招增伤0.003*Q_energy (special get_team) Q全体回能12.5 (recharge)
+    //TODO:设定为2命
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A|重A"), "伤害加成", 0.3));//E后
     temp.push_back(new Set(new Condition("冰", "ALL", "ALL"), "伤害加成", 0.18));//冲刺命中敌人
@@ -3064,11 +3065,36 @@ void get_all_config(string c_name, vector<Combination *> &combination_list, stri
     }
     if (c_name == "九条裟罗")
     {
-        //TODO:完成配置编写
-        if (mode == "generate_gcsim_script")
+        auto *tc1 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("枫原万叶"), find_character_by_name("班尼特"),
+                                    "昔日宗室之仪_翠绿之影", "雷火", "雷火");
+
+        //EQ
+        vector<Attack_config *> ac1{
+                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "NONE", 1,
+                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 3,
+                                                                        "弓", 2, 3, 0)),
+                new Attack_config(find_character_by_name(c_name), "Q", 1, true, "NONE", 12,
+                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 3,
+                                                                        "弓", 2, 3, 0)),
+                new Attack_config(find_character_by_name(c_name), "E", 0, false, "NONE", 1,
+                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 2,
+                                                                        "弓", 2, 2, 1))
+        };
+
+        if (mode == "cal_deployment")
+        {
+            combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                       "", "", "", tc1, ac1, true));
+        }
+        else if (mode == "cal_optimal_artifact")
+        {
+            combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name(""), find_artifact_by_name(""),
+                                                       "", "", "", tc1, ac1, true));
+        }
+        else if (mode == "generate_gcsim_script")
         {
             combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
-                                                       "元素充能效率", "伤害加成", "暴击率", nullptr, vector<Attack_config *>{}, true));
+                                                       "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
         }
     }
     if (c_name == "温迪")
@@ -3807,7 +3833,7 @@ void generate_gcsim_script(string filepath, string teamname)
 
                                     //options
                                     outfile_result << "options";
-                                    if (team_script->option_modify.find("iteration") == string::npos) outfile_result << " iteration=1000";
+                                    if (team_script->option_modify.find("iteration") == string::npos) outfile_result << " iteration=10000";
                                     if (team_script->option_modify.find("duration") == string::npos) outfile_result << " duration=105";
                                     if (team_script->option_modify.find("swap_delay") == string::npos) outfile_result << " swap_delay=4";
                                     if (!team_script->option_modify.empty()) outfile_result << " " << team_script->option_modify;
