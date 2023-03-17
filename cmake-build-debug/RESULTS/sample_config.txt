@@ -1,0 +1,36 @@
+A B C D
+gcsim_config:
+weapon= suit1= suit2= main3= main4= main5=
+BREAK
+weapon= suit1= suit2= main3= main4= main5=
+BREAK
+weapon= suit1= suit2= main3= main4= main5=
+BREAK
+weapon= suit1= suit2= main3= main4= main5=
+BREAK
+options:
+
+target:
+
+attack_list:
+rotation_start
+
+rotation_end
+BREAK
+restrictions/team_config/attack_config:
+weapon= suit1= suit2= main3= main4= main5= recharge=
+E_release_times= team_weapon_artifact= ele_attach_type= ele_allow_spread=
+attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=
+BREAK
+weapon= suit1= suit2= main3= main4= main5= recharge=
+E_release_times= team_weapon_artifact= ele_attach_type= ele_allow_spread=
+attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=
+BREAK
+weapon= suit1= suit2= main3= main4= main5= recharge=
+E_release_times= team_weapon_artifact= ele_attach_type= ele_allow_spread=
+attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=
+BREAK
+weapon= suit1= suit2= main3= main4= main5= recharge=
+E_release_times= team_weapon_artifact= ele_attach_type= ele_allow_spread=
+attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=
+BREAK

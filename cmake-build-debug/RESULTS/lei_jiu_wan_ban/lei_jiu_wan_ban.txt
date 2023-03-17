@@ -1,0 +1,55 @@
+雷电将军 九条裟罗 枫原万叶 班尼特
+gcsim_config:
+weapon=薙草之稻光 suit1=绝缘之旗印 suit2=绝缘之旗印 main3=元素充能效率 main4=伤害加成 main5=暴击率
+weapon=渔获 suit1=绝缘之旗印 suit2=绝缘之旗印 main3=元素充能效率 main4=伤害加成 main5=暴击率
+BREAK
+weapon=天空之翼 suit1=绝缘之旗印 suit2=绝缘之旗印 main3=攻击力 main4=伤害加成 main5=暴击率
+weapon=天空之翼 suit1=绝缘之旗印 suit2=绝缘之旗印 main3=元素充能效率 main4=伤害加成 main5=暴击率
+BREAK
+weapon=铁蜂刺 suit1=翠绿之影 suit2=翠绿之影 main3=元素精通 main4=元素精通 main5=元素精通
+BREAK
+weapon=天空之刃 suit1=昔日宗室之仪 suit2=昔日宗室之仪 main3=元素充能效率 main4=生命值 main5=治疗加成
+BREAK
+options:
+duration=105
+target:
+radius=2 pos=0,4
+attack_list:
+rotation_start
+雷电将军 E
+枫原万叶 长E, 下落A
+九条裟罗 E, aim, 平A
+班尼特 Q
+枫原万叶 Q
+九条裟罗 平A, Q
+雷电将军 Q, 平A:15
+班尼特 E, 平A:3
+rotation_end
+BREAK
+restrictions/team_config/attack_config:
+weapon= suit1= suit2= main3= main4= main5= recharge=1
+E_release_times=1 team_weapon_artifact=昔日宗室之仪_翠绿之影 ele_attach_type=雷 ele_allow_spread=雷火
+attack_way=E rate_pos=0 background=0 react_type=NONE attack_time=1 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=2 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=1
+attack_way=E rate_pos=1 background=0 react_type=NONE attack_time=18 cangbai_level=2 qianyan_enable=1 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=2 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=0 background=0 react_type=NONE attack_time=1 cangbai_level=2 qianyan_enable=1 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=1 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=1 background=0 react_type=NONE attack_time=3 cangbai_level=2 qianyan_enable=1 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=2 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=2 background=0 react_type=NONE attack_time=3 cangbai_level=2 qianyan_enable=1 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=2 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=3 background=0 react_type=NONE attack_time=3 cangbai_level=2 qianyan_enable=1 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=2 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=4 background=0 react_type=NONE attack_time=3 cangbai_level=2 qianyan_enable=1 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=2 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=5 background=0 react_type=NONE attack_time=3 cangbai_level=2 qianyan_enable=1 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=2 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=6 background=0 react_type=NONE attack_time=3 cangbai_level=2 qianyan_enable=1 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=2 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+BREAK
+weapon= suit1= suit2= main3= main4= main5= recharge=1
+E_release_times=1 team_weapon_artifact=昔日宗室之仪_翠绿之影 ele_attach_type=雷 ele_allow_spread=雷火
+attack_way=E rate_pos=0 background=0 react_type=NONE attack_time=1 cangbai_level=1 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=0 shuixian_level=2 wuqie_shenle_feilei_humo=2 shengxian_biluo_dongji_chisha=2 none_sifeng_pomo_shizuo=1
+attack_way=Q rate_pos=0 background=0 react_type=NONE attack_time=1 cangbai_level=1 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=0 shuixian_level=3 wuqie_shenle_feilei_humo=2 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=1 background=1 react_type=NONE attack_time=12 cangbai_level=1 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=0 shuixian_level=3 wuqie_shenle_feilei_humo=2 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+BREAK
+weapon= suit1= suit2= main3= main4= main5= recharge=1
+E_release_times=1 team_weapon_artifact=昔日宗室之仪 ele_attach_type=雷 ele_allow_spread=雷火
+attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=
+BREAK
+weapon= suit1= suit2= main3= main4= main5= recharge=1
+E_release_times=1 team_weapon_artifact=翠绿之影 ele_attach_type=雷 ele_allow_spread=雷火
+attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=
+BREAK

@@ -324,7 +324,7 @@ Group::~Group()
     delete damage;
 }
 
-int Group::init_check_data(int recharge_restriction_num)
+int Group::init_check_data(string cal_mode)
 {
     if (out_debug) outfile_debug << (c_point->name + "_" + w_point->name + "_" + suit1->name + "_" + suit2->name + "_" + a_main3 + "_" + a_main4 + "_" + a_main5 + "_") << (team_config->teammate_all + "_" + team_config->team_weapon_artifact) + ",";
 
@@ -408,7 +408,20 @@ int Group::init_check_data(int recharge_restriction_num)
         if (need_to_satisfy_recharge) entry[str2index_part("元素充能效率")] = max(entry[str2index_part("元素充能效率")], i->min_recharge_num);
     }
 
-    if (entry[str2index_part("元素充能效率")] > recharge_restriction_num) return 6;
+    if (cal_mode == "cal_optimal_substats" && entry[str2index_part("元素充能效率")] > max_recharge_substat_num) return 6;
+    else if (cal_mode == "cal_optimal_artifact")
+    {
+        double recharge_value = 0;
+        for (auto &i: data)
+        {
+            if (i->entry1_type == "元素充能效率") recharge_value += i->entry1_value;
+            if (i->entry2_type == "元素充能效率") recharge_value += i->entry2_value;
+            if (i->entry3_type == "元素充能效率") recharge_value += i->entry3_value;
+            if (i->entry4_type == "元素充能效率") recharge_value += i->entry4_value;
+        }
+        if (entry[str2index_part("元素充能效率")] * combination[0]->data_list[str2index_full("元素充能效率")]->value_per_entry > recharge_value) return 6;
+    }
+
     return 0;
 }
 
@@ -527,13 +540,6 @@ void Group::cal_damage_entry_num()
                                                                                                             (rechargeup + rechargebase) * combination[0]->data_list[str2index_full("元素充能效率")]->value_per_entry,
                                                                                                             (critrateup + critratebase) * combination[0]->data_list[str2index_full("暴击率")]->value_per_entry,
                                                                                                             (critdamup + critdambase) * combination[0]->data_list[str2index_full("暴击伤害")]->value_per_entry);
-
-                                                                //TODO:TEST
-                                                                if (combination[i]->w_point->name.find("祭礼") != string::npos && combination[i]->attack_config->condition->attack_way == "E" && !combination[i]->c_point->E_sustain)
-                                                                {
-                                                                    if (double_E_per_round.find(combination[i]->c_point->name) != string::npos) temp_damage[i] = temp_damage[i] * 3 / 2;
-                                                                    else temp_damage[i] = temp_damage[i] * 2 / 1;
-                                                                }
                                                                 temp_total_damage += temp_damage[i];
                                                             }
 
@@ -647,13 +653,6 @@ void Group::cal_assigned_artifact_damage()
     for (int i = 0; i < combination.size(); ++i)
     {
         damage[i] = combination[i]->attack_config->attack_time * combination[i]->cal_damage(life_value, atk_value, def_value, mastery_value, recharge_value, critrate_value, critdam_value);
-
-        //TODO:TEST
-        if (combination[i]->w_point->name.find("祭礼") != string::npos && combination[i]->attack_config->condition->attack_way == "E" && !combination[i]->c_point->E_sustain)
-        {
-            if (double_E_per_round.find(combination[i]->c_point->name) != string::npos) damage[i] = damage[i] * 3 / 2;
-            else damage[i] = damage[i] * 2 / 1;
-        }
         total_damage += damage[i];
     }
 }

@@ -65,41 +65,123 @@
 
 ### 计算配置
 
-用户需要按如下规则定义人物的攻击状态：
+2023/3/16日更新：
 
-2022/10/13更新：
+为了更精确地计算副词条分配，本程序需要结合gcsim使用，整体流程如下：
 
-添加了技能组计算的功能，现在的配置定义如下：
+1、标准配置文件生成：运行程序，使用功能1生成sample_config文件。
 
-1、队伍配置：队友1；队友2；队友3；队伍加成类武器和圣遗物；敌人的元素附着；允许的扩散元素
+2、初步队伍设定：确定队伍成员（替换sample_config文件中的A、B、C、D），确定大致的输出流程，并填入以下内容：
 
-2、攻击序列：n*攻击方式：攻击方式；攻击方式对应的倍率位置；前台/后台？；反应类型；攻击次数；武器-圣遗物层数设置（请见weapon_related_arguments类）
+    1）在gcsim_config:后，按照队伍成员的顺序填入现有的武器、圣遗物配置。
 
-3、计算组合：武器限定；圣遗物1限定；圣遗物2限定；主属性3限定；主属性4限定；主属性5限定；队伍配置；攻击序列；是否保证循环；
+    2）在options:后，按照gcsim中对options设置的定义，填入需要更改或添加的选项（默认options iteration=10000 swap_delay=4 duration=106;）。
 
-2022/12/21更新：
+    3）在target:后，按照gcsim中对options设置的定义，填入需要更改或添加的选项（默认target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1;）。
 
-需要特别注意的是：同一技能的反应类型请务必保持一致，不发生反应的请在之后添加no_add_damage；技能全部不发生反应请填入"NONE"；
+    4）在attack_list:后，按照gcsim中对options设置的定义以及大致的输出流程，填入中文描述的动作序列
+
+将sample_config文件重命名为队伍名称，并放置在队伍名文件夹内。
+
+3、初步脚本生成：运行程序，使用功能2生成初步的gcsim脚本文件。
+
+4、脚本流程检查：在网页端gcsim模拟器中运行模拟，调整输出流程（设置particle=10以保证循环），推荐检查如下元素：CD对接、吃球情况、元素附着、buff及伤害情况。
+
+5、手动数据填充：根据gcsim网页端的Details页面，在restrictions/team_config/attack_config:后，按按照队伍成员的顺序填入以下内容：
+
+    1）计算最佳副词条时对于武器圣遗物的限制，以及该人物是否要保证单轮循环充能
+
+    2）一轮释放E的次数E_release_times，能够获取的队友武器和圣遗物增益team_weapon_artifact，怪物附着的元素ele_attach_type，允许扩散结晶的元素ele_allow_spread
+
+    3）多个攻击配置：攻击方式attack_way，倍率索引rate_pos，是否后台background，反应类型react_type，攻击次数attack_time，苍白层数cangbai_level，千岩触发qianyan_enable，魔女层数monv_level，辰砂触发chensha_enable，深林触发shenlin_enable，水仙层数shuixian_level，对应武器层数wuqie_shenle_feilei_humo，对应武器层数shengxian_biluo_dongji_chisha，对应武器层数none_sifeng_pomo_shizuo。
+
+6、最佳副词条结果生成：运行程序，使用功能3生成最佳副词条结果。需要注意的是，该结果并不为最精确的结果，由于"已知问题"的存在，更为精确的结果请继续后续步骤。
+
+7、手动配置确定：根据生成的csv文件，确定希望gcsim计算的，每个人物较好的武器、圣遗物搭配，并类似2、1）填入gcsim_config:后的行。
+
+8、gcsim运行以及结果检查：请按顺序执行以下步骤：
+
+    1）运行程序，使用功能2生成最终的gcsim脚本文件。
+
+    2）运行run_optimized_config.ps1，在optimized_config文件夹中可以获取gcsim优化副词条后的配置。！！！需要重点注意的是，由于存在随机性，即使完全相同的队伍（武器圣遗物不影响充能）的情况下，优化的充能词条仍不一样，会严重影响dps的计算结果
+
+    3）统一各配置的充能词条（或者整体的副词条一致）
+
+    4）运行run_substat_optimizer.ps1，在logs中获取具体的计算信息，在viewer_gz中获取可在gcsim.app上查看的json文件。
+
+=> 几个注意事项
+
+1、由于程序不能创建文件夹，请为每个队伍设置以队伍名作为文件夹名的独立文件夹，并在其中创建config，optimized_config，logs，viewer_gz四个文件夹。
+
+2、请严格设置options duration，较大程度影响dps
+
+3、上述步骤5中同一技能的反应类型请务必保持一致，不发生反应的请在之后添加no_add_damage；技能全部不发生反应请填入"NONE"。
+
+4、8.3）中统一充能词条需要格外注意充能武器、圣遗物等会影响充能词条，不同的配置不一定要求相同的充能词条。
+
+### 配置文件详解
+
+Line1：队伍成员A B C D的中文全名（注意顺序，之后的数据顺序对应该顺序）
+
+Line2：提示下面的内容为gcsim中的角色武器、圣遗物配置
+
+Line3：角色A的武器、圣遗物配置（可以通过复制填入多行）
+
+Line4：BREAK，角色A配置结束标志
+
+Line5：角色B的武器、圣遗物配置（可以通过复制填入多行）
+
+Line6：BREAK，角色B配置结束标志
+
+Line7：角色C的武器、圣遗物配置（可以通过复制填入多行）
+
+Line8：BREAK，角色C配置结束标志
+
+Line9：角色D的武器、圣遗物配置（可以通过复制填入多行）
+
+Line10：BREAK，角色D配置结束标志
+
+Line11：提示下面的内容为gcsim中的options参数
+
+Line12：gcsim中的options参数（默认options iteration=10000 swap_delay=4 duration=105）
+
+Line13：提示下面的内容为gcsim中的target参数
+
+Line14：gcsim中的target参数（默认target lvl=95 resist=0.1 particle_threshold=150000 particle_drop_count=1）
+
+Line15：提示下面的内容为gcsim中的动作序列
+
+Line16、17、18：夹在rotation_start和rotation_end的动作序列将被循环执行5次，在rotation_start之前和rotation_end之后的动作序列将在开始和结尾被执行。每行动作请按照gcsim中的定义，用中文角色名+（平A/重A/下落A/E/Q/冲刺/跳跃）完成。
+
+Line19：BREAK，动作序列结束标志
+
+Line20：提示下面的内容为cal_optimal_substats的参数
+
+Line21：计算A的最佳副词条时对武器圣遗物的限制，对每轮循环是否需要保证充能的限制recharge
+
+Line22：A每轮循环释放E技能的次数E_release_times（持续性E技能请填1），所在队伍其他角色武器圣遗物提供的buff team_weapon_artifact，所在队伍怪物头上主要的附着元素ele_attach_type，所在队伍循环过程中能够被扩散/结晶的元素ele_allow_spread。
+
+Line23：A的单个动作：攻击方式attack_way（平A/重A/下落A/E/Q），倍率索引rate_pos，是否后台background，反应类型react_type，攻击次数attack_time，苍白层数cangbai_level，千岩触发qianyan_enable，魔女层数monv_level，辰砂触发chensha_enable，深林触发shenlin_enable，水仙层数shuixian_level，对应武器层数wuqie_shenle_feilei_humo，对应武器层数shengxian_biluo_dongji_chisha，对应武器层数none_sifeng_pomo_shizuo（可以通过复制填入多行）
+
+Line24：BREAK，角色A参数配置结束标志
+
+Line25-28：与Line21-24定义一致，为B对应的内容
+
+Line29-32：与Line21-24定义一致，为C对应的内容
+
+Line33-36：与Line21-24定义一致，为D对应的内容
 
 ### 其他功能
 
-增量更新：
+1、gcsim脚本生成：具体见计算配置
 
-在每个版本数据更新后，可以对add_character/add_weapon/add_artifact三个参数设定为更新的数据名称，若武器、圣遗物均未更新，则程序只会计算更新的角色；若圣遗物未更新，程序只会计算（原角色-新武器）、（新角色-武器）的配置；若圣遗物更新，程序会全部重新计算
+2、圣遗物搭配，流程如下：（正在更新中）
 
-圣遗物搭配：
+    1）使用圣遗物扫描器对数据进行扫描，导出为莫娜占卜铺的格式。
 
-1、使用圣遗物扫描器对数据进行扫描，导出为莫娜占卜铺的格式。
+    2）使用Filter_Artifact项目将扫描得到的圣遗物文件转化为本程序能够识别的格式。
 
-2、使用Filter_Artifact项目将扫描得到的圣遗物文件转化为本程序能够识别的格式。
-
-3、运行本程序即可根据定义的计算配置和2中的圣遗物数据计算得到最佳的圣遗物搭配。
-
-gcsim脚本生成：
-
-1、在get_build_up中设置角色搭配（建议先使用计算功能考虑较好的搭配以减少生成的比对脚本数量），在RESULTS/chinese_config/中按照书写队伍搭配和攻击序列：人物1、人物2、人物3、人物4、循环5轮需要的时间、动作序列。
-
-2、使用程序生成符合gcsim优化的脚本（包括武器、圣遗物、主属性），并进一步按照gcsim的流程进行最优副词条求解以及模拟。
+    3）运行程序，使用功能4生成最佳的圣遗物搭配。
 
 ### 运行注意事项
 
@@ -110,18 +192,6 @@ gcsim脚本生成：
 在WIN中，请首先在设置中将项目的文件编码改为UTF-8，并在编辑界面将所有文件的编码改为GBK，并使用ctrl+alt+shift+.打开控制台注册表界面，并勾选run.process.with.pty，如此可解决运行过程中中文乱码的问题。但是在调试过程中仍会出现中文乱码和显示string为16进制字符的问题。
 
 目前来说，拥有5个有效词条的人物-武器对计算时间在10s，拥有4个有效词条的人物-武器对计算时间在1s（cpu：12400f），随着配置复杂度的不同而有所变化。
-
-### 操作流程
-
-1、首先确定队伍成员，并确定队伍大致的输出流程，将现有的配置填入get_build_up函数中，并生成基本gcsim配置文件。
-
-2、将基本gcsim配置文件放入gcsim模拟器中，并设置particle=10以保证循环，运行模拟。
-
-3、在gcsim Debug页面检查如下元素（建议）：CD对接、吃球情况、元素附着、伤害情况等，调整输出流程。
-
-4、根据最后确认的输出流程，修改chinese_config中的文件，同样修改get_all_config中的配置，尽量与gcsim的所有伤害保持一致，并运行cal_deployment获取最佳配置。
-
-5、将最佳配置填入get_build_up函数中，生成gcsim脚本，并根据gcsim给出的副词条最佳配置运行方式进行计算。
 
 ### 已知问题
 
@@ -135,8 +205,8 @@ gcsim脚本生成：
 
 2、添加更多角色（主要是5星）
 
-3、配置文件化
+3、配置文件化 FINISH 2023/3/16
 
 4、GUI
 
-5、多线程并行计算 FINISH 2022/2/2
+5、多线程并行计算 FINISH 2023/2/2

@@ -15,7 +15,6 @@ using namespace std;
 ofstream outfile_result;
 ofstream outfile_debug;
 bool out_header = true;
-string double_E_per_round = "神里绫华甘雨温迪夜兰枫原万叶班尼特";
 int max_up_num_per_base = 4;
 double max_attribute_num_per_pos = 2.5;
 int max_entry_num = 30;
@@ -54,6 +53,243 @@ Artifact *find_artifact_by_name(string a_name)
 string a_main3[5] = {"生命值", "攻击力", "防御力", "元素精通", "元素充能效率"};
 string a_main4[5] = {"生命值", "攻击力", "防御力", "元素精通", "伤害加成"};
 string a_main5[7] = {"生命值", "攻击力", "防御力", "元素精通", "暴击率", "暴击伤害", "治疗加成"};
+
+struct weapon_artifact_related_arguments
+{
+    //weapon
+    int sword_wuqie_level = -1;//雾切，普通攻击造成元素伤害时，持续5秒；施放元素爆发时，持续10秒；角色元素能量低于100%时
+    int sword_shengxian_level = -1;//圣显之钥，E命中。20s，3层
+    int catalyst_shenle_level = -1;//神乐铃，释放E，16s，3层
+    bool catalyst_biluo_enable = false;//碧落之珑，创造护盾，3s
+    int catalyst_sifeng_level = -1;
+    int bow_feilei_level = -1;//飞雷，普通攻击造成伤害时，持续5秒；施放元素战技时，持续10秒；此外，角色元素能量低于100%时
+    int bow_dongji_level = -1;//冬极，普通攻击、重击、元素战技或元素爆发命中敌人
+    bool bow_pomo_fullenergy = false;//破魔
+    bool polearm_humo_halflife = false;//护摩
+    int polearm_chisha_level = -1;//赤砂之杖，E命中，10s，3层
+    int polearm_shizuo_level = -1;//试作星镰，释放E，12s，2层
+    //artifact
+    int cangbai_level;//苍白，E命中，7s，2层
+    bool qianyan_enable;//千岩，E命中，3s
+    int monv_level;//魔女，释放E，10s，3层
+    bool chensha_enable;//辰砂
+    bool shenlin_enable;//草套，EQ命中，8s
+    int shuixian_level;//水仙，A重A下落AEQ命中，8s
+
+    weapon_artifact_related_arguments(int cangbai_level_,
+                                      bool qianyan_enable_,
+                                      int monv_level_,
+                                      bool chensha_enable_,
+                                      bool shenlin_enable_,
+                                      int shuixian_level_,
+
+                                      string weapon_type,
+                                      int wuqie_shenle_feilei_humo,
+                                      int shengxian_biluo_dongji_chisha,
+                                      int none_sifeng_pomo_shizuo)
+    {
+        cangbai_level = cangbai_level_;
+        qianyan_enable = qianyan_enable_;
+        monv_level = monv_level_;
+        chensha_enable = chensha_enable_;
+        shenlin_enable = shenlin_enable_;
+        shuixian_level = shuixian_level_;
+
+        if (weapon_type == "单手剑")
+        {
+            sword_wuqie_level = wuqie_shenle_feilei_humo;
+            sword_shengxian_level = shengxian_biluo_dongji_chisha;
+        }
+        else if (weapon_type == "法器")
+        {
+            catalyst_shenle_level = wuqie_shenle_feilei_humo;
+            catalyst_biluo_enable = shengxian_biluo_dongji_chisha;
+            catalyst_sifeng_level = none_sifeng_pomo_shizuo;
+        }
+        else if (weapon_type == "弓")
+        {
+            bow_feilei_level = wuqie_shenle_feilei_humo;
+            bow_dongji_level = shengxian_biluo_dongji_chisha;
+            bow_pomo_fullenergy = none_sifeng_pomo_shizuo;
+        }
+        else if (weapon_type == "双手剑")
+        {
+
+        }
+        else if (weapon_type == "长柄武器")
+        {
+            polearm_humo_halflife = wuqie_shenle_feilei_humo;
+            polearm_chisha_level = shengxian_biluo_dongji_chisha;
+            polearm_shizuo_level = none_sifeng_pomo_shizuo;
+        }
+    }
+};
+
+//config data struct
+struct equipment
+{
+    string weapon;
+    string suit1;
+    string suit2;
+    string main3;
+    string main4;
+    string main5;
+
+    equipment(string weapon_, string suit1_, string suit2_, string main3_, string main4_, string main5_)
+    {
+        weapon = weapon_;
+        suit1 = suit1_;
+        suit2 = suit2_;
+        main3 = main3_;
+        main4 = main4_;
+        main5 = main5_;
+    }
+};
+
+vector<pair<string, string>> parse_param(string info)
+{
+    vector<pair<string, string>> results;
+    int pos = 0;
+    while (pos < info.length())
+    {
+        int next_pos = (info.find(' ', pos) != -1) ? (int) info.find(' ', pos) : (int) info.length();
+        string param = info.substr(pos, next_pos - pos);
+        results.emplace_back(param.substr(0, param.find('=')), param.substr(param.find('=') + 1));
+        pos = next_pos + 1;
+    }
+    return results;
+}
+
+string find_param(vector<pair<string, string>> &info, string target)
+{
+    for (auto &i: info)
+        if (i.first == target)
+            return i.second;
+    return "";
+}
+
+struct character_info
+{
+    Character *c_point;
+    //attack_config
+    equipment *cal_all_restriction;
+    bool recharge_restriction;
+    Team_config *team_config;
+    int E_release_times;
+    vector<Attack_config *> attack_config_list;
+    //gcsim_config
+    vector<equipment *> gcsim_combinations;
+    //artifact_config
+    vector<equipment *> artifact_combinations;
+
+    character_info(Character *c_point_, Character *tm1, Character *tm2, Character *tm3, string cal_all_info, string team_info, vector<string> attack_config_info, vector<string> gcsim_script_info)
+    {
+        c_point = c_point_;
+
+        vector<pair<string, string>> parsed_cal_all_info = parse_param(cal_all_info);
+        cal_all_restriction = new equipment(find_param(parsed_cal_all_info, "weapon"), find_param(parsed_cal_all_info, "suit1"), find_param(parsed_cal_all_info, "suit2"),
+                                            find_param(parsed_cal_all_info, "main3"), find_param(parsed_cal_all_info, "main4"), find_param(parsed_cal_all_info, "main5"));
+        recharge_restriction = (bool) stoi(find_param(parsed_cal_all_info, "recharge").empty() ? "0" : find_param(parsed_cal_all_info, "recharge"));
+
+        vector<pair<string, string>> parsed_team_info = parse_param(team_info);
+        E_release_times = stoi(find_param(parsed_team_info, "E_release_times").empty() ? "1" : find_param(parsed_team_info, "E_release_times"));
+        team_config = new Team_config(tm1, tm2, tm3, vector<pair<Character *, int>>{make_pair(c_point, E_release_times)}, find_param(parsed_team_info, "team_weapon_artifact"),
+                                      find_param(parsed_team_info, "ele_attach_type"), find_param(parsed_team_info, "ele_allow_spread"));
+
+        for (auto &i: attack_config_info)
+        {
+            vector<pair<string, string>> parsed_attack_config_info = parse_param(i);
+            attack_config_list.push_back(new Attack_config(c_point_,
+                                                           find_param(parsed_attack_config_info, "attack_way"),
+                                                           stoi(find_param(parsed_attack_config_info, "rate_pos").empty() ? "0" : find_param(parsed_attack_config_info, "rate_pos")),
+                                                           (bool) stoi(find_param(parsed_attack_config_info, "background").empty() ? "0" : find_param(parsed_attack_config_info, "background")),
+                                                           find_param(parsed_attack_config_info, "react_type"),
+                                                           stoi(find_param(parsed_attack_config_info, "attack_time").empty() ? "0" : find_param(parsed_attack_config_info, "attack_time")),
+                                                           new weapon_artifact_related_arguments(stoi(find_param(parsed_attack_config_info, "cangbai_level").empty() ? "0" : find_param(parsed_attack_config_info, "cangbai_level")),
+                                                                                                 (bool) stoi(find_param(parsed_attack_config_info, "qianyan_enable").empty() ? "0" : find_param(parsed_attack_config_info, "qianyan_enable")),
+                                                                                                 stoi(find_param(parsed_attack_config_info, "monv_level").empty() ? "0" : find_param(parsed_attack_config_info, "monv_level")),
+                                                                                                 (bool) stoi(find_param(parsed_attack_config_info, "chensha_enable").empty() ? "0" : find_param(parsed_attack_config_info, "chensha_enable")),
+                                                                                                 (bool) stoi(find_param(parsed_attack_config_info, "shenlin_enable").empty() ? "0" : find_param(parsed_attack_config_info, "shenlin_enable")),
+                                                                                                 stoi(find_param(parsed_attack_config_info, "shuixian_level").empty() ? "0" : find_param(parsed_attack_config_info, "shuixian_level")),
+                                                                                                 c_point_->weapon_type,
+                                                                                                 stoi(find_param(parsed_attack_config_info, "wuqie_shenle_feilei_humo").empty() ? "0" : find_param(parsed_attack_config_info, "wuqie_shenle_feilei_humo")),
+                                                                                                 stoi(find_param(parsed_attack_config_info, "shengxian_biluo_dongji_chisha").empty() ? "0" : find_param(parsed_attack_config_info, "shengxian_biluo_dongji_chisha")),
+                                                                                                 stoi(find_param(parsed_attack_config_info, "none_sifeng_pomo_shizuo").empty() ? "0" : find_param(parsed_attack_config_info, "none_sifeng_pomo_shizuo")))));
+        }
+
+        for (auto &j: gcsim_script_info)
+        {
+            vector<pair<string, string>> parsed_gcsim_script_info = parse_param(j);
+            gcsim_combinations.push_back(new equipment(find_param(parsed_gcsim_script_info, "weapon"), find_param(parsed_gcsim_script_info, "suit1"), find_param(parsed_gcsim_script_info, "suit2"),
+                                                       find_param(parsed_gcsim_script_info, "main3"), find_param(parsed_gcsim_script_info, "main4"), find_param(parsed_gcsim_script_info, "main5")));
+        }
+    }
+
+    ~character_info()
+    {
+        delete cal_all_restriction;
+        delete team_config;
+        for (auto &i: attack_config_list) delete i;
+        for (auto &i: gcsim_combinations) delete i;
+    }
+};
+
+class config_file
+{
+public:
+    string team_name;
+    character_info *c1;
+    character_info *c2;
+    character_info *c3;
+    character_info *c4;
+    //gcsim_script
+    string options;
+    string target;
+    vector<string> attack_list;
+
+    config_file(string team_name_info, Character *c_point1, Character *c_point2, Character *c_point3, Character *c_point4,
+                string options_info, string target_info, vector<string> attack_list_info,
+                string c1_cal_all_info, string c1_team_info, vector<string> c1_attack_config_info, vector<string> c1_gcsim_script_info,
+                string c2_cal_all_info, string c2_team_info, vector<string> c2_attack_config_info, vector<string> c2_gcsim_script_info,
+                string c3_cal_all_info, string c3_team_info, vector<string> c3_attack_config_info, vector<string> c3_gcsim_script_info,
+                string c4_cal_all_info, string c4_team_info, vector<string> c4_attack_config_info, vector<string> c4_gcsim_script_info)
+    {
+        team_name = team_name_info;
+        options = options_info;
+        target = target_info;
+        attack_list = attack_list_info;
+        c1 = new character_info(c_point1, c_point2, c_point3, c_point4, c1_cal_all_info, c1_team_info, c1_attack_config_info, c1_gcsim_script_info);
+        c2 = new character_info(c_point2, c_point1, c_point3, c_point4, c2_cal_all_info, c2_team_info, c2_attack_config_info, c2_gcsim_script_info);
+        c3 = new character_info(c_point3, c_point1, c_point2, c_point4, c3_cal_all_info, c3_team_info, c3_attack_config_info, c3_gcsim_script_info);
+        c4 = new character_info(c_point4, c_point1, c_point2, c_point3, c4_cal_all_info, c4_team_info, c4_attack_config_info, c4_gcsim_script_info);
+
+        c1->team_config->E_release_data.emplace_back(c2->c_point, c2->E_release_times);
+        c1->team_config->E_release_data.emplace_back(c3->c_point, c3->E_release_times);
+        c1->team_config->E_release_data.emplace_back(c4->c_point, c4->E_release_times);
+
+        c2->team_config->E_release_data.emplace_back(c1->c_point, c1->E_release_times);
+        c2->team_config->E_release_data.emplace_back(c3->c_point, c3->E_release_times);
+        c2->team_config->E_release_data.emplace_back(c4->c_point, c4->E_release_times);
+
+        c3->team_config->E_release_data.emplace_back(c1->c_point, c1->E_release_times);
+        c3->team_config->E_release_data.emplace_back(c2->c_point, c2->E_release_times);
+        c3->team_config->E_release_data.emplace_back(c4->c_point, c4->E_release_times);
+
+        c4->team_config->E_release_data.emplace_back(c1->c_point, c1->E_release_times);
+        c4->team_config->E_release_data.emplace_back(c2->c_point, c2->E_release_times);
+        c4->team_config->E_release_data.emplace_back(c3->c_point, c3->E_release_times);
+    }
+
+    ~config_file()
+    {
+        delete c1;
+        delete c2;
+        delete c3;
+        delete c4;
+    }
+};
+
+config_file *full_config;
 
 //TODO:less important 将所有添加的属性分为face_percentage,converted_face_percentage,monster_percentage，增加过程为face(get_convert)->converted->monster，目前来看只有增伤、暴击、爆伤可能不加在面板上，不影响结果（没有增伤/暴击/爆伤转别的）
 //TODO:important 部分加成默认触发，应根据攻击序列确定触发
@@ -379,11 +615,12 @@ bool Character::get_extra_special(Deployment *data) const
         if (data->c_point->constellation >= 2 && data->attack_config->react_type.find("激化") != string::npos)
             data->add_percentage("防御削弱", 0.3, (name + "_extra_special"));
     }
-    else if (data->c_point->name == "夜兰")
-    {
-        if (!data->attack_config->background)
-            data->add_percentage("伤害加成", 0.25, (name + "_extra_special"));
-    }
+        //夜兰EQ一段不吃自己增伤
+//    else if (data->c_point->name == "夜兰")
+//    {
+//        if (!data->attack_config->background)
+//            data->add_percentage("伤害加成", 0.25, (name + "_extra_special"));
+//    }
     else if (data->c_point->name == "九条裟罗")
     {
         if (data->c_point->E_level == 13) data->add_percentage("攻击力", 0.91, (name + "_extra_special"));
@@ -393,78 +630,6 @@ bool Character::get_extra_special(Deployment *data) const
     }
     return true;
 }
-
-class weapon_artifact_related_arguments
-{
-public:
-    //weapon
-    int sword_wuqie_level = -1;//雾切，普通攻击造成元素伤害时，持续5秒；施放元素爆发时，持续10秒；角色元素能量低于100%时
-    int sword_shengxian_level = -1;//圣显之钥，E命中。20s，3层
-    int catalyst_shenle_level = -1;//神乐铃，释放E，16s，3层
-    bool catalyst_biluo_enable = false;//碧落之珑，创造护盾，3s
-    int catalyst_sifeng_level = -1;
-    int bow_feilei_level = -1;//飞雷，普通攻击造成伤害时，持续5秒；施放元素战技时，持续10秒；此外，角色元素能量低于100%时
-    int bow_dongji_level = -1;//冬极，普通攻击、重击、元素战技或元素爆发命中敌人
-    bool bow_pomo_fullenergy = false;//破魔
-    bool polearm_humo_halflife = false;//护摩
-    int polearm_chisha_level = -1;//赤砂之杖，E命中，10s，3层
-    int polearm_shizuo_level = -1;//试作星镰，释放E，12s，2层
-    //artifact
-    int cangbai_level;//苍白，E命中，7s，2层
-    bool qianyan_enable;//千岩，E命中，3s
-    int monv_level;//魔女，释放E，10s，3层
-    bool chensha_enable;//辰砂
-    bool shenlin_enable;//草套，EQ命中，8s
-    int shuixian_level;//水仙，A重A下落AEQ命中，8s
-
-    weapon_artifact_related_arguments(int cangbai_level_,
-                                      bool qianyan_enable_,
-                                      int monv_level_,
-                                      bool chensha_enable_,
-                                      bool shenlin_enable_,
-                                      int shuixian_level_,
-
-                                      string weapon_type,
-                                      int wuqie_shenle_feilei_humo,
-                                      int shengxian_biluo_dongji_chisha,
-                                      int none_sifeng_pomo_shizuo)
-    {
-        cangbai_level = cangbai_level_;
-        qianyan_enable = qianyan_enable_;
-        monv_level = monv_level_;
-        chensha_enable = chensha_enable_;
-        shenlin_enable = shenlin_enable_;
-        shuixian_level = shuixian_level_;
-
-        if (weapon_type == "单手剑")
-        {
-            sword_wuqie_level = wuqie_shenle_feilei_humo;
-            sword_shengxian_level = shengxian_biluo_dongji_chisha;
-        }
-        else if (weapon_type == "法器")
-        {
-            catalyst_shenle_level = wuqie_shenle_feilei_humo;
-            catalyst_biluo_enable = shengxian_biluo_dongji_chisha;
-            catalyst_sifeng_level = none_sifeng_pomo_shizuo;
-        }
-        else if (weapon_type == "弓")
-        {
-            bow_feilei_level = wuqie_shenle_feilei_humo;
-            bow_dongji_level = shengxian_biluo_dongji_chisha;
-            bow_pomo_fullenergy = none_sifeng_pomo_shizuo;
-        }
-        else if (weapon_type == "双手剑")
-        {
-
-        }
-        else if (weapon_type == "长柄武器")
-        {
-            polearm_humo_halflife = wuqie_shenle_feilei_humo;
-            polearm_chisha_level = shengxian_biluo_dongji_chisha;
-            polearm_shizuo_level = none_sifeng_pomo_shizuo;
-        }
-    }
-};
 
 //build new weapon(all)
 void init_weapon_data()
@@ -2032,23 +2197,23 @@ void Deployment::satisfy_recharge_requirement()
     double monster_drop = 10;
 
     double Q_energy_modify = c_point->Q_energy;
-    if (team_config->teammate_all.find("雷电将军") != string::npos) Q_energy_modify -= 24;
-    //扩散与元素附着
-    if (team_config->teammate_all.find("温迪") != string::npos && team_config->ele_allow_spread.find(attack_config->condition->ele_type) != string::npos) Q_energy_modify -= 15;
-    if (team_config->teammate_all.find("九条裟罗") != string::npos) Q_energy_modify -= 2.4;
-
     double energy = monster_drop;
-    energy += team_config->teammate_1->E_energy * back * ((team_config->teammate_1->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_1->name) != string::npos) ? 2 : 1);
-    energy += team_config->teammate_2->E_energy * back * ((team_config->teammate_2->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_2->name) != string::npos) ? 2 : 1);
-    energy += team_config->teammate_3->E_energy * back * ((team_config->teammate_3->ele_type == c_point->ele_type) ? same : diff) * ((double_E_per_round.find(team_config->teammate_3->name) != string::npos) ? 2 : 1);
+    double converted_recharge = 0;
+    //队友E
+    energy += team_config->E_release_data[1].second * team_config->E_release_data[1].first->E_energy * back * ((team_config->E_release_data[1].first->ele_type == c_point->ele_type) ? same : diff);
+    energy += team_config->E_release_data[2].second * team_config->E_release_data[2].first->E_energy * back * ((team_config->E_release_data[2].first->ele_type == c_point->ele_type) ? same : diff);
+    energy += team_config->E_release_data[3].second * team_config->E_release_data[3].first->E_energy * back * ((team_config->E_release_data[3].first->ele_type == c_point->ele_type) ? same : diff);
+    //队友特殊
+    if (team_config->teammate_all.find("雷电将军") != string::npos) Q_energy_modify -= 24;
+    if (team_config->teammate_all.find("温迪") != string::npos && team_config->ele_allow_spread.find(c_point->ele_type) != string::npos) Q_energy_modify -= 15;//扩散与元素附着
+    if (team_config->teammate_all.find("九条裟罗") != string::npos) Q_energy_modify -= 2.4;
+    //双雷
     int electro_num = 0;
     if (c_point->ele_type == "雷") electro_num++;
     if (team_config->teammate_1->ele_type == "雷") electro_num++;
     if (team_config->teammate_2->ele_type == "雷") electro_num++;
     if (team_config->teammate_3->ele_type == "雷") electro_num++;
     if (electro_num >= 2) energy += (3 * back + 1 * front) * ((c_point->ele_type == "雷") ? same : diff);
-
-    double converted_recharge = 0;
 
     //"天目影打刀" 12/E 不吃充能
     //"西风剑" 3*2/6s
@@ -2074,7 +2239,7 @@ void Deployment::satisfy_recharge_requirement()
     if (c_point->name == "胡桃")
     {
         //Q 60 E 5f 2E/Q
-        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
+        energy += team_config->E_release_data[0].second * c_point->E_energy * front * same;
 
         if (w_point->name == "西风长枪") energy += 3 * front * white;
         else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
@@ -2082,18 +2247,18 @@ void Deployment::satisfy_recharge_requirement()
     else if (c_point->name == "艾尔海森")
     {
         //Q 70 E 5f 1E/Q
-        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
+        energy += team_config->E_release_data[0].second * c_point->E_energy * front * same;
 
         if (w_point->name == "西风剑") energy += 3 * front * white;
         else if (w_point->name == "祭礼剑") energy += 0;
-        else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
+        else if (w_point->name == "天目影打刀") Q_energy_modify -= team_config->E_release_data[0].second * 12;
         else if (w_point->name == "西福斯的月光") converted_recharge += data_list[str2index_full("元素精通")]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
     }
     else if (c_point->name == "雷电将军")
     {
         //Q 90-24=66 E 10b 1E/Q
         Q_energy_modify -= 24;
-        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * back * same;
+        energy += team_config->E_release_data[0].second * c_point->E_energy * back * same;
 
         if (w_point->name == "西风长枪") energy += 3 * front * white;
         else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
@@ -2103,17 +2268,17 @@ void Deployment::satisfy_recharge_requirement()
     else if (c_point->name == "神里绫华")
     {
         //Q 80 E 4.5f 2E/Q
-        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
+        energy += team_config->E_release_data[0].second * c_point->E_energy * front * same;
 
         if (w_point->name == "西风剑") energy += 3 * front * white;
         else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
-        else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
+        else if (w_point->name == "天目影打刀") Q_energy_modify -= team_config->E_release_data[0].second * 12;
         else if (w_point->name == "西福斯的月光") converted_recharge += data_list[str2index_full("元素精通")]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
     }
     else if (c_point->name == "甘雨")
     {
         //Q 60 E 2f+2b 2E/Q
-        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * (front / 2 + back / 2) * same;
+        energy += team_config->E_release_data[0].second * c_point->E_energy * (front / 2 + back / 2) * same;
 
         if (w_point->name == "西风猎弓") energy += 3 * front * white;
         else if (w_point->name == "祭礼弓") energy += c_point->E_energy * (front / 2 + back / 2) * same;
@@ -2121,7 +2286,7 @@ void Deployment::satisfy_recharge_requirement()
     else if (c_point->name == "纳西妲")
     {
         //Q 50 E 6b 2E/Q
-        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * back * same;
+        energy += team_config->E_release_data[0].second * c_point->E_energy * back * same;
 
         if (w_point->name == "西风秘典") energy += 3 * front * white;
         else if (w_point->name == "祭礼残章") energy += 0;
@@ -2133,7 +2298,7 @@ void Deployment::satisfy_recharge_requirement()
     else if (c_point->name == "夜兰")
     {
         //Q 70 E 4f 1E/Q
-        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
+        energy += team_config->E_release_data[0].second * c_point->E_energy * front * same;
 
         if (w_point->name == "西风猎弓") energy += 3 * front * white;
         else if (w_point->name == "祭礼弓") energy += c_point->E_energy * front * same;
@@ -2142,7 +2307,7 @@ void Deployment::satisfy_recharge_requirement()
     {
         //Q 90-24=66 E 5b 1E/Q
         Q_energy_modify -= 24;
-        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * back * same;
+        energy += team_config->E_release_data[0].second * c_point->E_energy * back * same;
 
         if (w_point->name == "西风秘典") energy += 3 * front * white;
         else if (w_point->name == "祭礼残章") energy += 0;
@@ -2154,7 +2319,7 @@ void Deployment::satisfy_recharge_requirement()
     else if (c_point->name == "香菱")
     {
         //Q 80 E 4b 1E/Q
-        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * back * same;
+        energy += team_config->E_release_data[0].second * c_point->E_energy * back * same;
 
         if (w_point->name == "西风长枪") energy += 3 * front * white;
         else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
@@ -2163,11 +2328,11 @@ void Deployment::satisfy_recharge_requirement()
     {
         //Q 80-3*5=65 E 5f 1E/Q
         Q_energy_modify -= 12;
-        energy += ((double_E_per_round.find(c_point->name) != string::npos) ? 2 : 1) * c_point->E_energy * front * same;
+        energy += team_config->E_release_data[0].second * c_point->E_energy * front * same;
 
         if (w_point->name == "西风剑") energy += 3 * front * white;
         else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
-        else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
+        else if (w_point->name == "天目影打刀") Q_energy_modify -= team_config->E_release_data[0].second * 12;
         else if (w_point->name == "西福斯的月光") converted_recharge += data_list[str2index_full("元素精通")]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
     }
     else energy = Q_energy_modify;
@@ -2475,833 +2640,524 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
     }
 }
 
-struct Combination
-{
-    Weapon *w_point;
-    Artifact *suit1;
-    Artifact *suit2;
-    string a_main3;
-    string a_main4;
-    string a_main5;
-    Team_config *team_config;
-    vector<Attack_config *> attack_config_list;
-    bool need_to_satisfy_recharge;
-
-    Combination(Weapon *w_point_,
-                Artifact *suit1_,
-                Artifact *suit2_,
-                string a_main3_,
-                string a_main4_,
-                string a_main5_,
-                Team_config *team_config_,
-                vector<Attack_config *> attack_config_list_,
-                bool need_to_satisfy_recharge_)
-    {
-        w_point = w_point_;
-        suit1 = suit1_;
-        suit2 = suit2_;
-        a_main3 = a_main3_;
-        a_main4 = a_main4_;
-        a_main5 = a_main5_;
-        team_config = team_config_;
-        attack_config_list = attack_config_list_;
-        need_to_satisfy_recharge = need_to_satisfy_recharge_;
-    }
-};
-
+//SET
 bool out_debug = false;
 double out_filter_percentage = 0.95;//0.95*(1+2.5%)*(1+2.5%)=1 2词条
-string config_cal_enable = "ALL";//ALL全部启用
-string add_character = "";
-string add_weapon = "";
-string add_artifact = "";
+int max_recharge_substat_num = 9;
+string filepath = "./RESULTS/";
 
-//注意圣遗物限定2+2有顺序，所有的限定条件只能是单个限定
-void get_all_config(string c_name, vector<Combination *> &combination_list, string mode)
+size_t replace_all(string &inout, string_view what, string_view with)
 {
-    //"白辰之环" "苍古自由之誓" "松籁响起之时" "圣显之钥" "西福斯的月光" "流浪的晚星" "玛海菈的水色"
-
-    //"终末嗟叹之诗" "讨龙" "原木刀" "森林王器" "贯月矢" "千夜浮梦"
-    //"悠古的磐岩" "昔日宗室之仪" "翠绿之影" "千岩牢固" "深林的记忆"
-
-    //"胡桃" "夜兰" "行秋" "钟离" "终末嗟叹之诗_昔日宗室之仪" "水" "水"
-    //"神里绫华" "甘雨" "莫娜" "温迪"/"枫原万叶" "昔日宗室之仪_翠绿之影" "冰水" "冰水"
-    //"雷电将军" "行秋" "香菱" "班尼特" "昔日宗室之仪" "水雷" "水雷火"
-    //"雷电将军" "九条裟罗" "枫原万叶" "班尼特" "昔日宗室之仪_翠绿之影" "雷火" "雷火"
-    //"艾尔海森" "八重神子" "纳西妲" "钟离" "千夜浮梦_深林的记忆_昔日宗室之仪" "草" ""
-
-    if (config_cal_enable.find(c_name) == string::npos && config_cal_enable != "ALL") return;
-
-    if (c_name == "胡桃")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("钟离"), find_character_by_name("行秋"), find_character_by_name("夜兰"),
-                                    "终末嗟叹之诗_昔日宗室之仪", "水", "水");
-
-        //9AZ 4E
-        vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "蒸发_no_add_damage", 6,
-                                  new weapon_artifact_related_arguments(1, true, 1, false, true, 3,
-                                                                        "长柄武器", 1, 1, 1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "蒸发", 3,
-                                  new weapon_artifact_related_arguments(1, true, 1, false, true, 3,
-                                                                        "长柄武器", 1, 1, 1)),
-                new Attack_config(find_character_by_name(c_name), "重A", 0, false, "蒸发", 9,
-                                  new weapon_artifact_related_arguments(1, true, 1, false, true, 3,
-                                                                        "长柄武器", 1, 1, 1)),
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "蒸发", 4,
-                                  new weapon_artifact_related_arguments(1, true, 1, false, true, 3,
-                                                                        "长柄武器", 1, 1, 1))
-        };
-
-        if (mode == "cal_deployment")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, false));
-        }
-        else if (mode == "cal_optimal_artifact")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("护摩之杖"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, false));
-        }
-        else if (mode == "generate_gcsim_script")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("护摩之杖"), find_artifact_by_name("炽烈的炎之魔女"), find_artifact_by_name("炽烈的炎之魔女"),
-                                                       "生命值", "伤害加成", "暴击率", tc1, ac1, false));
-            combination_list.push_back(new Combination(find_weapon_by_name("护摩之杖"), find_artifact_by_name("追忆之注连"), find_artifact_by_name("追忆之注连"),
-                                                       "元素精通", "伤害加成", "暴击率", tc1, ac1, false));
-        }
-    }
-    if (c_name == "艾尔海森")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("八重神子"), find_character_by_name("钟离"),
-                                    "千夜浮梦_深林的记忆_昔日宗室之仪", "草", "");
-
-        //4Q 233332E AAA AAA AAA Z AAA AAA AAA
-        vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "蔓激化", 2,
-                                  new weapon_artifact_related_arguments(0, false, 0, false, true, 3,
-                                                                        "单手剑", 2, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "蔓激化_no_add_damage", 2,
-                                  new weapon_artifact_related_arguments(0, false, 0, false, true, 3,
-                                                                        "单手剑", 2, 3, -1)),
-
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "蔓激化", 1,
-                                  new weapon_artifact_related_arguments(0, false, 1, false, true, 3,
-                                                                        "单手剑", 2, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "E", 1, false, "蔓激化", 8,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "E", 1, false, "蔓激化_no_add_damage", 8,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1)),
-
-                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "蔓激化", 2,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "蔓激化_no_add_damage", 4,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 1, false, "蔓激化_no_add_damage", 6,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 2, false, "蔓激化", 3,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 2, false, "蔓激化_no_add_damage", 3,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 3, false, "蔓激化", 4,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 3, false, "蔓激化_no_add_damage", 2,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1)),
-
-                new Attack_config(find_character_by_name(c_name), "重A", 0, false, "蔓激化", 1,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1)),
-                new Attack_config(find_character_by_name(c_name), "重A", 1, false, "蔓激化_no_add_damage", 1,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 3,
-                                                                        "单手剑", 3, 3, -1))
-        };
-
-        if (mode == "cal_deployment")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-        }
-        else if (mode == "cal_optimal_artifact")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("雾切之回光"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-        }
-        else if (mode == "generate_gcsim_script")
-        {
-            //裁叶翠光
-            combination_list.push_back(new Combination(find_weapon_by_name("雾切之回光"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"),
-                                                       "元素精通", "伤害加成", "暴击率", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("雾切之回光"), find_artifact_by_name("流浪大地的乐团"), find_artifact_by_name("饰金之梦"),
-                                                       "元素精通", "伤害加成", "暴击率", tc1, ac1, true));
-        }
-    }
-    if (c_name == "雷电将军")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("香菱"), find_character_by_name("班尼特"), find_character_by_name("行秋"),
-                                    "昔日宗室之仪", "水雷", "水雷火");
-        auto *tc2 = new Team_config(find_character_by_name("九条裟罗"), find_character_by_name("枫原万叶"), find_character_by_name("班尼特"),
-                                    "昔日宗室之仪_翠绿之影", "雷火", "雷火");
-
-        //无法准确得知感电反应次数和触发关系
-        //Q AAAAA AAAAA AAAAA 18+1E
-        vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "感电_no_add_damage", 1,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 1,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 1, false, "感电_no_add_damage", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 2, false, "感电_no_add_damage", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 3, false, "感电_no_add_damage", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 4, false, "感电_no_add_damage", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 5, false, "感电_no_add_damage", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 6, false, "感电_no_add_damage", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "感电_no_add_damage", 1,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 2,
-                                                                        "长柄武器", 0, 3, 1)),
-                new Attack_config(find_character_by_name(c_name), "E", 1, false, "感电_no_add_damage", 18,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0))
-        };
-
-        vector<Attack_config *> ac2{
-                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "NONE", 1,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 1,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 1, false, "NONE", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 2, false, "NONE", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 3, false, "NONE", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 4, false, "NONE", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 5, false, "NONE", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 6, false, "NONE", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "NONE", 1,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 2,
-                                                                        "长柄武器", 0, 3, 1)),
-                new Attack_config(find_character_by_name(c_name), "E", 1, false, "NONE", 18,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "长柄武器", 0, 3, 0))
-        };
-
-        if (mode == "cal_deployment")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc2, ac2, true));
-        }
-        else if (mode == "cal_optimal_artifact")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("渔获"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("渔获"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc2, ac2, true));
-        }
-        else if (mode == "generate_gcsim_script")
-        {
-            //薙草之稻光
-            combination_list.push_back(new Combination(find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
-                                                       "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
-                                                       "元素充能效率", "攻击力", "暴击率", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
-                                                       "元素充能效率", "伤害加成", "暴击率", tc2, ac2, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("渔获"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
-                                                       "元素充能效率", "攻击力", "暴击率", tc2, ac2, true));
-        }
-    }
-    if (c_name == "神里绫华")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
-                                    "昔日宗室之仪_翠绿之影", "冰水", "冰水");
-        auto *tc2 = new Team_config(find_character_by_name("甘雨"), find_character_by_name("莫娜"), find_character_by_name("枫原万叶"),
-                                    "昔日宗室之仪_翠绿之影", "冰水", "冰水");
-
-        //EAQ EAZAA
-        vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "冻结", 1,
-                                  new weapon_artifact_related_arguments(0, false, 1, false, false, 2,
-                                                                        "单手剑", 1, 2, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "冻结", 1,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 3,
-                                                                        "单手剑", 1, 2, -1)),
-                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "冻结", 19,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 2,
-                                                                        "单手剑", 3, 2, -1)),
-                new Attack_config(find_character_by_name(c_name), "Q", 1, false, "冻结", 1,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 2,
-                                                                        "单手剑", 3, 2, -1)),
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "冻结", 1,
-                                  new weapon_artifact_related_arguments(0, false, 1, false, false, 2,
-                                                                        "单手剑", 2, 2, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 0, false, "冻结", 2,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 3,
-                                                                        "单手剑", 2, 2, -1)),
-                new Attack_config(find_character_by_name(c_name), "平A", 1, false, "冻结", 1,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 3,
-                                                                        "单手剑", 2, 2, -1)),
-                new Attack_config(find_character_by_name(c_name), "重A", 0, false, "冻结", 3,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 3,
-                                                                        "单手剑", 2, 2, -1))
-        };
-
-        if (mode == "cal_deployment")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc2, ac1, true));
-        }
-        else if (mode == "cal_optimal_artifact")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("雾切之回光"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("雾切之回光"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc2, ac1, true));
-        }
-        else if (mode == "generate_gcsim_script")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("雾切之回光"), find_artifact_by_name("冰风迷途的勇士"), find_artifact_by_name("冰风迷途的勇士"),
-                                                       "攻击力", "伤害加成", "暴击伤害", tc1, ac1, true));
-
-            combination_list.push_back(new Combination(find_weapon_by_name("雾切之回光"), find_artifact_by_name("冰风迷途的勇士"), find_artifact_by_name("冰风迷途的勇士"),
-                                                       "攻击力", "伤害加成", "暴击伤害", tc2, ac1, true));
-        }
-    }
-    if (c_name == "甘雨")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("莫娜"), find_character_by_name("温迪"),
-                                    "昔日宗室之仪_翠绿之影", "冰水", "冰水");
-        auto *tc2 = new Team_config(find_character_by_name("神里绫华"), find_character_by_name("莫娜"), find_character_by_name("枫原万叶"),
-                                    "昔日宗室之仪_翠绿之影", "冰水", "冰水");
-
-        //EQ EZZ
-        vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "Q", 0, true, "冻结", 15,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, true, 2,
-                                                                        "弓", 1, 2, 0)),
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "冻结", 2,
-                                  new weapon_artifact_related_arguments(0, false, 1, false, true, 2,
-                                                                        "弓", 1, 2, 0)),
-                new Attack_config(find_character_by_name(c_name), "E", 1, true, "冻结", 2,
-                                  new weapon_artifact_related_arguments(0, false, 1, false, true, 2,
-                                                                        "弓", 1, 2, 0)),
-                new Attack_config(find_character_by_name(c_name), "重A", 0, false, "冻结", 2,
-                                  new weapon_artifact_related_arguments(2, false, 1, false, true, 3,
-                                                                        "弓", 2, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "重A", 1, false, "冻结", 2,
-                                  new weapon_artifact_related_arguments(2, false, 1, false, true, 3,
-                                                                        "弓", 2, 3, 0))
-        };
-
-        if (mode == "cal_deployment")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc2, ac1, true));
-        }
-        else if (mode == "cal_optimal_artifact")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("飞雷之弦振"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("飞雷之弦振"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc2, ac1, true));
-        }
-        else if (mode == "generate_gcsim_script")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("飞雷之弦振"), find_artifact_by_name("冰风迷途的勇士"), find_artifact_by_name("冰风迷途的勇士"),
-                                                       "攻击力", "伤害加成", "暴击伤害", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("飞雷之弦振"), find_artifact_by_name("冰风迷途的勇士"), find_artifact_by_name("冰风迷途的勇士"),
-                                                       "攻击力", "伤害加成", "暴击伤害", tc2, ac1, true));
-        }
-    }
-    if (c_name == "纳西妲")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("艾尔海森"), find_character_by_name("八重神子"), find_character_by_name("钟离"),
-                                    "昔日宗室之仪", "草", "");
-
-        vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "蔓激化", 1,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 1,
-                                                                        "法器", 0, 0, 1)),
-                new Attack_config(find_character_by_name(c_name), "E", 1, true, "蔓激化", 7,
-                                  new weapon_artifact_related_arguments(2, true, 1, false, true, 1,
-                                                                        "法器", 1, 0, 0))
-        };
-
-        if (mode == "cal_deployment")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                       "", "", "", tc1, ac1, true));
-        }
-        else if (mode == "cal_optimal_artifact")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("千夜浮梦"), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                       "", "", "", tc1, ac1, true));
-        }
-        else if (mode == "generate_gcsim_script")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("千夜浮梦"), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                       "元素精通", "元素精通", "暴击率", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("千夜浮梦"), find_artifact_by_name("深林的记忆"), find_artifact_by_name("深林的记忆"),
-                                                       "元素精通", "伤害加成", "暴击率", tc1, ac1, true));
-        }
-    }
-    if (c_name == "夜兰")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("行秋"),
-                                    "昔日宗室之仪", "水", "水");
-
-        //EEQ
-        vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "NONE", 2,
-                                  new weapon_artifact_related_arguments(1, false, 2, false, true, 2,
-                                                                        "弓", 3, 2, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "NONE", 1,
-                                  new weapon_artifact_related_arguments(2, false, 2, false, true, 3,
-                                                                        "弓", 2, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 1, true, "NONE", 45,
-                                  new weapon_artifact_related_arguments(2, false, 2, false, true, 3,
-                                                                        "弓", 2, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 2, true, "NONE", 7,
-                                  new weapon_artifact_related_arguments(2, false, 2, false, true, 3,
-                                                                        "弓", 2, 3, 0))
-        };
-
-        if (mode == "cal_deployment")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-        }
-        else if (mode == "cal_optimal_artifact")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("终末嗟叹之诗"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-        }
-        else if (mode == "generate_gcsim_script")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("若水"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
-                                                       "生命值", "伤害加成", "暴击率", tc1, ac1, true));//准备提升
-            combination_list.push_back(new Combination(find_weapon_by_name("终末嗟叹之诗"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
-                                                       "生命值", "伤害加成", "暴击率", tc1, ac1, true));
-        }
-    }
-    if (c_name == "八重神子")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("纳西妲"), find_character_by_name("艾尔海森"), find_character_by_name("钟离"),
-                                    "千夜浮梦_深林的记忆_昔日宗室之仪", "草", "");
-
-        vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "E", 0, true, "超激化", 10,
-                                  new weapon_artifact_related_arguments(2, true, 3, false, true, 1,
-                                                                        "法器", 3, 0, 0)),
-                new Attack_config(find_character_by_name(c_name), "E", 0, true, "超激化_no_add_damage", 18,
-                                  new weapon_artifact_related_arguments(2, true, 3, false, true, 1,
-                                                                        "法器", 3, 0, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "超激化", 1,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 1,
-                                                                        "法器", 3, 0, 1)),
-                new Attack_config(find_character_by_name(c_name), "Q", 1, false, "超激化", 3,
-                                  new weapon_artifact_related_arguments(2, true, 0, false, true, 2,
-                                                                        "法器", 3, 0, 1))
-        };
-
-        if (mode == "cal_deployment")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, false));//两轮一大
-        }
-        else if (mode == "cal_optimal_artifact")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("神乐之真意"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, false));//两轮一大
-        }
-        else if (mode == "generate_gcsim_script")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("神乐之真意"), find_artifact_by_name("流浪大地的乐团"), find_artifact_by_name("角斗士的终幕礼"),
-                                                       "攻击力", "伤害加成", "暴击率", tc1, ac1, false));//两轮一大
-            combination_list.push_back(new Combination(find_weapon_by_name("神乐之真意"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"),
-                                                       "攻击力", "伤害加成", "暴击率", tc1, ac1, false));//两轮一大
-        }
-    }
-    if (c_name == "香菱")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("班尼特"), find_character_by_name("行秋"),
-                                    "昔日宗室之仪", "水雷", "水雷火");
-
-        //QE
-        vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "蒸发_超载_no_add_damage", 1,
-                                  new weapon_artifact_related_arguments(0, false, 0, false, true, 0,
-                                                                        "长柄武器", 0, 0, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 1, false, "蒸发_超载_no_add_damage", 1,
-                                  new weapon_artifact_related_arguments(0, false, 0, false, true, 1,
-                                                                        "长柄武器", 0, 0, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 2, false, "蒸发_超载_no_add_damage", 1,
-                                  new weapon_artifact_related_arguments(0, false, 0, false, true, 1,
-                                                                        "长柄武器", 0, 0, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 3, true, "蒸发_超载_no_add_damage", 4,
-                                  new weapon_artifact_related_arguments(0, false, 0, false, true, 1,
-                                                                        "长柄武器", 0, 0, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 3, true, "蒸发_超载", 8,
-                                  new weapon_artifact_related_arguments(0, false, 0, false, true, 1,
-                                                                        "长柄武器", 0, 0, 0)),
-                new Attack_config(find_character_by_name(c_name), "E", 0, true, "蒸发", 4,
-                                  new weapon_artifact_related_arguments(0, false, 1, false, true, 1,
-                                                                        "长柄武器", 0, 0, 0))
-        };
-
-        if (mode == "cal_deployment")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-        }
-        else if (mode == "cal_optimal_artifact")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("断浪长鳍"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("决斗之枪"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("匣里灭辰"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-        }
-        else if (mode == "generate_gcsim_script")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("断浪长鳍"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
-                                                       "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("断浪长鳍"), find_artifact_by_name("饰金之梦"), find_artifact_by_name("饰金之梦"),
-                                                       "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
-        }
-    }
-    if (c_name == "行秋")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("胡桃"), find_character_by_name("钟离"), find_character_by_name("夜兰"),
-                                    "终末嗟叹之诗_昔日宗室之仪", "水", "水");
-
-        auto *tc2 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("香菱"), find_character_by_name("班尼特"),
-                                    "昔日宗室之仪", "水雷", "水雷火");
-
-        //QE
-        vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "NONE", 1,
-                                  new weapon_artifact_related_arguments(0, false, 1, false, true, 2,
-                                                                        "单手剑", 2, 1, -1)),
-                new Attack_config(find_character_by_name(c_name), "E", 1, false, "NONE", 1,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, true, 3,
-                                                                        "单手剑", 2, 1, -1)),
-                new Attack_config(find_character_by_name(c_name), "Q", 0, true, "NONE", 42,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, true, 3,
-                                                                        "单手剑", 2, 1, -1))
-        };
-
-        vector<Attack_config *> ac2{
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "感电_no_add_damage", 1,
-                                  new weapon_artifact_related_arguments(0, false, 1, false, true, 2,
-                                                                        "单手剑", 2, 1, -1)),
-                new Attack_config(find_character_by_name(c_name), "E", 1, false, "感电_no_add_damage", 1,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, true, 3,
-                                                                        "单手剑", 2, 1, -1)),
-                new Attack_config(find_character_by_name(c_name), "Q", 0, true, "感电_no_add_damage", 45,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, true, 3,
-                                                                        "单手剑", 2, 1, -1))
-        };
-
-        if (mode == "cal_deployment")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name(""), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc2, ac2, true));
-        }
-        else if (mode == "cal_optimal_artifact")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("祭礼剑"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("祭礼剑"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc2, ac2, true));
-        }
-        else if (mode == "generate_gcsim_script")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("磐岩结绿"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
-                                                       "攻击力", "伤害加成", "暴击伤害", tc1, ac1, true));//准备提升
-            combination_list.push_back(new Combination(find_weapon_by_name("磐岩结绿"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
-                                                       "攻击力", "伤害加成", "暴击伤害", tc2, ac2, true));//准备提升
-            combination_list.push_back(new Combination(find_weapon_by_name("祭礼剑"), find_artifact_by_name("沉沦之心"), find_artifact_by_name("昔日宗室之仪"),
-                                                       "攻击力", "伤害加成", "暴击率", tc1, ac1, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("祭礼剑"), find_artifact_by_name("沉沦之心"), find_artifact_by_name("昔日宗室之仪"),
-                                                       "攻击力", "伤害加成", "暴击率", tc2, ac2, true));
-        }
-    }
-    if (c_name == "九条裟罗")
-    {
-        auto *tc1 = new Team_config(find_character_by_name("雷电将军"), find_character_by_name("枫原万叶"), find_character_by_name("班尼特"),
-                                    "昔日宗室之仪_翠绿之影", "雷火", "雷火");
-
-        //EQ
-        vector<Attack_config *> ac1{
-                new Attack_config(find_character_by_name(c_name), "Q", 0, false, "NONE", 1,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 3,
-                                                                        "弓", 2, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "Q", 1, true, "NONE", 12,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 3,
-                                                                        "弓", 2, 3, 0)),
-                new Attack_config(find_character_by_name(c_name), "E", 0, false, "NONE", 1,
-                                  new weapon_artifact_related_arguments(1, false, 1, false, false, 2,
-                                                                        "弓", 2, 2, 1))
-        };
-
-        if (mode == "cal_deployment")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-        }
-        else if (mode == "cal_optimal_artifact")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name(""), find_artifact_by_name(""),
-                                                       "", "", "", tc1, ac1, true));
-        }
-        else if (mode == "generate_gcsim_script")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name("绝缘之旗印"), find_artifact_by_name("绝缘之旗印"),
-                                                       "元素充能效率", "伤害加成", "暴击率", tc1, ac1, true));
-        }
-    }
-    if (c_name == "温迪")
-    {
-        if (mode == "generate_gcsim_script")
-        {
-            //终末嗟叹之诗
-            combination_list.push_back(new Combination(find_weapon_by_name("终末嗟叹之诗"), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
-                                                       "元素精通", "元素精通", "元素精通", nullptr, vector<Attack_config *>{}, true));
-            combination_list.push_back(new Combination(find_weapon_by_name("天空之翼"), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
-                                                       "攻击力", "伤害加成", "暴击率", nullptr, vector<Attack_config *>{}, true));
-        }
-    }
-    if (c_name == "莫娜")
-    {
-        if (mode == "generate_gcsim_script")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("试作金珀"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                       "元素充能效率", "攻击力", "暴击率", nullptr, vector<Attack_config *>{}, true));
-//            combination_list.push_back(new Combination(find_weapon_by_name("讨龙英杰谭"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "元素充能效率", "攻击力", "暴击率"));
-        }
-    }
-    if (c_name == "钟离")
-    {
-        if (mode == "generate_gcsim_script")
-        {
-            //护摩之杖
-            combination_list.push_back(new Combination(find_weapon_by_name("西风长枪"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                       "生命值", "生命值", "暴击率", nullptr, vector<Attack_config *>{}, false));
-//            combination_list.push_back(new Combination(find_weapon_by_name("决斗之枪"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"), "生命值", "伤害加成", "暴击伤害"));
-        }
-    }
-    if (c_name == "枫原万叶")
-    {
-        if (mode == "generate_gcsim_script")
-        {
-            //苍古自由之誓
-            combination_list.push_back(new Combination(find_weapon_by_name("铁蜂刺"), find_artifact_by_name("翠绿之影"), find_artifact_by_name("翠绿之影"),
-                                                       "元素精通", "元素精通", "元素精通", nullptr, vector<Attack_config *>{}, true));
-        }
-    }
-    if (c_name == "班尼特")
-    {
-        if (mode == "generate_gcsim_script")
-        {
-            combination_list.push_back(new Combination(find_weapon_by_name("天空之刃"), find_artifact_by_name("昔日宗室之仪"), find_artifact_by_name("昔日宗室之仪"),
-                                                       "元素充能效率", "生命值", "治疗加成", nullptr, vector<Attack_config *>{}, true));
-        }
-    }
+    size_t count{};
+    for (string::size_type pos{}; string::npos != (pos = inout.find(what.data(), pos, what.length())); pos += with.length(), ++count)
+        inout.replace(pos, what.length(), with.data(), with.length());
+    return count;
 }
 
-//cal_(add_)deployment
+void read_config_file(string team_name)
+{
+    ifstream infile;
+    infile.open(filepath + team_name + "/" + team_name + ".txt");
 
+    string c_name1;
+    string c_name2;
+    string c_name3;
+    string c_name4;
+    infile >> c_name1 >> c_name2 >> c_name3 >> c_name4;
+
+    vector<string> c1_gcsim_script_info;
+    vector<string> c2_gcsim_script_info;
+    vector<string> c3_gcsim_script_info;
+    vector<string> c4_gcsim_script_info;
+    string options_info;
+    string target_info;
+    vector<string> attack_list_info;
+    string c1_cal_all_info;
+    string c1_team_info;
+    vector<string> c1_attack_config_info;
+    string c2_cal_all_info;
+    string c2_team_info;
+    vector<string> c2_attack_config_info;
+    string c3_cal_all_info;
+    string c3_team_info;
+    vector<string> c3_attack_config_info;
+    string c4_cal_all_info;
+    string c4_team_info;
+    vector<string> c4_attack_config_info;
+
+    string info;
+    getline(infile, info);
+    while (!infile.eof())
+    {
+        getline(infile, info);
+        if (info == "gcsim_config:")
+        {
+            while (true)
+            {
+                getline(infile, info);
+                if (info == "BREAK") break;
+                c1_gcsim_script_info.push_back(info);
+            }
+            while (true)
+            {
+                getline(infile, info);
+                if (info == "BREAK") break;
+                c2_gcsim_script_info.push_back(info);
+            }
+            while (true)
+            {
+                getline(infile, info);
+                if (info == "BREAK") break;
+                c3_gcsim_script_info.push_back(info);
+            }
+            while (true)
+            {
+                getline(infile, info);
+                if (info == "BREAK") break;
+                c4_gcsim_script_info.push_back(info);
+            }
+        }
+        else if (info == "options:") getline(infile, options_info);
+        else if (info == "target:") getline(infile, target_info);
+        else if (info == "attack_list:")
+        {
+            while (true)
+            {
+                getline(infile, info);
+                if (info == "BREAK") break;
+                replace_all(info, c_name1, find_character_by_name(c_name1)->english_name);
+                replace_all(info, c_name2, find_character_by_name(c_name2)->english_name);
+                replace_all(info, c_name3, find_character_by_name(c_name3)->english_name);
+                replace_all(info, c_name4, find_character_by_name(c_name4)->english_name);
+                replace_all(info, "平A", "attack");
+                replace_all(info, "重A", "charge");
+                replace_all(info, "下落A", "high_plunge");
+                replace_all(info, "长E", "skill[hold=1]");
+                replace_all(info, "E", "skill");
+                replace_all(info, "Q", "burst");
+                replace_all(info, "冲刺", "dash");
+                replace_all(info, "跳跃", "jump");
+                attack_list_info.push_back(info);
+            }
+        }
+        else if (info == "restrictions/team_config/attack_config:")
+        {
+            getline(infile, c1_cal_all_info);
+            getline(infile, c1_team_info);
+            while (true)
+            {
+                getline(infile, info);
+                if (info == "BREAK") break;
+                c1_attack_config_info.push_back(info);
+            }
+            getline(infile, c2_cal_all_info);
+            getline(infile, c2_team_info);
+            while (true)
+            {
+                getline(infile, info);
+                if (info == "BREAK") break;
+                c2_attack_config_info.push_back(info);
+            }
+            getline(infile, c3_cal_all_info);
+            getline(infile, c3_team_info);
+            while (true)
+            {
+                getline(infile, info);
+                if (info == "BREAK") break;
+                c3_attack_config_info.push_back(info);
+            }
+            getline(infile, c4_cal_all_info);
+            getline(infile, c4_team_info);
+            while (true)
+            {
+                getline(infile, info);
+                if (info == "BREAK") break;
+                c4_attack_config_info.push_back(info);
+            }
+        }
+    }
+    infile.close();
+
+    full_config = new config_file(team_name, find_character_by_name(c_name1), find_character_by_name(c_name2), find_character_by_name(c_name3), find_character_by_name(c_name4),
+                                  options_info, target_info, attack_list_info,
+                                  c1_cal_all_info, c1_team_info, c1_attack_config_info, c1_gcsim_script_info,
+                                  c2_cal_all_info, c2_team_info, c2_attack_config_info, c2_gcsim_script_info,
+                                  c3_cal_all_info, c3_team_info, c3_attack_config_info, c3_gcsim_script_info,
+                                  c4_cal_all_info, c4_team_info, c4_attack_config_info, c4_gcsim_script_info);
+}
+
+//function 1 generate config sample
+void generate_sample_config()
+{
+    ofstream outfile;
+    outfile.open(filepath + "sample_config.txt");
+
+    outfile << "A B C D" << endl;
+    outfile << "gcsim_config:" << endl;
+    outfile << "weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "BREAK" << endl;
+    outfile << "weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "BREAK" << endl;
+    outfile << "weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "BREAK" << endl;
+    outfile << "weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "BREAK" << endl;
+    outfile << "options:" << endl;
+    outfile << "" << endl;
+    outfile << "target:" << endl;
+    outfile << "" << endl;
+    outfile << "attack_list:" << endl;
+    outfile << "rotation_start" << endl;
+    outfile << "" << endl;
+    outfile << "rotation_end" << endl;
+    outfile << "BREAK" << endl;
+    outfile << "restrictions/team_config/attack_config:" << endl;
+    outfile << "weapon= suit1= suit2= main3= main4= main5= recharge=" << endl;
+    outfile << "E_release_times= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
+    outfile << "attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
+    outfile << "BREAK" << endl;
+    outfile << "weapon= suit1= suit2= main3= main4= main5= recharge=" << endl;
+    outfile << "E_release_times= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
+    outfile << "attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
+    outfile << "BREAK" << endl;
+    outfile << "weapon= suit1= suit2= main3= main4= main5= recharge=" << endl;
+    outfile << "E_release_times= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
+    outfile << "attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
+    outfile << "BREAK" << endl;
+    outfile << "weapon= suit1= suit2= main3= main4= main5= recharge=" << endl;
+    outfile << "E_release_times= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
+    outfile << "attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
+    outfile << "BREAK";
+
+    outfile.close();
+}
+
+//function 2 generate gcsim script (init/final)
+pair<string, string> main_convert(string ele_type, string main)
+{
+    if (main == "生命值") return make_pair("hp%", "0.466");
+    if (main == "攻击力") return make_pair("atk%", "0.466");
+    if (main == "防御力") return make_pair("def%", "0.583");
+    if (main == "元素充能效率") return make_pair("er", "0.518");
+    if (main == "元素精通") return make_pair("em", "187");
+    if (main == "暴击率") return make_pair("cr", "0.311");
+    if (main == "暴击伤害") return make_pair("cd", "0.622");
+    if (main == "治疗加成") return make_pair("heal", "0.359");
+    if (main == "伤害加成" && ele_type == "火") return make_pair("pyro%", "0.466");
+    if (main == "伤害加成" && ele_type == "水") return make_pair("hydro%", "0.466");
+    if (main == "伤害加成" && ele_type == "雷") return make_pair("electro%", "0.466");
+    if (main == "伤害加成" && ele_type == "冰") return make_pair("cryo%", "0.466");
+    if (main == "伤害加成" && ele_type == "风") return make_pair("anemo%", "0.466");
+    if (main == "伤害加成" && ele_type == "岩") return make_pair("geo%", "0.466");
+    if (main == "伤害加成" && ele_type == "草") return make_pair("dendro%", "0.466");
+    if (main == "物理元素伤害加成" && ele_type == "物理") return make_pair("phys%", "0.583");
+    return make_pair("", "");
+}
+
+void generate_gcsim_script(string team_name)
+{
+    ofstream outfile_run_substat_optimizer;
+    outfile_run_substat_optimizer.open(filepath + team_name + "/run_substat_optimizer.ps1");
+    ofstream outfile_run_optimized_config;
+    outfile_run_optimized_config.open(filepath + team_name + "/run_optimized_config.ps1");
+
+    int filecount = 1;
+    for (auto &combination_1: full_config->c1->gcsim_combinations)
+        for (auto &combination_2: full_config->c2->gcsim_combinations)
+            for (auto &combination_3: full_config->c3->gcsim_combinations)
+                for (auto &combination_4: full_config->c4->gcsim_combinations)
+                {
+                    //TODO:ps1
+                    outfile_run_substat_optimizer << ("./run_substat_optimizer.bat " + team_name + "_" + to_string(filecount) + ".txt") << endl;
+                    outfile_run_optimized_config << ("./run_optimized_config.bat " + team_name + "_" + to_string(filecount) + ".txt > ./logs/" + team_name + "_" + to_string(filecount) + ".txt") << endl;
+
+                    //config
+                    outfile_result.open(filepath + team_name + "/config/" + team_name + "_" + to_string(filecount) + ".txt");
+                    Character *c;
+                    Weapon *w;
+                    Artifact *a1;
+                    Artifact *a2;
+                    string m3;
+                    string m4;
+                    string m5;
+
+                    //character1
+                    c = full_config->c1->c_point;
+                    w = find_weapon_by_name(combination_1->weapon);
+                    a1 = find_artifact_by_name(combination_1->suit1);
+                    a2 = find_artifact_by_name(combination_1->suit2);
+                    m3 = combination_1->main3;
+                    m4 = combination_1->main4;
+                    m5 = combination_1->main5;
+
+                    outfile_result << "#" << c->name << " " << w->name << " " << a1->name << " " << a2->name << " " << m3 << " " << m4 << " " << m5 << endl;
+                    outfile_result << c->english_name << " char lvl=90/90 cons=" << to_string(c->constellation) << " talent=" << to_string(c->A_level) << "," << to_string((c->E_level > 10) ? (c->E_level - 3) : c->E_level) << ","
+                                   << to_string((c->Q_level > 10) ? (c->Q_level - 3) : c->Q_level) << ";" << endl;
+                    outfile_result << c->english_name << " add weapon=\"" << w->english_name << "\" refine=" << to_string(w->level) << " lvl=90/90;" << endl;
+                    if (a1 == a2) outfile_result << c->english_name << " add set=\"" << a1->english_name << "\" count=4;" << endl;
+                    else
+                    {
+                        outfile_result << c->english_name << " add set=\"" << a1->english_name << "\" count=2;" << endl;
+                        outfile_result << c->english_name << " add set=\"" << a2->english_name << "\" count=2;" << endl;
+                    }
+                    outfile_result << c->english_name << " add stats hp=4780 atk=311 "
+                                   << main_convert(c->ele_type, m3).first << "=" << main_convert(c->ele_type, m3).second << " "
+                                   << main_convert(c->ele_type, m4).first << "=" << main_convert(c->ele_type, m4).second << " "
+                                   << main_convert(c->ele_type, m5).first << "=" << main_convert(c->ele_type, m5).second << ";" << endl;
+                    outfile_result << endl;
+
+                    //character2
+                    c = full_config->c2->c_point;
+                    w = find_weapon_by_name(combination_2->weapon);
+                    a1 = find_artifact_by_name(combination_2->suit1);
+                    a2 = find_artifact_by_name(combination_2->suit2);
+                    m3 = combination_2->main3;
+                    m4 = combination_2->main4;
+                    m5 = combination_2->main5;
+
+                    outfile_result << "#" << c->name << " " << w->name << " " << a1->name << " " << a2->name << " " << m3 << " " << m4 << " " << m5 << endl;
+                    outfile_result << c->english_name << " char lvl=90/90 cons=" << to_string(c->constellation) << " talent=" << to_string(c->A_level) << "," << to_string((c->E_level > 10) ? (c->E_level - 3) : c->E_level) << ","
+                                   << to_string((c->Q_level > 10) ? (c->Q_level - 3) : c->Q_level) << ";" << endl;
+                    outfile_result << c->english_name << " add weapon=\"" << w->english_name << "\" refine=" << to_string(w->level) << " lvl=90/90;" << endl;
+                    if (a1 == a2) outfile_result << c->english_name << " add set=\"" << a1->english_name << "\" count=4;" << endl;
+                    else
+                    {
+                        outfile_result << c->english_name << " add set=\"" << a1->english_name << "\" count=2;" << endl;
+                        outfile_result << c->english_name << " add set=\"" << a2->english_name << "\" count=2;" << endl;
+                    }
+                    outfile_result << c->english_name << " add stats hp=4780 atk=311 "
+                                   << main_convert(c->ele_type, m3).first << "=" << main_convert(c->ele_type, m3).second << " "
+                                   << main_convert(c->ele_type, m4).first << "=" << main_convert(c->ele_type, m4).second << " "
+                                   << main_convert(c->ele_type, m5).first << "=" << main_convert(c->ele_type, m5).second << ";" << endl;
+                    outfile_result << endl;
+
+                    //character3
+                    c = full_config->c3->c_point;
+                    w = find_weapon_by_name(combination_3->weapon);
+                    a1 = find_artifact_by_name(combination_3->suit1);
+                    a2 = find_artifact_by_name(combination_3->suit2);
+                    m3 = combination_3->main3;
+                    m4 = combination_3->main4;
+                    m5 = combination_3->main5;
+
+                    outfile_result << "#" << c->name << " " << w->name << " " << a1->name << " " << a2->name << " " << m3 << " " << m4 << " " << m5 << endl;
+                    outfile_result << c->english_name << " char lvl=90/90 cons=" << to_string(c->constellation) << " talent=" << to_string(c->A_level) << "," << to_string((c->E_level > 10) ? (c->E_level - 3) : c->E_level) << ","
+                                   << to_string((c->Q_level > 10) ? (c->Q_level - 3) : c->Q_level) << ";" << endl;
+                    outfile_result << c->english_name << " add weapon=\"" << w->english_name << "\" refine=" << to_string(w->level) << " lvl=90/90;" << endl;
+                    if (a1 == a2) outfile_result << c->english_name << " add set=\"" << a1->english_name << "\" count=4;" << endl;
+                    else
+                    {
+                        outfile_result << c->english_name << " add set=\"" << a1->english_name << "\" count=2;" << endl;
+                        outfile_result << c->english_name << " add set=\"" << a2->english_name << "\" count=2;" << endl;
+                    }
+                    outfile_result << c->english_name << " add stats hp=4780 atk=311 "
+                                   << main_convert(c->ele_type, m3).first << "=" << main_convert(c->ele_type, m3).second << " "
+                                   << main_convert(c->ele_type, m4).first << "=" << main_convert(c->ele_type, m4).second << " "
+                                   << main_convert(c->ele_type, m5).first << "=" << main_convert(c->ele_type, m5).second << ";" << endl;
+                    outfile_result << endl;
+
+                    //character4
+                    c = full_config->c4->c_point;
+                    w = find_weapon_by_name(combination_4->weapon);
+                    a1 = find_artifact_by_name(combination_4->suit1);
+                    a2 = find_artifact_by_name(combination_4->suit2);
+                    m3 = combination_4->main3;
+                    m4 = combination_4->main4;
+                    m5 = combination_4->main5;
+
+                    outfile_result << "#" << c->name << " " << w->name << " " << a1->name << " " << a2->name << " " << m3 << " " << m4 << " " << m5 << endl;
+                    outfile_result << c->english_name << " char lvl=90/90 cons=" << to_string(c->constellation) << " talent=" << to_string(c->A_level) << "," << to_string((c->E_level > 10) ? (c->E_level - 3) : c->E_level) << ","
+                                   << to_string((c->Q_level > 10) ? (c->Q_level - 3) : c->Q_level) << ";" << endl;
+                    outfile_result << c->english_name << " add weapon=\"" << w->english_name << "\" refine=" << to_string(w->level) << " lvl=90/90;" << endl;
+                    if (a1 == a2) outfile_result << c->english_name << " add set=\"" << a1->english_name << "\" count=4;" << endl;
+                    else
+                    {
+                        outfile_result << c->english_name << " add set=\"" << a1->english_name << "\" count=2;" << endl;
+                        outfile_result << c->english_name << " add set=\"" << a2->english_name << "\" count=2;" << endl;
+                    }
+                    outfile_result << c->english_name << " add stats hp=4780 atk=311 "
+                                   << main_convert(c->ele_type, m3).first << "=" << main_convert(c->ele_type, m3).second << " "
+                                   << main_convert(c->ele_type, m4).first << "=" << main_convert(c->ele_type, m4).second << " "
+                                   << main_convert(c->ele_type, m5).first << "=" << main_convert(c->ele_type, m5).second << ";" << endl;
+                    outfile_result << endl;
+
+                    //options
+                    outfile_result << "options";
+                    if (full_config->options.find("iteration") == string::npos) outfile_result << " iteration=10000";
+                    if (full_config->options.find("duration") == string::npos) outfile_result << " duration=105";
+                    if (full_config->options.find("swap_delay") == string::npos) outfile_result << " swap_delay=4";
+                    if (!full_config->options.empty()) outfile_result << " " << full_config->options;
+                    outfile_result << ";" << endl;
+
+                    //target
+                    outfile_result << "target";
+                    if (full_config->target.find("lvl") == string::npos) outfile_result << " lvl=95";
+                    if (full_config->target.find("resist") == string::npos) outfile_result << " resist=0.1";
+                    if (full_config->target.find("particle_threshold") == string::npos) outfile_result << " particle_threshold=150000";
+                    if (full_config->target.find("particle_drop_count") == string::npos) outfile_result << " particle_drop_count=1";
+                    if (!full_config->target.empty()) outfile_result << " " << full_config->target;
+                    outfile_result << ";" << endl;
+
+                    outfile_result << endl;
+
+                    //active
+                    if (full_config->attack_list[0] == "rotation_start") outfile_result << "active " << full_config->attack_list[1].substr(0, full_config->attack_list[1].find_first_of(' ')) << ";" << endl;
+                    else outfile_result << "active " << full_config->attack_list[0].substr(0, full_config->attack_list[0].find_first_of(' ')) << ";" << endl;
+                    outfile_result << endl;
+
+                    //attack_list
+                    for (auto &i: full_config->attack_list)
+                    {
+                        if (i == "rotation_start") outfile_result << "for let x=0; x<5; x=x+1 {" << endl;
+                        else if (i == "rotation_end") outfile_result << "}" << endl;
+                        else
+                        {
+                            if (i[i.length() - 1] == '{' || i[i.length() - 1] == '}')
+                                outfile_result << "  " << i << endl;
+                            else
+                                outfile_result << "  " << i << ";" << endl;
+                        }
+                    }
+                    outfile_result.close();
+
+                    filecount++;
+                }
+}
+
+//function 3 cal_optimal_substats
 bool cmp_func(Group *a, Group *b)
 {
     if (a->total_damage > b->total_damage) return true;
     else return false;
 }
 
-void cal_deployment(string mode)
+//注意圣遗物限定2+2有顺序
+void cal_optimal_substats(character_info *characterInfo)
 {
+    //don't calculate
+    if (characterInfo->attack_config_list[0]->condition->attack_way.empty()) return;
+
+    vector<Group *> comb_out_data;
     auto total_start = chrono::system_clock::now();
-    for (auto &c_index: character_list)
+
+    for (auto &w_index: weapon_list)
     {
-        //没有武器和圣遗物更新则不用计算未更新角色的任何配置
-        if (mode == "ADD" && add_weapon.empty() && add_artifact.empty() && add_character.find(c_index->name) == string::npos) continue;
+        if (characterInfo->c_point->weapon_type != w_index->weapon_type) continue;
+        if (!characterInfo->cal_all_restriction->weapon.empty() && characterInfo->cal_all_restriction->weapon.find(w_index->name) == string::npos) continue;
 
-        vector<Combination *> combination_list;
-        get_all_config(c_index->name, combination_list, "cal_deployment");
-        for (auto &comb_index: combination_list)
+        vector<Group *> c_w_pair;
+        vector<thread> ths;
+        auto start = chrono::system_clock::now();
+
+        for (int a_index1 = 0; a_index1 < artifact_list.size(); a_index1++)
         {
-            vector<Group *> comb_out_data;
-
-            for (auto &w_index: weapon_list)
+            if (!characterInfo->cal_all_restriction->suit1.empty() && characterInfo->cal_all_restriction->suit1.find(artifact_list[a_index1]->name) == string::npos) continue;
+            for (int a_index2 = a_index1; a_index2 < artifact_list.size(); a_index2++)
             {
-                //没有圣遗物更新则不用计算未更新武器的任何配置
-                if (mode == "ADD" && add_artifact.empty() && add_weapon.find(w_index->name) == string::npos) continue;
-
-                if (c_index->weapon_type != w_index->weapon_type) continue;
-
-                if (comb_index->w_point != nullptr && comb_index->w_point != w_index) continue;
-
-                vector<Group *> c_w_pair;
-                vector<thread> ths;
-
-                auto start = chrono::system_clock::now();
-
-                for (int a_index1 = 0; a_index1 < artifact_list.size(); a_index1++)
+                if (!characterInfo->cal_all_restriction->suit2.empty() && characterInfo->cal_all_restriction->suit2.find(artifact_list[a_index2]->name) == string::npos) continue;
+                for (int main3_index = 0; main3_index < 5; main3_index++)
                 {
-                    if (comb_index->suit1 != nullptr && comb_index->suit1 != artifact_list[a_index1]) continue;
-
-                    for (int a_index2 = a_index1; a_index2 < artifact_list.size(); a_index2++)
+                    if (!characterInfo->cal_all_restriction->main3.empty() && characterInfo->cal_all_restriction->main3.find(a_main3[main3_index]) == string::npos) continue;
+                    for (int main4_index = (main3_index == 4) ? 0 : main3_index; main4_index < 5; main4_index++)
                     {
-                        if (comb_index->suit2 != nullptr && comb_index->suit2 != artifact_list[a_index2]) continue;
-
-                        for (int main3_index = 0; main3_index < 5; main3_index++)
+                        if (!characterInfo->cal_all_restriction->main4.empty() && characterInfo->cal_all_restriction->main4.find(a_main4[main4_index]) == string::npos) continue;
+                        for (int main5_index = (main4_index == 4) ? ((main3_index == 4) ? 0 : main3_index) : main4_index; main5_index < 7; main5_index++)
                         {
-                            if (!comb_index->a_main3.empty() && comb_index->a_main3 != a_main3[main3_index]) continue;
+                            if (!characterInfo->cal_all_restriction->main5.empty() && characterInfo->cal_all_restriction->main5.find(a_main5[main5_index]) == string::npos) continue;
 
-                            for (int main4_index = (main3_index == 4) ? 0 : main3_index; main4_index < 5; main4_index++)
+                            auto *temp = new Group(characterInfo->c_point, w_index, artifact_list[a_index1], artifact_list[a_index2], a_main3[main3_index], a_main4[main4_index], a_main5[main5_index],
+                                                   characterInfo->team_config, characterInfo->attack_config_list, characterInfo->recharge_restriction);
+                            int check_num = temp->init_check_data("cal_optimal_substats");
+                            if (check_num == 0)//pass
                             {
-                                if (!comb_index->a_main4.empty() && comb_index->a_main4 != a_main4[main4_index]) continue;
-
-                                for (int main5_index = (main4_index == 4) ? ((main3_index == 4) ? 0 : main3_index) : main4_index; main5_index < 7; main5_index++)
-                                {
-                                    if (!comb_index->a_main5.empty() && comb_index->a_main5 != a_main5[main5_index]) continue;
-
-                                    auto *temp = new Group(c_index, w_index, artifact_list[a_index1], artifact_list[a_index2], a_main3[main3_index],
-                                                           a_main4[main4_index], a_main5[main5_index], comb_index->team_config, comb_index->attack_config_list, comb_index->need_to_satisfy_recharge);
-                                    int check_num = temp->init_check_data(9);
-                                    if (check_num == 0)//pass
-                                    {
-                                        c_w_pair.push_back(temp);
-                                        ths.emplace_back(&Group::cal_damage_entry_num, temp);
-                                        //temp->cal_damage_entry_num();
-                                    }
-                                    else if (check_num == 1)//error:suit1
-                                    {
-                                        delete temp;
-                                        goto NEXTARTIFACT1;
-                                    }
-                                    else if (check_num == 2)//error:suit2
-                                    {
-                                        delete temp;
-                                        goto NEXTARTIFACT2;
-                                    }
-                                    else if (check_num == 3)//error:main3
-                                    {
-                                        delete temp;
-                                        goto NEXTMAIN3;
-                                    }
-                                    else if (check_num == 4)//error:main4
-                                    {
-                                        delete temp;
-                                        goto NEXTMAIN4;
-                                    }
-                                    else if (check_num == 5)//error:main5
-                                    {
-                                        delete temp;
-                                        goto NEXTMAIN5;
-                                    }
-                                    else if (check_num == 6)//error:recharge
-                                    {
-                                        delete temp;
-                                        goto NEXTMAIN5;
-                                    }
-                                    NEXTMAIN5:;
-                                }
-                                NEXTMAIN4:;
+                                c_w_pair.push_back(temp);
+                                ths.emplace_back(&Group::cal_damage_entry_num, temp);
                             }
-                            NEXTMAIN3:;
+                            else if (check_num == 1)//error:suit1
+                            {
+                                delete temp;
+                                goto NEXTARTIFACT1;
+                            }
+                            else if (check_num == 2)//error:suit2
+                            {
+                                delete temp;
+                                goto NEXTARTIFACT2;
+                            }
+                            else if (check_num == 3)//error:main3
+                            {
+                                delete temp;
+                                goto NEXTMAIN3;
+                            }
+                            else if (check_num == 4)//error:main4
+                            {
+                                delete temp;
+                                goto NEXTMAIN4;
+                            }
+                            else if (check_num == 5)//error:main5
+                            {
+                                delete temp;
+                                goto NEXTMAIN5;
+                            }
+                            else if (check_num == 6)//error:recharge
+                            {
+                                delete temp;
+                                goto NEXTMAIN5;
+                            }
+                            NEXTMAIN5:;
                         }
-                        NEXTARTIFACT2:;
+                        NEXTMAIN4:;
                     }
-                    NEXTARTIFACT1:;
+                    NEXTMAIN3:;
                 }
-
-                for (auto &th: ths) th.join();
-
-                chrono::duration<double> time = chrono::system_clock::now() - start;
-
-                if (!c_w_pair.empty())
-                {
-                    Group *optimal = c_w_pair[0];
-                    for (auto &i: c_w_pair)
-                        if (i->total_damage > optimal->total_damage)
-                            optimal = i;
-                    for (auto &i: c_w_pair)
-                    {
-                        if (i->total_damage / optimal->total_damage >= out_filter_percentage) comb_out_data.push_back(i);
-                        else delete i;
-                    }
-                }
-                c_w_pair.clear();
-
-                cout << c_index->name << " " << w_index->name << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << " ";
-                for (auto &i: comb_index->attack_config_list)
-                    cout << to_string(i->attack_time) + "*" + i->condition->attack_way + "_" + (i->background ? "后台" : "前台") + "_" + i->react_type + "/";
-                cout << " " << comb_index->team_config->teammate_all + "_" + comb_index->team_config->team_weapon_artifact << "\n";
+                NEXTARTIFACT2:;
             }
-
-            if (!comb_out_data.empty())
-            {
-                stable_sort(comb_out_data.begin(), comb_out_data.end(), cmp_func);
-                double total_damage_baseline = comb_out_data[0]->total_damage;
-                for (auto &i: comb_out_data)
-                {
-                    i->out(total_damage_baseline);
-                    delete i;
-                }
-            }
-            comb_out_data.clear();
+            NEXTARTIFACT1:;
         }
-        combination_list.clear();
+
+        for (auto &th: ths) th.join();
+
+        chrono::duration<double> time = chrono::system_clock::now() - start;
+
+        if (!c_w_pair.empty())
+        {
+            Group *optimal = c_w_pair[0];
+            for (auto &i: c_w_pair)
+                if (i->total_damage > optimal->total_damage)
+                    optimal = i;
+            for (auto &i: c_w_pair)
+            {
+                if (i->total_damage / optimal->total_damage >= out_filter_percentage) comb_out_data.push_back(i);
+                else delete i;
+            }
+        }
+        c_w_pair.clear();
+
+        cout << characterInfo->c_point->name << " " << w_index->name << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << " ";
     }
+
+    if (!comb_out_data.empty())
+    {
+        stable_sort(comb_out_data.begin(), comb_out_data.end(), cmp_func);
+        double total_damage_baseline = comb_out_data[0]->total_damage;
+        for (auto &i: comb_out_data)
+        {
+            i->out(total_damage_baseline);
+            delete i;
+        }
+    }
+    comb_out_data.clear();
+
     chrono::duration<double> total_time = chrono::system_clock::now() - total_start;
     cout << "total_time:" << total_time.count() << "s" << endl;
 }
 
-//cal_optimal_artifact
-
+//function 4 cal_optimal_artifact TODO:OPTIMIZE
 vector<vector<Reinforced_Artifact *>> reinforced_artifact_list;
 
-void read_artifact(string filename)
+void read_artifact()
 {
     ifstream infile;
-    infile.open(filename);
+    infile.open(filepath + "artifacts.txt");
     vector<Reinforced_Artifact *> pos1;
     vector<Reinforced_Artifact *> pos2;
     vector<Reinforced_Artifact *> pos3;
@@ -3482,12 +3338,12 @@ struct cmp
     }
 };
 
-void cal_optimal_artifact(string c_name)
+void cal_optimal_artifact(character_info *characterInfo)
 {
-    vector<Combination *> combination_list;
-    get_all_config(c_name, combination_list, "cal_optimal_artifact");
-    Character *c_point = find_character_by_name(c_name);
-    for (auto &comb_index: combination_list)
+    //don't calculate
+    if (characterInfo->attack_config_list[0]->condition->attack_way.empty()) return;
+
+    for (auto &comb_index: characterInfo->artifact_combinations)
     {
         Group *optimal = nullptr;
         priority_queue<Group *, vector<Group *>, cmp> c_w_pair;
@@ -3506,7 +3362,7 @@ void cal_optimal_artifact(string c_name)
                     for (int pos4_index = 0; pos4_index < reinforced_artifact_list[3].size(); ++pos4_index)
                     {
                         if (reinforced_artifact_list[3][pos4_index]->character_belong != "none") continue;
-                        if (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos && reinforced_artifact_list[3][pos4_index]->main_type != (c_point->ele_type + "伤害加成")) continue;
+                        if (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos && reinforced_artifact_list[3][pos4_index]->main_type != (characterInfo->c_point->ele_type + "伤害加成")) continue;
                         for (int pos5_index = 0; pos5_index < reinforced_artifact_list[4].size(); ++pos5_index)
                         {
                             if (reinforced_artifact_list[4][pos5_index]->character_belong != "none") continue;
@@ -3521,22 +3377,22 @@ void cal_optimal_artifact(string c_name)
 
                             //check config restrictions
                             bool valid = false;
-                            if ((comb_index->suit1 == nullptr || comb_index->suit1 == suit1) && (comb_index->suit2 == nullptr || comb_index->suit2 == suit2)) valid = true;
-                            if ((comb_index->suit1 == nullptr || comb_index->suit1 == suit2) && (comb_index->suit2 == nullptr || comb_index->suit2 == suit1)) valid = true;
+                            if ((comb_index->suit1.empty() || comb_index->suit1 == suit1->name) && (comb_index->suit2.empty() || comb_index->suit2 == suit2->name)) valid = true;
+                            if ((comb_index->suit1.empty() || comb_index->suit1 == suit2->name) && (comb_index->suit2.empty() || comb_index->suit2 == suit1->name)) valid = true;
                             if (!valid) continue;
-                            if (!comb_index->a_main3.empty() && comb_index->a_main3 != main3) continue;
-                            if (!comb_index->a_main4.empty() && comb_index->a_main4 != main4) continue;
-                            if (!comb_index->a_main5.empty() && comb_index->a_main5 != main5) continue;
+                            if (!comb_index->main3.empty() && comb_index->main3 != main3) continue;
+                            if (!comb_index->main4.empty() && comb_index->main4 != main4) continue;
+                            if (!comb_index->main5.empty() && comb_index->main5 != main5) continue;
 
-                            auto *temp = new Group(c_point, comb_index->w_point, suit1, suit2, main3, main4, main5,
-                                                   comb_index->team_config, comb_index->attack_config_list, comb_index->need_to_satisfy_recharge);
+                            auto *temp = new Group(characterInfo->c_point, find_weapon_by_name(comb_index->weapon), suit1, suit2, main3, main4, main5,
+                                                   characterInfo->team_config, characterInfo->attack_config_list, characterInfo->recharge_restriction);
                             temp->data[0] = reinforced_artifact_list[0][pos1_index];
                             temp->data[1] = reinforced_artifact_list[1][pos2_index];
                             temp->data[2] = reinforced_artifact_list[2][pos3_index];
                             temp->data[3] = reinforced_artifact_list[3][pos4_index];
                             temp->data[4] = reinforced_artifact_list[4][pos5_index];
 
-                            int check_num = temp->init_check_data(2);
+                            int check_num = temp->init_check_data("cal_optimal_artifact");
                             if (check_num == 0)//pass
                             {
                                 temp->cal_assigned_artifact_damage();
@@ -3603,280 +3459,8 @@ void cal_optimal_artifact(string c_name)
             delete c_w;
         }
 
-        cout << c_point->name << " " << comb_index->w_point->name << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << " ";
-        for (auto &i: comb_index->attack_config_list)
-            cout << to_string(i->attack_time) + "*" + i->condition->attack_way + "_" + (i->background ? "后台" : "前台") + "_" + i->react_type + "/";
-        cout << " " << comb_index->team_config->teammate_all + "_" + comb_index->team_config->team_weapon_artifact << "\n";
+        cout << characterInfo->c_point->name << " " << comb_index->weapon << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << " ";
     }
-    combination_list.clear();
-}
-
-//generate_gcsim_script
-
-class gcsim_script
-{
-public:
-    vector<Character *> character_list;
-    string option_modify;
-    string target_modify;
-    vector<string> attack_list;
-};
-
-gcsim_script *team_script;
-ofstream outfile_run_substat_optimizer_full;
-ofstream outfile_rerun_optimized_config;
-
-size_t replace_all(string &inout, string_view what, string_view with)
-{
-    size_t count{};
-    for (string::size_type pos{}; string::npos != (pos = inout.find(what.data(), pos, what.length())); pos += with.length(), ++count)
-        inout.replace(pos, what.length(), with.data(), with.length());
-    return count;
-}
-
-void read_team_script(string filename)
-{
-    ifstream infile;
-    infile.open(filename);
-
-    string c_name;
-    for (int i = 0; i < 4; ++i)
-    {
-        infile >> c_name;
-        team_script->character_list.push_back(find_character_by_name(c_name));
-    }
-
-    string info;
-    getline(infile, info);
-    while (!infile.eof())
-    {
-        getline(infile, info);
-        if (info.empty()) continue;
-        else if (info.find("options") != string::npos) team_script->option_modify = info.substr(info.find_first_of(' ') + 1);
-        else if (info.find("target") != string::npos) team_script->target_modify = info.substr(info.find_first_of(' ') + 1);
-        else
-        {
-            replace_all(info, team_script->character_list[0]->name, team_script->character_list[0]->english_name);
-            replace_all(info, team_script->character_list[1]->name, team_script->character_list[1]->english_name);
-            replace_all(info, team_script->character_list[2]->name, team_script->character_list[2]->english_name);
-            replace_all(info, team_script->character_list[3]->name, team_script->character_list[3]->english_name);
-            replace_all(info, "平A", "attack");
-            replace_all(info, "重A", "charge");
-            replace_all(info, "下落A", "high_plunge");
-            replace_all(info, "长E", "skill[hold=1]");
-            replace_all(info, "E", "skill");
-            replace_all(info, "Q", "burst");
-            replace_all(info, "冲刺", "dash");
-            replace_all(info, "跳跃", "jump");
-            team_script->attack_list.push_back(info);
-        }
-    }
-
-    infile.close();
-}
-
-pair<string, string> main_convert(string ele_type, string main)
-{
-    if (main == "生命值") return make_pair("hp%", "0.466");
-    if (main == "攻击力") return make_pair("atk%", "0.466");
-    if (main == "防御力") return make_pair("def%", "0.583");
-    if (main == "元素充能效率") return make_pair("er", "0.518");
-    if (main == "元素精通") return make_pair("em", "187");
-    if (main == "暴击率") return make_pair("cr", "0.311");
-    if (main == "暴击伤害") return make_pair("cd", "0.622");
-    if (main == "治疗加成") return make_pair("heal", "0.359");
-    if (main == "伤害加成" && ele_type == "火") return make_pair("pyro%", "0.466");
-    if (main == "伤害加成" && ele_type == "水") return make_pair("hydro%", "0.466");
-    if (main == "伤害加成" && ele_type == "雷") return make_pair("electro%", "0.466");
-    if (main == "伤害加成" && ele_type == "冰") return make_pair("cryo%", "0.466");
-    if (main == "伤害加成" && ele_type == "风") return make_pair("anemo%", "0.466");
-    if (main == "伤害加成" && ele_type == "岩") return make_pair("geo%", "0.466");
-    if (main == "伤害加成" && ele_type == "草") return make_pair("dendro%", "0.466");
-    if (main == "物理元素伤害加成" && ele_type == "物理") return make_pair("phys%", "0.583");
-    return make_pair("", "");
-}
-
-void generate_gcsim_script(string filepath, string teamname)
-{
-    vector<Combination *> combination_list_1;
-    get_all_config(team_script->character_list[0]->name, combination_list_1, "generate_gcsim_script");
-    vector<Combination *> combination_list_2;
-    get_all_config(team_script->character_list[1]->name, combination_list_2, "generate_gcsim_script");
-    vector<Combination *> combination_list_3;
-    get_all_config(team_script->character_list[2]->name, combination_list_3, "generate_gcsim_script");
-    vector<Combination *> combination_list_4;
-    get_all_config(team_script->character_list[3]->name, combination_list_4, "generate_gcsim_script");
-
-    int filecount = 1;
-    for (auto &combination_1: combination_list_1)
-        if (combination_1->team_config == nullptr ||
-            (combination_1->team_config->teammate_all.find(team_script->character_list[1]->name) != string::npos &&
-             combination_1->team_config->teammate_all.find(team_script->character_list[2]->name) != string::npos &&
-             combination_1->team_config->teammate_all.find(team_script->character_list[3]->name) != string::npos))
-            for (auto &combination_2: combination_list_2)
-                if (combination_2->team_config == nullptr ||
-                    (combination_2->team_config->teammate_all.find(team_script->character_list[0]->name) != string::npos &&
-                     combination_2->team_config->teammate_all.find(team_script->character_list[2]->name) != string::npos &&
-                     combination_2->team_config->teammate_all.find(team_script->character_list[3]->name) != string::npos))
-                    for (auto &combination_3: combination_list_3)
-                        if (combination_3->team_config == nullptr ||
-                            (combination_3->team_config->teammate_all.find(team_script->character_list[1]->name) != string::npos &&
-                             combination_3->team_config->teammate_all.find(team_script->character_list[0]->name) != string::npos &&
-                             combination_3->team_config->teammate_all.find(team_script->character_list[3]->name) != string::npos))
-                            for (auto &combination_4: combination_list_4)
-                                if (combination_4->team_config == nullptr ||
-                                    (combination_4->team_config->teammate_all.find(team_script->character_list[1]->name) != string::npos &&
-                                     combination_4->team_config->teammate_all.find(team_script->character_list[2]->name) != string::npos &&
-                                     combination_4->team_config->teammate_all.find(team_script->character_list[0]->name) != string::npos))
-                                {
-                                    //ps1
-                                    outfile_run_substat_optimizer_full << "./run_substat_optimizer_full.bat " << (teamname + "_" + to_string(filecount) + ".txt") << endl;
-                                    outfile_rerun_optimized_config << "./rerun_optimized_config.bat " << (teamname + "_" + to_string(filecount) + ".txt") << " > ./logs/" << (teamname + "_" + to_string(filecount) + ".txt") << endl;
-
-                                    //config
-                                    outfile_result.open(filepath + teamname + "_" + to_string(filecount) + ".txt");
-                                    outfile_result << "#./run_substat_optimizer_full.bat " << (teamname + "_" + to_string(filecount) + ".txt") << endl;
-                                    outfile_result << "#./rerun_optimized_config.bat " << (teamname + "_" + to_string(filecount) + ".txt") << " > ./logs/" << (teamname + "_" + to_string(filecount) + ".txt") << endl;
-                                    outfile_result << endl;
-
-                                    //character1
-                                    outfile_result << "#" << team_script->character_list[0]->name << " " << combination_1->w_point->name << " " << combination_1->suit1->name << " " << combination_1->suit2->name << " "
-                                                   << combination_1->a_main3 << " " << combination_1->a_main4 << " " << combination_1->a_main5 << endl;
-
-                                    outfile_result << team_script->character_list[0]->english_name << " char lvl=90/90 cons=" << to_string(team_script->character_list[0]->constellation)
-                                                   << " talent=" << to_string(team_script->character_list[0]->A_level) << ","
-                                                   << to_string((team_script->character_list[0]->E_level > 10) ? (team_script->character_list[0]->E_level - 3) : team_script->character_list[0]->E_level) << ","
-                                                   << to_string((team_script->character_list[0]->Q_level > 10) ? (team_script->character_list[0]->Q_level - 3) : team_script->character_list[0]->Q_level) << ";" << endl;
-                                    outfile_result << team_script->character_list[0]->english_name << " add weapon=\"" << combination_1->w_point->english_name << "\" refine=" << to_string(combination_1->w_point->level) << " lvl=90/90;" << endl;
-                                    if (combination_1->suit1 == combination_1->suit2)
-                                    {
-                                        outfile_result << team_script->character_list[0]->english_name << " add set=\"" << combination_1->suit1->english_name << "\" count=4;" << endl;
-                                    }
-                                    else
-                                    {
-                                        outfile_result << team_script->character_list[0]->english_name << " add set=\"" << combination_1->suit1->english_name << "\" count=2;" << endl;
-                                        outfile_result << team_script->character_list[0]->english_name << " add set=\"" << combination_1->suit2->english_name << "\" count=2;" << endl;
-                                    }
-                                    outfile_result << team_script->character_list[0]->english_name << " add stats hp=4780 atk=311 "
-                                                   << main_convert(team_script->character_list[0]->ele_type, combination_1->a_main3).first << "=" << main_convert(team_script->character_list[0]->ele_type, combination_1->a_main3).second << " "
-                                                   << main_convert(team_script->character_list[0]->ele_type, combination_1->a_main4).first << "=" << main_convert(team_script->character_list[0]->ele_type, combination_1->a_main4).second << " "
-                                                   << main_convert(team_script->character_list[0]->ele_type, combination_1->a_main5).first << "=" << main_convert(team_script->character_list[0]->ele_type, combination_1->a_main5).second << ";" << endl;
-                                    outfile_result << endl;
-
-                                    //character2
-                                    outfile_result << "#" << team_script->character_list[1]->name << " " << combination_2->w_point->name << " " << combination_2->suit1->name << " " << combination_2->suit2->name << " "
-                                                   << combination_2->a_main3 << " " << combination_2->a_main4 << " " << combination_2->a_main5 << endl;
-
-                                    outfile_result << team_script->character_list[1]->english_name << " char lvl=90/90 cons=" << to_string(team_script->character_list[1]->constellation)
-                                                   << " talent=" << to_string(team_script->character_list[1]->A_level) << ","
-                                                   << to_string((team_script->character_list[1]->E_level > 10) ? (team_script->character_list[1]->E_level - 3) : team_script->character_list[1]->E_level) << ","
-                                                   << to_string((team_script->character_list[1]->Q_level > 10) ? (team_script->character_list[1]->Q_level - 3) : team_script->character_list[1]->Q_level) << ";" << endl;
-                                    outfile_result << team_script->character_list[1]->english_name << " add weapon=\"" << combination_2->w_point->english_name << "\" refine=" << to_string(combination_2->w_point->level) << " lvl=90/90;" << endl;
-                                    if (combination_2->suit1 == combination_2->suit2)
-                                    {
-                                        outfile_result << team_script->character_list[1]->english_name << " add set=\"" << combination_2->suit1->english_name << "\" count=4;" << endl;
-                                    }
-                                    else
-                                    {
-                                        outfile_result << team_script->character_list[1]->english_name << " add set=\"" << combination_2->suit1->english_name << "\" count=2;" << endl;
-                                        outfile_result << team_script->character_list[1]->english_name << " add set=\"" << combination_2->suit2->english_name << "\" count=2;" << endl;
-                                    }
-                                    outfile_result << team_script->character_list[1]->english_name << " add stats hp=4780 atk=311 "
-                                                   << main_convert(team_script->character_list[1]->ele_type, combination_2->a_main3).first << "=" << main_convert(team_script->character_list[1]->ele_type, combination_2->a_main3).second << " "
-                                                   << main_convert(team_script->character_list[1]->ele_type, combination_2->a_main4).first << "=" << main_convert(team_script->character_list[1]->ele_type, combination_2->a_main4).second << " "
-                                                   << main_convert(team_script->character_list[1]->ele_type, combination_2->a_main5).first << "=" << main_convert(team_script->character_list[1]->ele_type, combination_2->a_main5).second << ";" << endl;
-                                    outfile_result << endl;
-
-                                    //character3
-                                    outfile_result << "#" << team_script->character_list[2]->name << " " << combination_3->w_point->name << " " << combination_3->suit1->name << " " << combination_3->suit2->name << " "
-                                                   << combination_3->a_main3 << " " << combination_3->a_main4 << " " << combination_3->a_main5 << endl;
-
-                                    outfile_result << team_script->character_list[2]->english_name << " char lvl=90/90 cons=" << to_string(team_script->character_list[2]->constellation)
-                                                   << " talent=" << to_string(team_script->character_list[2]->A_level) << ","
-                                                   << to_string((team_script->character_list[2]->E_level > 10) ? (team_script->character_list[2]->E_level - 3) : team_script->character_list[2]->E_level) << ","
-                                                   << to_string((team_script->character_list[2]->Q_level > 10) ? (team_script->character_list[2]->Q_level - 3) : team_script->character_list[2]->Q_level) << ";" << endl;
-                                    outfile_result << team_script->character_list[2]->english_name << " add weapon=\"" << combination_3->w_point->english_name << "\" refine=" << to_string(combination_3->w_point->level) << " lvl=90/90;" << endl;
-                                    if (combination_3->suit1 == combination_3->suit2)
-                                    {
-                                        outfile_result << team_script->character_list[2]->english_name << " add set=\"" << combination_3->suit1->english_name << "\" count=4;" << endl;
-                                    }
-                                    else
-                                    {
-                                        outfile_result << team_script->character_list[2]->english_name << " add set=\"" << combination_3->suit1->english_name << "\" count=2;" << endl;
-                                        outfile_result << team_script->character_list[2]->english_name << " add set=\"" << combination_3->suit2->english_name << "\" count=2;" << endl;
-                                    }
-                                    outfile_result << team_script->character_list[2]->english_name << " add stats hp=4780 atk=311 "
-                                                   << main_convert(team_script->character_list[2]->ele_type, combination_3->a_main3).first << "=" << main_convert(team_script->character_list[2]->ele_type, combination_3->a_main3).second << " "
-                                                   << main_convert(team_script->character_list[2]->ele_type, combination_3->a_main4).first << "=" << main_convert(team_script->character_list[2]->ele_type, combination_3->a_main4).second << " "
-                                                   << main_convert(team_script->character_list[2]->ele_type, combination_3->a_main5).first << "=" << main_convert(team_script->character_list[2]->ele_type, combination_3->a_main5).second << ";" << endl;
-                                    outfile_result << endl;
-
-                                    //character4
-                                    outfile_result << "#" << team_script->character_list[3]->name << " " << combination_4->w_point->name << " " << combination_4->suit1->name << " " << combination_4->suit2->name << " "
-                                                   << combination_4->a_main3 << " " << combination_4->a_main4 << " " << combination_4->a_main5 << endl;
-
-                                    outfile_result << team_script->character_list[3]->english_name << " char lvl=90/90 cons=" << to_string(team_script->character_list[3]->constellation)
-                                                   << " talent=" << to_string(team_script->character_list[3]->A_level) << ","
-                                                   << to_string((team_script->character_list[3]->E_level > 10) ? (team_script->character_list[3]->E_level - 3) : team_script->character_list[3]->E_level) << ","
-                                                   << to_string((team_script->character_list[3]->Q_level > 10) ? (team_script->character_list[3]->Q_level - 3) : team_script->character_list[3]->Q_level) << ";" << endl;
-                                    outfile_result << team_script->character_list[3]->english_name << " add weapon=\"" << combination_4->w_point->english_name << "\" refine=" << to_string(combination_4->w_point->level) << " lvl=90/90;" << endl;
-                                    if (combination_4->suit1 == combination_4->suit2)
-                                    {
-                                        outfile_result << team_script->character_list[3]->english_name << " add set=\"" << combination_4->suit1->english_name << "\" count=4;" << endl;
-                                    }
-                                    else
-                                    {
-                                        outfile_result << team_script->character_list[3]->english_name << " add set=\"" << combination_4->suit1->english_name << "\" count=2;" << endl;
-                                        outfile_result << team_script->character_list[3]->english_name << " add set=\"" << combination_4->suit2->english_name << "\" count=2;" << endl;
-                                    }
-                                    outfile_result << team_script->character_list[3]->english_name << " add stats hp=4780 atk=311 "
-                                                   << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main3).first << "=" << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main3).second << " "
-                                                   << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main4).first << "=" << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main4).second << " "
-                                                   << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main5).first << "=" << main_convert(team_script->character_list[3]->ele_type, combination_4->a_main5).second << ";" << endl;
-                                    outfile_result << endl;
-
-                                    //options
-                                    outfile_result << "options";
-                                    if (team_script->option_modify.find("iteration") == string::npos) outfile_result << " iteration=10000";
-                                    if (team_script->option_modify.find("duration") == string::npos) outfile_result << " duration=105";
-                                    if (team_script->option_modify.find("swap_delay") == string::npos) outfile_result << " swap_delay=4";
-                                    if (!team_script->option_modify.empty()) outfile_result << " " << team_script->option_modify;
-                                    outfile_result << ";" << endl;
-
-                                    //target
-                                    outfile_result << "target";
-                                    if (team_script->target_modify.find("lvl") == string::npos) outfile_result << " lvl=95";
-                                    if (team_script->target_modify.find("resist") == string::npos) outfile_result << " resist=0.1";
-                                    if (team_script->target_modify.find("particle_threshold") == string::npos) outfile_result << " particle_threshold=150000";
-                                    if (team_script->target_modify.find("particle_drop_count") == string::npos) outfile_result << " particle_drop_count=1";
-                                    if (!team_script->target_modify.empty()) outfile_result << " " << team_script->target_modify;
-                                    outfile_result << ";" << endl;
-
-                                    outfile_result << endl;
-
-                                    //active
-                                    if (team_script->attack_list[0] == "start:") outfile_result << "active " << team_script->attack_list[1].substr(0, team_script->attack_list[1].find_first_of(' ')) << ";" << endl;
-                                    else outfile_result << "active " << team_script->attack_list[0].substr(0, team_script->attack_list[0].find_first_of(' ')) << ";" << endl;
-                                    outfile_result << endl;
-
-                                    //attack_list
-                                    for (auto &i: team_script->attack_list)
-                                    {
-                                        if (i == "start:")
-                                        {
-                                            outfile_result << "for let x=0; x<5; x=x+1 {" << endl;
-                                            continue;
-                                        }
-                                        if (i[i.length() - 1] == '{' || i[i.length() - 1] == '}')
-                                            outfile_result << "  " << i << endl;
-                                        else
-                                            outfile_result << "  " << i << ";" << endl;
-                                    }
-                                    outfile_result << "}";
-                                    outfile_result.close();
-
-                                    filecount++;
-                                }
 }
 
 int main()
@@ -3886,61 +3470,85 @@ int main()
     init_artifact_data();
 
     int mode = 0;
-    cout << "计算模式(1:cal_deployment 2:cal_add_deployment 3:cal_optimal_artifact 4:generate_gcsim_script):";
+    cout << "计算模式(1:generate_sample_config 2:generate_gcsim_script 3:cal_optimal_substats 4:cal_optimal_artifact):";
     cin >> mode;
-    if (mode == 1)
-    {
-        outfile_result.open("./RESULTS/data.csv");
-        if (out_debug) outfile_debug.open("./RESULTS/log_data.csv");
-        cal_deployment("ALL");
-        outfile_result.close();
-        outfile_debug.close();
-    }
+    if (mode == 1) generate_sample_config();
     else if (mode == 2)
-    {
-        outfile_result.open("./RESULTS/data_add.csv");
-        if (out_debug) outfile_debug.open("./RESULTS/log_data_add.csv");
-        cal_deployment("ADD");
-        outfile_result.close();
-        outfile_debug.close();
-    }
-    else if (mode == 3)
-    {
-        string c_name;
-        cout << "人物:";
-        cin >> c_name;
-
-        outfile_result.open("./RESULTS/assign_artifact_data_" + c_name + ".csv");
-        if (out_debug) outfile_debug.open("./RESULTS/assign_artifact_log_" + c_name + ".csv");
-        read_artifact("./RESULTS/artifacts.txt");
-        cal_optimal_artifact(c_name);
-        outfile_result.close();
-        outfile_debug.close();
-    }
-    else if (mode == 4)
     {
         vector<string> team_list;
         string team_name;
         getline(cin, team_name);
         while (true)
         {
-            cout << "输入中文配置文件名(ENTER结束):";
+            cout << "输入队伍名(ENTER结束):";
+            getline(cin, team_name);
+            if (team_name.empty()) break;
+            team_list.push_back(team_name);
+        }
+        for (auto &i: team_list)
+        {
+            read_config_file(i);
+            generate_gcsim_script(i);
+            delete full_config;
+        }
+    }
+    else if (mode == 3)
+    {
+        vector<string> team_list;
+        string team_name;
+        getline(cin, team_name);
+        while (true)
+        {
+            cout << "输入队伍名(ENTER结束):";
+            getline(cin, team_name);
+            if (team_name.empty()) break;
+            team_list.push_back(team_name);
+        }
+        for (auto &i: team_list)
+        {
+            read_config_file(i);
+            outfile_result.open(filepath + i + "/optimized_substats.csv");
+            if (out_debug) outfile_debug.open(filepath + i + "/optimized_substats_log.csv");
+            cout << i << ":" << endl;
+            cal_optimal_substats(full_config->c1);
+            cal_optimal_substats(full_config->c2);
+            cal_optimal_substats(full_config->c3);
+            cal_optimal_substats(full_config->c4);
+            outfile_debug.close();
+            outfile_result.close();
+            delete full_config;
+        }
+    }
+    else if (mode == 4)
+    {
+        return 0;
+
+        vector<string> team_list;
+        string team_name;
+        getline(cin, team_name);
+        while (true)
+        {
+            cout << "输入队伍名(ENTER结束):";
             getline(cin, team_name);
             if (team_name.empty()) break;
             team_list.push_back(team_name);
         }
 
-        outfile_run_substat_optimizer_full.open("./RESULTS/calculate_all_substat_optimizer.ps1");
-        outfile_rerun_optimized_config.open("./RESULTS/calculate_all_optimized_config.ps1");
+        read_artifact();
         for (auto &i: team_list)
         {
-            team_script = new gcsim_script();
-            read_team_script("./RESULTS/chinese_config/" + i + ".txt");
-            generate_gcsim_script("./RESULTS/config/", i);
-            delete team_script;
+            read_config_file(i);
+            outfile_result.open(filepath + i + "/optimized_artifact.csv");
+            if (out_debug) outfile_debug.open(filepath + i + "/optimized_artifact_log.csv");
+            cout << i << ":" << endl;
+            cal_optimal_artifact(full_config->c1);
+            cal_optimal_artifact(full_config->c2);
+            cal_optimal_artifact(full_config->c3);
+            cal_optimal_artifact(full_config->c4);
+            outfile_debug.close();
+            outfile_result.close();
+            delete full_config;
         }
-        outfile_run_substat_optimizer_full.close();
-        outfile_rerun_optimized_config.close();
     }
     return 0;
 }

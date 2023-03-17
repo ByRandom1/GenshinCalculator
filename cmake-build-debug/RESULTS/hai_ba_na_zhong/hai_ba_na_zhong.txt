@@ -1,0 +1,62 @@
+艾尔海森 八重神子 纳西妲 钟离
+gcsim_config:
+weapon=雾切之回光 suit1=饰金之梦 suit2=饰金之梦 main3=元素精通 main4=伤害加成 main5=暴击率
+weapon=雾切之回光 suit1=流浪大地的乐团 suit2=饰金之梦 main3=元素精通 main4=伤害加成 main5=暴击率
+BREAK
+weapon=神乐之真意 suit1=流浪大地的乐团 suit2=角斗士的终幕礼 main3=攻击力 main4=伤害加成 main5=暴击率
+weapon=神乐之真意 suit1=饰金之梦 suit2=饰金之梦 main3=攻击力 main4=伤害加成 main5=暴击率
+BREAK
+weapon=千夜浮梦 suit1=深林的记忆 suit2=深林的记忆 main3=元素精通 main4=元素精通 main5=暴击率
+weapon=千夜浮梦 suit1=深林的记忆 suit2=深林的记忆 main3=元素精通 main4=伤害加成 main5=暴击率
+BREAK
+weapon=西风长枪 suit1=昔日宗室之仪 suit2=昔日宗室之仪 main3=生命值 main4=生命值 main5=暴击率
+BREAK
+options:
+duration=106
+target:
+
+attack_list:
+rotation_start
+钟离 长E, Q
+纳西妲 Q, E
+八重神子 E, E, E
+艾尔海森 Q, E, 平A:3, 冲刺, 平A:3, 冲刺, 平A:3, 重A, 平A:3, 冲刺, 平A:3, 冲刺, 平A:3
+if .八重神子.Q.ready {
+  八重神子 Q
+}
+rotation_end
+BREAK
+restrictions/team_config/attack_config:
+weapon= suit1= suit2= main3= main4= main5= recharge=1
+E_release_times=1 team_weapon_artifact=千夜浮梦_深林的记忆_昔日宗室之仪 ele_attach_type=草 ele_allow_spread=
+attack_way=平A rate_pos=0 background=0 react_type=蔓激化 attack_time=2 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=平A rate_pos=0 background=0 react_type=蔓激化_no_add_damage attack_time=4 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=平A rate_pos=1 background=0 react_type=蔓激化_no_add_damage attack_time=6 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=平A rate_pos=2 background=0 react_type=蔓激化 attack_time=4 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=平A rate_pos=2 background=0 react_type=蔓激化_no_add_damage attack_time=2 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=平A rate_pos=3 background=0 react_type=蔓激化 attack_time=4 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=平A rate_pos=3 background=0 react_type=蔓激化_no_add_damage attack_time=2 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=重A rate_pos=0 background=0 react_type=蔓激化 attack_time=1 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=重A rate_pos=1 background=0 react_type=蔓激化_no_add_damage attack_time=1 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=E rate_pos=0 background=0 react_type=蔓激化 attack_time=1 cangbai_level=0 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=2 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=E rate_pos=1 background=0 react_type=蔓激化 attack_time=8 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=E rate_pos=1 background=0 react_type=蔓激化_no_add_damage attack_time=8 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=0 background=0 react_type=蔓激化 attack_time=2 cangbai_level=0 qianyan_enable=0 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=2 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=0 background=0 react_type=蔓激化_no_add_damage attack_time=2 cangbai_level=0 qianyan_enable=0 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=2 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+BREAK
+weapon= suit1= suit2= main3= main4= main5= recharge=0
+E_release_times=1 team_weapon_artifact=千夜浮梦_深林的记忆_昔日宗室之仪 ele_attach_type=草 ele_allow_spread=
+attack_way=E rate_pos=0 background=1 react_type=超激化 attack_time=10 cangbai_level=2 qianyan_enable=1 monv_level=3 chensha_enable=0 shenlin_enable=1 shuixian_level=1 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=0
+attack_way=E rate_pos=0 background=1 react_type=超激化_no_add_damage attack_time=18 cangbai_level=2 qianyan_enable=1 monv_level=3 chensha_enable=0 shenlin_enable=1 shuixian_level=1 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=0 background=0 react_type=超激化 attack_time=1 cangbai_level=2 qianyan_enable=1 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=1 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=1
+attack_way=Q rate_pos=1 background=0 react_type=超激化 attack_time=3 cangbai_level=2 qianyan_enable=1 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=2 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=1
+BREAK
+weapon= suit1=深林的记忆 suit2=深林的记忆 main3= main4= main5= recharge=1
+E_release_times=1 team_weapon_artifact=昔日宗室之仪 ele_attach_type=草 ele_allow_spread=
+attack_way=E rate_pos=0 background=0 react_type=蔓激化 attack_time=1 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=1 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=1
+attack_way=E rate_pos=1 background=1 react_type=蔓激化 attack_time=8 cangbai_level=2 qianyan_enable=1 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=1 wuqie_shenle_feilei_humo=1 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=0
+BREAK
+weapon= suit1= suit2= main3= main4= main5= recharge=1
+E_release_times=1 team_weapon_artifact=千夜浮梦_深林的记忆 ele_attach_type=草 ele_allow_spread=
+attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=
+BREAK

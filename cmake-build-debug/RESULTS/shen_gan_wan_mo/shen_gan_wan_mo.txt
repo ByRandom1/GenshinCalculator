@@ -1,0 +1,52 @@
+神里绫华 甘雨 枫原万叶 莫娜
+gcsim_config:
+weapon=雾切之回光 suit1=冰风迷途的勇士 suit2=冰风迷途的勇士 main3=攻击力 main4=伤害加成 main5=暴击伤害
+BREAK
+weapon=飞雷之弦振 suit1=冰风迷途的勇士 suit2=冰风迷途的勇士 main3=攻击力 main4=伤害加成 main5=暴击伤害
+BREAK
+weapon=铁蜂刺 suit1=翠绿之影 suit2=翠绿之影 main3=元素精通 main4=元素精通 main5=元素精通
+BREAK
+weapon=试作金珀 suit1=昔日宗室之仪 suit2=昔日宗室之仪 main3=元素充能效率 main4=攻击力 main5=暴击率
+BREAK
+options:
+duration=110
+target:
+
+attack_list:
+rotation_start
+甘雨 E, Q
+枫原万叶 E, 下落A, Q
+莫娜 Q
+神里绫华 冲刺, E, 平A, Q
+甘雨 E, aim, aim
+枫原万叶 E, 下落A
+莫娜 E
+神里绫华 冲刺, E, 平A, 重A, 平A:2
+rotation_end
+BREAK
+restrictions/team_config/attack_config:
+weapon= suit1= suit2= main3= main4= main5= recharge=1
+E_release_times=2 team_weapon_artifact=昔日宗室之仪_翠绿之影 ele_attach_type=冰水 ele_allow_spread=冰水
+attack_way=平A rate_pos=0 background=0 react_type=冻结 attack_time=3 cangbai_level=1 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=0 shuixian_level=3 wuqie_shenle_feilei_humo=1 shengxian_biluo_dongji_chisha=2 none_sifeng_pomo_shizuo=0
+attack_way=重A rate_pos=0 background=0 react_type=冻结 attack_time=3 cangbai_level=1 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=0 shuixian_level=3 wuqie_shenle_feilei_humo=2 shengxian_biluo_dongji_chisha=2 none_sifeng_pomo_shizuo=0
+attack_way=E rate_pos=0 background=0 react_type=冻结 attack_time=1 cangbai_level=0 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=0 shuixian_level=2 wuqie_shenle_feilei_humo=1 shengxian_biluo_dongji_chisha=2 none_sifeng_pomo_shizuo=0
+attack_way=E rate_pos=0 background=0 react_type=冻结 attack_time=1 cangbai_level=0 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=0 shuixian_level=2 wuqie_shenle_feilei_humo=2 shengxian_biluo_dongji_chisha=2 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=0 background=0 react_type=冻结 attack_time=19 cangbai_level=1 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=0 shuixian_level=2 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=2 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=1 background=0 react_type=冻结 attack_time=1 cangbai_level=1 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=0 shuixian_level=2 wuqie_shenle_feilei_humo=3 shengxian_biluo_dongji_chisha=2 none_sifeng_pomo_shizuo=0
+BREAK
+weapon= suit1= suit2= main3= main4= main5= recharge=1
+E_release_times=2 team_weapon_artifact=昔日宗室之仪_翠绿之影 ele_attach_type=冰水 ele_allow_spread=冰水
+attack_way=重A rate_pos=0 background=0 react_type=冻结 attack_time=2 cangbai_level=2 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=2 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=重A rate_pos=1 background=0 react_type=冻结 attack_time=2 cangbai_level=2 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=3 wuqie_shenle_feilei_humo=2 shengxian_biluo_dongji_chisha=3 none_sifeng_pomo_shizuo=0
+attack_way=E rate_pos=0 background=0 react_type=冻结 attack_time=2 cangbai_level=0 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=2 wuqie_shenle_feilei_humo=1 shengxian_biluo_dongji_chisha=2 none_sifeng_pomo_shizuo=0
+attack_way=E rate_pos=1 background=1 react_type=冻结 attack_time=2 cangbai_level=0 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=2 wuqie_shenle_feilei_humo=1 shengxian_biluo_dongji_chisha=2 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=0 background=1 react_type=冻结 attack_time=15 cangbai_level=1 qianyan_enable=0 monv_level=1 chensha_enable=0 shenlin_enable=1 shuixian_level=2 wuqie_shenle_feilei_humo=1 shengxian_biluo_dongji_chisha=2 none_sifeng_pomo_shizuo=0
+BREAK
+weapon= suit1= suit2= main3= main4= main5= recharge=1
+E_release_times=2 team_weapon_artifact=昔日宗室之仪 ele_attach_type=冰水 ele_allow_spread=冰水
+attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=
+BREAK
+weapon= suit1= suit2= main3= main4= main5= recharge=1
+E_release_times=1 team_weapon_artifact=翠绿之影 ele_attach_type=冰水 ele_allow_spread=冰水
+attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=
+BREAK

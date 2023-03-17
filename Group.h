@@ -21,13 +21,13 @@ extern ofstream outfile_debug;
 
 //parameters
 extern bool out_header;
-extern string double_E_per_round;
 extern int max_up_num_per_base;
 extern double max_attribute_num_per_pos;
 extern int max_entry_num;
 extern int artifact_2_2_max_entry_bonus;
 
 extern bool out_debug;
+extern int max_recharge_substat_num;
 
 int str2index_full(string type_);
 
@@ -40,6 +40,7 @@ struct Team_config
     Character *teammate_1;
     Character *teammate_2;
     Character *teammate_3;
+    vector<pair<Character *, int>> E_release_data;
     string teammate_all;//FIND
     string team_weapon_artifact;//FIND
     string ele_attach_type;//FIND
@@ -48,6 +49,7 @@ struct Team_config
     Team_config(Character *teammate_1_,
                 Character *teammate_2_,
                 Character *teammate_3_,
+                vector<pair<Character *, int>> E_release_data_,
                 string team_weapon_artifact_,
                 string ele_attach_type_,
                 string ele_allow_spread_)
@@ -55,6 +57,7 @@ struct Team_config
         teammate_1 = teammate_1_;
         teammate_2 = teammate_2_;
         teammate_3 = teammate_3_;
+        E_release_data = E_release_data_;
         teammate_all = teammate_1->name + "_" + teammate_2->name + "_" + teammate_3->name;
         team_weapon_artifact = team_weapon_artifact_;
         ele_attach_type = ele_attach_type_;
@@ -312,7 +315,7 @@ public:
 
     ~Group();
 
-    int init_check_data(int recharge_restriction_num);
+    int init_check_data(string cal_mode);
 
     void cal_damage_entry_num();
 
