@@ -4,7 +4,7 @@ weapon=薙草之稻光 suit1=绝缘之旗印 suit2=绝缘之旗印 main3=元素�
 weapon=渔获 suit1=绝缘之旗印 suit2=绝缘之旗印 main3=元素充能效率 main4=伤害加成 main5=暴击率
 BREAK
 weapon=磐岩结绿 suit1=绝缘之旗印 suit2=绝缘之旗印 main3=攻击力 main4=伤害加成 main5=暴击伤害
-weapon=祭礼剑 suit1=绝缘之旗印 suit2=绝缘之旗印 main3=攻击力 main4=伤害加成 main5=暴击率
+weapon=雾切之回光 suit1=绝缘之旗印 suit2=绝缘之旗印 main3=攻击力 main4=伤害加成 main5=暴击率
 BREAK
 weapon=断浪长鳍 suit1=绝缘之旗印 suit2=绝缘之旗印 main3=元素充能效率 main4=伤害加成 main5=暴击率
 weapon=断浪长鳍 suit1=流浪大地的乐团 suit2=饰金之梦 main3=元素充能效率 main4=伤害加成 main5=暴击率
@@ -51,8 +51,8 @@ attack_way=E rate_pos=0 background=1 react_type=蒸发 attack_time=4 cangbai_lev
 attack_way=Q rate_pos=0 background=0 react_type=蒸发_超载_no_add_damage attack_time=1 cangbai_level=0 qianyan_enable=0 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=0 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=0
 attack_way=Q rate_pos=1 background=0 react_type=蒸发_超载_no_add_damage attack_time=1 cangbai_level=0 qianyan_enable=0 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=1 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=0
 attack_way=Q rate_pos=2 background=0 react_type=蒸发_超载_no_add_damage attack_time=1 cangbai_level=0 qianyan_enable=0 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=1 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=0
-attack_way=Q rate_pos=3 background=1 react_type=蒸发_超载_no_add_damage attack_time=4 cangbai_level=0 qianyan_enable=0 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=1 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=0
-attack_way=Q rate_pos=3 background=1 react_type=蒸发_超载 attack_time=8 cangbai_level=0 qianyan_enable=0 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=1 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=3 background=1 react_type=蒸发_超载_no_add_damage attack_time=3 cangbai_level=0 qianyan_enable=0 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=1 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=0
+attack_way=Q rate_pos=3 background=1 react_type=蒸发_超载 attack_time=9 cangbai_level=0 qianyan_enable=0 monv_level=0 chensha_enable=0 shenlin_enable=1 shuixian_level=1 wuqie_shenle_feilei_humo=0 shengxian_biluo_dongji_chisha=0 none_sifeng_pomo_shizuo=0
 BREAK
 weapon= suit1= suit2= main3= main4= main5= recharge=1
 E_release_times=2 team_weapon_artifact= ele_attach_type=水雷 ele_allow_spread=水雷火

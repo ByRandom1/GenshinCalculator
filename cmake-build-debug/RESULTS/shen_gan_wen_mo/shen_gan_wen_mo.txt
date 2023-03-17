@@ -4,8 +4,8 @@ weapon=雾切之回光 suit1=冰风迷途的勇士 suit2=冰风迷途的勇士 m
 BREAK
 weapon=飞雷之弦振 suit1=冰风迷途的勇士 suit2=冰风迷途的勇士 main3=攻击力 main4=伤害加成 main5=暴击伤害
 BREAK
-weapon=终末嗟叹之诗 suit1=翠绿之影 suit2=翠绿之影 main3=元素精通 main4=元素精通 main5=元素精通
 weapon=天空之翼 suit1=翠绿之影 suit2=翠绿之影 main3=攻击力 main4=伤害加成 main5=暴击率
+weapon=终末嗟叹之诗 suit1=翠绿之影 suit2=翠绿之影 main3=元素精通 main4=元素精通 main5=元素精通
 BREAK
 weapon=试作金珀 suit1=昔日宗室之仪 suit2=昔日宗室之仪 main3=元素充能效率 main4=攻击力 main5=暴击率
 BREAK

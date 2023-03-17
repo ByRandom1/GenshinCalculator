@@ -4,9 +4,9 @@ raiden add weapon="engulfinglightning" refine=1 lvl=90/90;
 raiden add set="emblemofseveredfate" count=4;
 raiden add stats hp=4780 atk=311 er=0.518 electro%=0.466 cr=0.311;
 
-#行秋 祭礼剑 绝缘之旗印 绝缘之旗印 攻击力 伤害加成 暴击率
+#行秋 雾切之回光 绝缘之旗印 绝缘之旗印 攻击力 伤害加成 暴击率
 xingqiu char lvl=90/90 cons=6 talent=6,9,9;
-xingqiu add weapon="sacrificialsword" refine=5 lvl=90/90;
+xingqiu add weapon="mistsplitterreforged" refine=1 lvl=90/90;
 xingqiu add set="emblemofseveredfate" count=4;
 xingqiu add stats hp=4780 atk=311 atk%=0.466 hydro%=0.466 cr=0.311;
 
