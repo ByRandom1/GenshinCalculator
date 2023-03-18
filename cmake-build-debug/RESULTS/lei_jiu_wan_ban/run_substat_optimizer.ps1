@@ -1,4 +1,4 @@
-./run_substat_optimizer.bat lei_jiu_wan_ban_1.txt
-./run_substat_optimizer.bat lei_jiu_wan_ban_2.txt
-./run_substat_optimizer.bat lei_jiu_wan_ban_3.txt
-./run_substat_optimizer.bat lei_jiu_wan_ban_4.txt
+"C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\gcsim.exe" -c="C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\lei_jiu_wan_ban\config\lei_jiu_wan_ban_1.txt" -substatOptim=true -out="C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\lei_jiu_wan_ban\optimized_config\lei_jiu_wan_ban_1.txt" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" || exit /b 0
+"C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\gcsim.exe" -c="C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\lei_jiu_wan_ban\config\lei_jiu_wan_ban_2.txt" -substatOptim=true -out="C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\lei_jiu_wan_ban\optimized_config\lei_jiu_wan_ban_2.txt" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" || exit /b 0
+"C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\gcsim.exe" -c="C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\lei_jiu_wan_ban\config\lei_jiu_wan_ban_3.txt" -substatOptim=true -out="C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\lei_jiu_wan_ban\optimized_config\lei_jiu_wan_ban_3.txt" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" || exit /b 0
+"C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\gcsim.exe" -c="C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\lei_jiu_wan_ban\config\lei_jiu_wan_ban_4.txt" -substatOptim=true -out="C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\lei_jiu_wan_ban\optimized_config\lei_jiu_wan_ban_4.txt" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" || exit /b 0

@@ -1,1 +1,1 @@
-./run_substat_optimizer.bat shen_gan_wan_mo_1.txt
+"C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\gcsim.exe" -c="C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\shen_gan_wan_mo\config\shen_gan_wan_mo_1.txt" -substatOptim=true -out="C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\shen_gan_wan_mo\optimized_config\shen_gan_wan_mo_1.txt" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" || exit /b 0
