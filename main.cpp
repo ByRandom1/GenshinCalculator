@@ -2858,9 +2858,9 @@ pair<string, string> main_convert(string ele_type, string main)
 void generate_gcsim_script(string team_name)
 {
     ofstream outfile_run_substat_optimizer;
-    outfile_run_substat_optimizer.open(filepath + team_name + "/run_substat_optimizer.ps1");
+    outfile_run_substat_optimizer.open(filepath + team_name + "/run_substat_optimizer.bat");
     ofstream outfile_run_optimized_config;
-    outfile_run_optimized_config.open(filepath + team_name + "/run_optimized_config.ps1");
+    outfile_run_optimized_config.open(filepath + team_name + "/run_optimized_config.bat");
 
     int filecount = 1;
     for (auto &combination_1: full_config->c1->gcsim_combinations)
@@ -2869,10 +2869,9 @@ void generate_gcsim_script(string team_name)
                 for (auto &combination_4: full_config->c4->gcsim_combinations)
                 {
                     outfile_run_substat_optimizer << R"(")" << path << R"(gcsim.exe" -c=")" << path << team_name << R"(\config\)" << team_name << "_" << to_string(filecount) << R"(.txt" -substatOptim=true -out=")" << path << team_name << R"(\optimized_config\)" << team_name
-                                                  << "_" << to_string(filecount) << R"(.txt" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" || exit /b 0)" << endl;
+                                                  << "_" << to_string(filecount) << R"(.txt" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" & )";
                     outfile_run_optimized_config << R"(")" << path << R"(gcsim.exe" -c=")" << path << team_name << R"(\optimized_config\)" << team_name << "_" << to_string(filecount) << R"(.txt" -out=")" << path << team_name << R"(\viewer_gz\)" << team_name << "_"
-                                                 << to_string(filecount) << R"(.json" -gz="true" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" > )" << path << team_name << R"(\logs\)" << team_name << "_" << to_string(filecount) << ".txt"
-                                                 << endl;
+                                                 << to_string(filecount) << R"(.json" -gz="true" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" > )" << path << team_name << R"(\logs\)" << team_name << "_" << to_string(filecount) << ".txt & ";
 
                     //config
                     outfile_result.open(filepath + team_name + "/config/" + team_name + "_" + to_string(filecount) + ".txt");
@@ -3025,6 +3024,8 @@ void generate_gcsim_script(string team_name)
 
                     filecount++;
                 }
+    outfile_run_substat_optimizer << "pause";
+    outfile_run_optimized_config << "pause";
 }
 
 //function 3 cal_optimal_substats
@@ -3495,8 +3496,8 @@ int main()
         for (auto &i: team_list)
         {
             read_config_file(i);
-            run_all_substat_optimizer << path << i << R"(\run_substat_optimizer.ps1)" << endl;
-            run_all_optimized_config << path << i << R"(\run_optimized_config.ps1)" << endl;
+            run_all_substat_optimizer << path << i << R"(\run_substat_optimizer.bat)" << endl;
+            run_all_optimized_config << path << i << R"(\run_optimized_config.bat)" << endl;
             generate_gcsim_script(i);
             delete full_config;
         }
