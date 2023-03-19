@@ -2859,10 +2859,10 @@ void generate_gcsim_script(string team_name)
 {
     ofstream outfile_run_substat_optimizer;
     outfile_run_substat_optimizer.open(filepath + team_name + "/run_substat_optimizer.bat");
-    outfile_run_substat_optimizer << R"(mkdir -p )" << runpath << team_name << R"(\optimized_config && )";
+    outfile_run_substat_optimizer << R"(mkdir )" << runpath << team_name << R"(\optimized_config && )";
     ofstream outfile_run_optimized_config;
     outfile_run_optimized_config.open(filepath + team_name + "/run_optimized_config.bat");
-    outfile_run_optimized_config << R"(mkdir -p )" << runpath << team_name << R"(\viewer_gz && mkdir -p )" << runpath << team_name << R"(\logs && )";
+    outfile_run_optimized_config << R"(mkdir )" << runpath << team_name << R"(\viewer_gz && mkdir )" << runpath << team_name << R"(\logs && )";
 
     int filecount = 1;
     for (auto &combination_1: full_config->c1->gcsim_combinations)
