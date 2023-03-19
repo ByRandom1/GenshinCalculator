@@ -81,11 +81,11 @@
 
     4）在attack_list:后，按照gcsim中对options设置的定义以及大致的输出流程，填入中文描述的动作序列
 
-将sample_config文件重命名为队伍名称，并放置在队伍名文件夹内。
+将sample_config文件重命名为队伍名称，并放置在队伍名文件夹内，并创建config文件夹。
 
 3、初步脚本生成：运行程序，使用功能2生成初步的gcsim脚本文件。
 
-4、脚本流程检查：在网页端gcsim模拟器中运行模拟，调整输出流程（设置particle=10以保证循环），推荐检查如下元素：CD对接、吃球情况、元素附着、buff及伤害情况。
+4、脚本流程检查：在网页端gcsim模拟器中运行模拟，调整输出流程（设置iteration=1000, particle=10以保证循环），推荐检查如下元素：CD对接、吃球情况、元素附着、buff及伤害情况。
 
 5、手动数据填充：根据gcsim网页端的Details页面，在restrictions/team_config/attack_config:后，按按照队伍成员的顺序填入以下内容：
 
@@ -103,21 +103,19 @@
 
     1）运行程序，使用功能2生成最终的gcsim脚本文件。
 
-    2）运行run_optimized_config.ps1，在optimized_config文件夹中可以获取gcsim优化副词条后的配置。！！！需要重点注意的是，由于存在随机性，即使完全相同的队伍（武器圣遗物不影响充能）的情况下，优化的充能词条仍不一样，会严重影响dps的计算结果
+    2）运行run_optimized_config.bat，在optimized_config文件夹中可以获取gcsim优化副词条后的配置。！！！需要重点注意的是，由于存在随机性，即使完全相同的队伍（武器圣遗物不影响充能）的情况下，优化的充能词条仍不一样，会严重影响dps的计算结果
 
     3）统一各配置的充能词条（或者整体的副词条一致）
 
-    4）运行run_substat_optimizer.ps1，在logs中获取具体的计算信息，在viewer_gz中获取可在gcsim.app上查看的json文件。
+    4）运行run_substat_optimizer.bat，在logs中获取具体的计算信息，在viewer_gz中获取可在gcsim.app上查看的json文件。
 
 => 几个注意事项
 
-1、由于程序不能创建文件夹，请为每个队伍设置以队伍名作为文件夹名的独立文件夹，并在其中创建config，optimized_config，logs，viewer_gz四个文件夹。
+1、请严格设置options duration，较大程度影响dps
 
-2、请严格设置options duration，较大程度影响dps
+2、上述步骤5中同一技能的反应类型请务必保持一致，不发生反应的请在之后添加no_add_damage；技能全部不发生反应请填入"NONE"。
 
-3、上述步骤5中同一技能的反应类型请务必保持一致，不发生反应的请在之后添加no_add_damage；技能全部不发生反应请填入"NONE"。
-
-4、8.3）中统一充能词条需要格外注意充能武器、圣遗物等会影响充能词条，不同的配置不一定要求相同的充能词条。
+3、8.3）中统一充能词条需要格外注意充能武器、圣遗物等会影响充能词条，不同的配置不一定要求相同的充能词条。
 
 ### 配置文件详解
 
@@ -161,7 +159,7 @@ Line21：计算A的最佳副词条时对武器圣遗物的限制，对每轮循�
 
 Line22：A每轮循环释放E技能的次数E_release_times（持续性E技能请填1），所在队伍其他角色武器圣遗物提供的buff team_weapon_artifact，所在队伍怪物头上主要的附着元素ele_attach_type，所在队伍循环过程中能够被扩散/结晶的元素ele_allow_spread。
 
-Line23：A的单个动作：攻击方式attack_way（平A/重A/下落A/E/Q），倍率索引rate_pos，是否后台background，反应类型react_type，攻击次数attack_time，苍白层数cangbai_level，千岩触发qianyan_enable，魔女层数monv_level，辰砂触发chensha_enable，深林触发shenlin_enable，水仙层数shuixian_level，对应武器层数wuqie_shenle_feilei_humo，对应武器层数shengxian_biluo_dongji_chisha，对应武器层数none_sifeng_pomo_shizuo（可以通过复制填入多行）
+Line23：A的单个动作：攻击方式attack_way（平A/重A/下落A/E/Q），倍率索引rate_pos，是否后台background（0/1），反应类型react_type，攻击次数attack_time，苍白层数cangbai_level，千岩触发qianyan_enable（0/1），魔女层数monv_level，辰砂触发chensha_enable（0/1），深林触发shenlin_enable（0/1），水仙层数shuixian_level，对应武器层数wuqie_shenle_feilei_humo，对应武器层数shengxian_biluo_dongji_chisha，对应武器层数none_sifeng_pomo_shizuo（可以通过复制填入多行）
 
 Line24：BREAK，角色A参数配置结束标志
 

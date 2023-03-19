@@ -2645,7 +2645,7 @@ bool out_debug = false;
 double out_filter_percentage = 0.95;//0.95*(1+2.5%)*(1+2.5%)=1 2词条
 int max_recharge_substat_num = 9;
 string filepath = "./RESULTS/";
-string path = R"(C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\)";
+string runpath = R"(C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\)";
 
 size_t replace_all(string &inout, string_view what, string_view with)
 {
@@ -2859,8 +2859,10 @@ void generate_gcsim_script(string team_name)
 {
     ofstream outfile_run_substat_optimizer;
     outfile_run_substat_optimizer.open(filepath + team_name + "/run_substat_optimizer.bat");
+    outfile_run_substat_optimizer << R"(mkdir -p )" << runpath << team_name << R"(\optimized_config && )";
     ofstream outfile_run_optimized_config;
     outfile_run_optimized_config.open(filepath + team_name + "/run_optimized_config.bat");
+    outfile_run_optimized_config << R"(mkdir -p )" << runpath << team_name << R"(\viewer_gz && mkdir -p )" << runpath << team_name << R"(\logs && )";
 
     int filecount = 1;
     for (auto &combination_1: full_config->c1->gcsim_combinations)
@@ -2868,10 +2870,10 @@ void generate_gcsim_script(string team_name)
             for (auto &combination_3: full_config->c3->gcsim_combinations)
                 for (auto &combination_4: full_config->c4->gcsim_combinations)
                 {
-                    outfile_run_substat_optimizer << R"(")" << path << R"(gcsim.exe" -c=")" << path << team_name << R"(\config\)" << team_name << "_" << to_string(filecount) << R"(.txt" -substatOptim=true -out=")" << path << team_name << R"(\optimized_config\)" << team_name
-                                                  << "_" << to_string(filecount) << R"(.txt" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" & )";
-                    outfile_run_optimized_config << R"(")" << path << R"(gcsim.exe" -c=")" << path << team_name << R"(\optimized_config\)" << team_name << "_" << to_string(filecount) << R"(.txt" -out=")" << path << team_name << R"(\viewer_gz\)" << team_name << "_"
-                                                 << to_string(filecount) << R"(.json" -gz="true" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" > )" << path << team_name << R"(\logs\)" << team_name << "_" << to_string(filecount) << ".txt & ";
+                    outfile_run_substat_optimizer << R"(")" << runpath << R"(gcsim.exe" -c=")" << runpath << team_name << R"(\config\)" << team_name << "_" << to_string(filecount) << R"(.txt" -substatOptim=true -out=")" << runpath << team_name << R"(\optimized_config\)"
+                                                  << team_name << "_" << to_string(filecount) << R"(.txt" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" & )";
+                    outfile_run_optimized_config << R"(")" << runpath << R"(gcsim.exe" -c=")" << runpath << team_name << R"(\optimized_config\)" << team_name << "_" << to_string(filecount) << R"(.txt" -out=")" << runpath << team_name << R"(\viewer_gz\)" << team_name << "_"
+                                                 << to_string(filecount) << R"(.json" -gz="true" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" > )" << runpath << team_name << R"(\logs\)" << team_name << "_" << to_string(filecount) << ".txt & ";
 
                     //config
                     outfile_result.open(filepath + team_name + "/config/" + team_name + "_" + to_string(filecount) + ".txt");
@@ -3155,9 +3157,10 @@ void cal_optimal_substats(character_info *characterInfo)
     cout << "total_time:" << total_time.count() << "s" << endl;
 }
 
-//function 4 cal_optimal_artifact TODO:OPTIMIZE
+//function 4 cal_optimal_artifact
 vector<vector<Reinforced_Artifact *>> reinforced_artifact_list;
 
+//TODO:integrate filter artifact
 void read_artifact()
 {
     ifstream infile;
@@ -3342,6 +3345,7 @@ struct cmp
     }
 };
 
+//TODO:optimize accelerate
 void cal_optimal_artifact(character_info *characterInfo)
 {
     //don't calculate
@@ -3489,15 +3493,9 @@ int main()
             if (team_name.empty()) break;
             team_list.push_back(team_name);
         }
-        ofstream run_all_substat_optimizer;
-        run_all_substat_optimizer.open(filepath + "run_all_substat_optimizer.ps1");
-        ofstream run_all_optimized_config;
-        run_all_optimized_config.open(filepath + "run_all_optimized_config.ps1");
         for (auto &i: team_list)
         {
             read_config_file(i);
-            run_all_substat_optimizer << path << i << R"(\run_substat_optimizer.bat)" << endl;
-            run_all_optimized_config << path << i << R"(\run_optimized_config.bat)" << endl;
             generate_gcsim_script(i);
             delete full_config;
         }
