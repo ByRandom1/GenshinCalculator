@@ -40,7 +40,7 @@ struct Team_config
     Character *teammate_1;
     Character *teammate_2;
     Character *teammate_3;
-    vector<pair<Character *, int>> E_release_data;
+    vector<pair<Character *, int>> E_energy_times_data;
     string teammate_all;//FIND
     string team_weapon_artifact;//FIND
     string ele_attach_type;//FIND
@@ -49,7 +49,7 @@ struct Team_config
     Team_config(Character *teammate_1_,
                 Character *teammate_2_,
                 Character *teammate_3_,
-                vector<pair<Character *, int>> E_release_data_,
+                vector<pair<Character *, int>> E_energy_times_data_,
                 string team_weapon_artifact_,
                 string ele_attach_type_,
                 string ele_allow_spread_)
@@ -57,7 +57,7 @@ struct Team_config
         teammate_1 = teammate_1_;
         teammate_2 = teammate_2_;
         teammate_3 = teammate_3_;
-        E_release_data = E_release_data_;
+        E_energy_times_data = E_energy_times_data_;
         teammate_all = teammate_1->name + "_" + teammate_2->name + "_" + teammate_3->name;
         team_weapon_artifact = team_weapon_artifact_;
         ele_attach_type = ele_attach_type_;
@@ -196,6 +196,11 @@ struct Attack_config
         if (react_type != "NONE" && react_type.find("no_add_damage") == string::npos && react_type.find("冻结") == string::npos && react_type.find("结晶") == string::npos)
             useful_attributes[str2index_full("元素精通")] = true;
     }
+
+    ~Attack_config()
+    {
+        delete condition;
+    }
 };
 
 struct attribute
@@ -262,6 +267,8 @@ public:
 
     void add_converted_percentage(string type_, double value_, string source);
 
+    void check_artifact_special(bool &suit1_valid, bool &suit2_valid, bool if_4_piece);//在main中实现
+
     void check_useful_attribute();//在main中实现
 
     void get_team_data();//在main中实现
@@ -322,8 +329,6 @@ public:
     void out(double total_damage_baseline);
 
     void cal_assigned_artifact_damage();
-
-    void out_assigned_artifact();
 };
 
 #endif //GENSHINCALCULATOR_GROUP_H

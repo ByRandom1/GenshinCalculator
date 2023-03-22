@@ -9,6 +9,7 @@
 #include "Artifact.h"
 #include "Reinforced_Artifact.h"
 #include "Group.h"
+#include <json/json.h>
 
 using namespace std;
 
@@ -171,29 +172,43 @@ string find_param(vector<pair<string, string>> &info, string target)
 struct character_info
 {
     Character *c_point;
-    //attack_config
-    equipment *cal_all_restriction;
+    vector<equipment *> gcsim_combinations;
+    vector<equipment *> cal_all_restriction;
+    vector<equipment *> cal_artifact_restriction;
+    int E_energy_times;
     bool recharge_restriction;
     Team_config *team_config;
-    int E_release_times;
     vector<Attack_config *> attack_config_list;
-    //gcsim_config
-    vector<equipment *> gcsim_combinations;
-    //artifact_config
-    vector<equipment *> artifact_combinations;
 
-    character_info(Character *c_point_, Character *tm1, Character *tm2, Character *tm3, string cal_all_info, string team_info, vector<string> attack_config_info, vector<string> gcsim_script_info)
+    character_info(Character *c_point_, Character *tm1, Character *tm2, Character *tm3, vector<string> gcsim_script_info, vector<string> cal_all_info, vector<string> cal_artifact_info, string team_info, vector<string> attack_config_info)
     {
         c_point = c_point_;
 
-        vector<pair<string, string>> parsed_cal_all_info = parse_param(cal_all_info);
-        cal_all_restriction = new equipment(find_param(parsed_cal_all_info, "weapon"), find_param(parsed_cal_all_info, "suit1"), find_param(parsed_cal_all_info, "suit2"),
-                                            find_param(parsed_cal_all_info, "main3"), find_param(parsed_cal_all_info, "main4"), find_param(parsed_cal_all_info, "main5"));
-        recharge_restriction = (bool) stoi(find_param(parsed_cal_all_info, "recharge").empty() ? "0" : find_param(parsed_cal_all_info, "recharge"));
+        for (auto &i: gcsim_script_info)
+        {
+            vector<pair<string, string>> parsed_gcsim_script_info = parse_param(i);
+            gcsim_combinations.push_back(new equipment(find_param(parsed_gcsim_script_info, "weapon"), find_param(parsed_gcsim_script_info, "suit1"), find_param(parsed_gcsim_script_info, "suit2"),
+                                                       find_param(parsed_gcsim_script_info, "main3"), find_param(parsed_gcsim_script_info, "main4"), find_param(parsed_gcsim_script_info, "main5")));
+        }
+
+        for (auto &i: cal_all_info)
+        {
+            vector<pair<string, string>> parsed_cal_all_info = parse_param(i);
+            cal_all_restriction.push_back(new equipment(find_param(parsed_cal_all_info, "weapon"), find_param(parsed_cal_all_info, "suit1"), find_param(parsed_cal_all_info, "suit2"),
+                                                        find_param(parsed_cal_all_info, "main3"), find_param(parsed_cal_all_info, "main4"), find_param(parsed_cal_all_info, "main5")));
+        }
+
+        for (auto &i: cal_artifact_info)
+        {
+            vector<pair<string, string>> parsed_cal_artifact_info = parse_param(i);
+            cal_artifact_restriction.push_back(new equipment(find_param(parsed_cal_artifact_info, "weapon"), find_param(parsed_cal_artifact_info, "suit1"), find_param(parsed_cal_artifact_info, "suit2"),
+                                                             find_param(parsed_cal_artifact_info, "main3"), find_param(parsed_cal_artifact_info, "main4"), find_param(parsed_cal_artifact_info, "main5")));
+        }
 
         vector<pair<string, string>> parsed_team_info = parse_param(team_info);
-        E_release_times = stoi(find_param(parsed_team_info, "E_release_times").empty() ? "1" : find_param(parsed_team_info, "E_release_times"));
-        team_config = new Team_config(tm1, tm2, tm3, vector<pair<Character *, int>>{make_pair(c_point, E_release_times)}, find_param(parsed_team_info, "team_weapon_artifact"),
+        E_energy_times = stoi(find_param(parsed_team_info, "E_energy_times").empty() ? "1" : find_param(parsed_team_info, "E_energy_times"));
+        recharge_restriction = (bool) stoi(find_param(parsed_team_info, "recharge").empty() ? "0" : find_param(parsed_team_info, "recharge"));
+        team_config = new Team_config(tm1, tm2, tm3, vector<pair<Character *, int>>{make_pair(c_point, E_energy_times)}, find_param(parsed_team_info, "team_weapon_artifact"),
                                       find_param(parsed_team_info, "ele_attach_type"), find_param(parsed_team_info, "ele_allow_spread"));
 
         for (auto &i: attack_config_info)
@@ -216,21 +231,19 @@ struct character_info
                                                                                                  stoi(find_param(parsed_attack_config_info, "shengxian_biluo_dongji_chisha").empty() ? "0" : find_param(parsed_attack_config_info, "shengxian_biluo_dongji_chisha")),
                                                                                                  stoi(find_param(parsed_attack_config_info, "none_sifeng_pomo_shizuo").empty() ? "0" : find_param(parsed_attack_config_info, "none_sifeng_pomo_shizuo")))));
         }
-
-        for (auto &j: gcsim_script_info)
-        {
-            vector<pair<string, string>> parsed_gcsim_script_info = parse_param(j);
-            gcsim_combinations.push_back(new equipment(find_param(parsed_gcsim_script_info, "weapon"), find_param(parsed_gcsim_script_info, "suit1"), find_param(parsed_gcsim_script_info, "suit2"),
-                                                       find_param(parsed_gcsim_script_info, "main3"), find_param(parsed_gcsim_script_info, "main4"), find_param(parsed_gcsim_script_info, "main5")));
-        }
     }
 
     ~character_info()
     {
-        delete cal_all_restriction;
-        delete team_config;
-        for (auto &i: attack_config_list) delete i;
         for (auto &i: gcsim_combinations) delete i;
+        for (auto &i: cal_all_restriction) delete i;
+        for (auto &i: cal_artifact_restriction) delete i;
+        delete team_config;
+        for (auto &i: attack_config_list)
+        {
+            delete i->args;
+            delete i;
+        }
     }
 };
 
@@ -249,35 +262,35 @@ public:
 
     config_file(string team_name_info, Character *c_point1, Character *c_point2, Character *c_point3, Character *c_point4,
                 string options_info, string target_info, vector<string> attack_list_info,
-                string c1_cal_all_info, string c1_team_info, vector<string> c1_attack_config_info, vector<string> c1_gcsim_script_info,
-                string c2_cal_all_info, string c2_team_info, vector<string> c2_attack_config_info, vector<string> c2_gcsim_script_info,
-                string c3_cal_all_info, string c3_team_info, vector<string> c3_attack_config_info, vector<string> c3_gcsim_script_info,
-                string c4_cal_all_info, string c4_team_info, vector<string> c4_attack_config_info, vector<string> c4_gcsim_script_info)
+                vector<string> c1_gcsim_script_info, vector<string> c1_cal_all_info, vector<string> c1_cal_artifact_info, string c1_team_info, vector<string> c1_attack_config_info,
+                vector<string> c2_gcsim_script_info, vector<string> c2_cal_all_info, vector<string> c2_cal_artifact_info, string c2_team_info, vector<string> c2_attack_config_info,
+                vector<string> c3_gcsim_script_info, vector<string> c3_cal_all_info, vector<string> c3_cal_artifact_info, string c3_team_info, vector<string> c3_attack_config_info,
+                vector<string> c4_gcsim_script_info, vector<string> c4_cal_all_info, vector<string> c4_cal_artifact_info, string c4_team_info, vector<string> c4_attack_config_info)
     {
         team_name = team_name_info;
         options = options_info;
         target = target_info;
         attack_list = attack_list_info;
-        c1 = new character_info(c_point1, c_point2, c_point3, c_point4, c1_cal_all_info, c1_team_info, c1_attack_config_info, c1_gcsim_script_info);
-        c2 = new character_info(c_point2, c_point1, c_point3, c_point4, c2_cal_all_info, c2_team_info, c2_attack_config_info, c2_gcsim_script_info);
-        c3 = new character_info(c_point3, c_point1, c_point2, c_point4, c3_cal_all_info, c3_team_info, c3_attack_config_info, c3_gcsim_script_info);
-        c4 = new character_info(c_point4, c_point1, c_point2, c_point3, c4_cal_all_info, c4_team_info, c4_attack_config_info, c4_gcsim_script_info);
+        c1 = new character_info(c_point1, c_point2, c_point3, c_point4, c1_gcsim_script_info, c1_cal_all_info, c1_cal_artifact_info, c1_team_info, c1_attack_config_info);
+        c2 = new character_info(c_point2, c_point1, c_point3, c_point4, c2_gcsim_script_info, c2_cal_all_info, c2_cal_artifact_info, c2_team_info, c2_attack_config_info);
+        c3 = new character_info(c_point3, c_point1, c_point2, c_point4, c3_gcsim_script_info, c3_cal_all_info, c3_cal_artifact_info, c3_team_info, c3_attack_config_info);
+        c4 = new character_info(c_point4, c_point1, c_point2, c_point3, c4_gcsim_script_info, c4_cal_all_info, c4_cal_artifact_info, c4_team_info, c4_attack_config_info);
 
-        c1->team_config->E_release_data.emplace_back(c2->c_point, c2->E_release_times);
-        c1->team_config->E_release_data.emplace_back(c3->c_point, c3->E_release_times);
-        c1->team_config->E_release_data.emplace_back(c4->c_point, c4->E_release_times);
+        c1->team_config->E_energy_times_data.emplace_back(c2->c_point, c2->E_energy_times);
+        c1->team_config->E_energy_times_data.emplace_back(c3->c_point, c3->E_energy_times);
+        c1->team_config->E_energy_times_data.emplace_back(c4->c_point, c4->E_energy_times);
 
-        c2->team_config->E_release_data.emplace_back(c1->c_point, c1->E_release_times);
-        c2->team_config->E_release_data.emplace_back(c3->c_point, c3->E_release_times);
-        c2->team_config->E_release_data.emplace_back(c4->c_point, c4->E_release_times);
+        c2->team_config->E_energy_times_data.emplace_back(c1->c_point, c1->E_energy_times);
+        c2->team_config->E_energy_times_data.emplace_back(c3->c_point, c3->E_energy_times);
+        c2->team_config->E_energy_times_data.emplace_back(c4->c_point, c4->E_energy_times);
 
-        c3->team_config->E_release_data.emplace_back(c1->c_point, c1->E_release_times);
-        c3->team_config->E_release_data.emplace_back(c2->c_point, c2->E_release_times);
-        c3->team_config->E_release_data.emplace_back(c4->c_point, c4->E_release_times);
+        c3->team_config->E_energy_times_data.emplace_back(c1->c_point, c1->E_energy_times);
+        c3->team_config->E_energy_times_data.emplace_back(c2->c_point, c2->E_energy_times);
+        c3->team_config->E_energy_times_data.emplace_back(c4->c_point, c4->E_energy_times);
 
-        c4->team_config->E_release_data.emplace_back(c1->c_point, c1->E_release_times);
-        c4->team_config->E_release_data.emplace_back(c2->c_point, c2->E_release_times);
-        c4->team_config->E_release_data.emplace_back(c3->c_point, c3->E_release_times);
+        c4->team_config->E_energy_times_data.emplace_back(c1->c_point, c1->E_energy_times);
+        c4->team_config->E_energy_times_data.emplace_back(c2->c_point, c2->E_energy_times);
+        c4->team_config->E_energy_times_data.emplace_back(c3->c_point, c3->E_energy_times);
     }
 
     ~config_file()
@@ -291,6 +304,8 @@ public:
 
 config_file *full_config;
 
+vector<vector<Reinforced_Artifact *>> reinforced_artifact_list;
+
 //TODO:less important 将所有添加的属性分为face_percentage,converted_face_percentage,monster_percentage，增加过程为face(get_convert)->converted->monster，目前来看只有增伤、暴击、爆伤可能不加在面板上，不影响结果（没有增伤/暴击/爆伤转别的）
 //TODO:important 部分加成默认触发，应根据攻击序列确定触发
 //build new character(needed) 保证AEQ单一攻击次数
@@ -299,7 +314,7 @@ void init_character_data()
     vector<Set *> temp;
 
     temp.push_back(nullptr);//E结束 队友12%暴击8s (get_team)
-    temp.push_back(new Set(new Condition("火", "ALL", "ALL"), "伤害加成", 0.33));//血量低于50%
+    temp.push_back(nullptr);//血量低于50% (special)
     temp.push_back(nullptr);//E下重击不消耗体力
     temp.push_back(nullptr);//Q附着血梅香，伤害提升10%最大生命 (extra_rate)
     temp.push_back(nullptr);//血梅香敌人被击败 队友12%暴击15s (get_team)
@@ -323,7 +338,7 @@ void init_character_data()
     character_list.push_back(new Character("艾尔海森", "alhaitham", "草", "单手剑", 13348, 313, 782, "伤害加成", 0.288,
                                            10, vector<bool>{false, true, false, false, false, true, true, true}, "草", vector<double>{0.979, 1.003, 0.676, 0.676, 1.32, 1.658}, vector<double>{0.91, 0.932, 0.628, 0.628, 1.227, 1.541},
                                            "草", vector<double>{1.092, 1.092}, vector<double>{1.015, 1.015}, "草", vector<double>{3.16}, vector<double>{2.93},
-                                           10, 8, false, vector<bool>{false, true, false, true, false, true, true, true}, vector<double>{4.114, 1.482}, vector<double>{3.872, 1.344}, vector<double>{3.485, 1.21}, vector<double>{3.291, 1.142},
+                                           10, 1, false, vector<bool>{false, true, false, true, false, true, true, true}, vector<double>{4.114, 1.482}, vector<double>{3.872, 1.344}, vector<double>{3.485, 1.21}, vector<double>{3.291, 1.142},
                                            10, 70, true, vector<bool>{false, true, false, true, false, true, true, true}, vector<double>{2.584}, vector<double>{2.432}, vector<double>{2.189}, vector<double>{2.067},
                                            0, temp, false, false, true));//A2、3连续，Z0、1连续，E突进、1层、2层、3层，Q单次
     temp.clear();
@@ -338,7 +353,7 @@ void init_character_data()
     character_list.push_back(new Character("雷电将军", "raiden", "雷", "长柄武器", 12907, 337, 789, "元素充能效率", 0.32,
                                            6, vector<bool>{false, true, false, false, false, true, true, true}, "物理", vector<double>{0.784, 0.785, 0.986, 0.573, 0.573, 1.294}, vector<double>{0.728, 0.73, 0.916, 0.533, 0.533, 1.202},
                                            "物理", vector<double>{1.969}, vector<double>{1.83}, "物理", vector<double>{3.16}, vector<double>{2.93},
-                                           10, 10, false, vector<bool>{false, true, false, false, true, true, true, true}, vector<double>{2.491, 0.893}, vector<double>{2.344, 0.84}, vector<double>{2.11, 0.756}, vector<double>{1.992, 0.714},
+                                           10, 0.5, false, vector<bool>{false, true, false, false, true, true, true, true}, vector<double>{2.491, 0.893}, vector<double>{2.344, 0.84}, vector<double>{2.11, 0.756}, vector<double>{1.992, 0.714},
                                            10, 90, false, vector<bool>{false, true, false, false, true, true, true, true},
                                            vector<double>{8.52 + 0.0826 * 60, 0.935 + 0.0154 * 60, 0.919 + 0.0154 * 60, 1.125 + 0.0154 * 60, 0.646 + 0.0154 * 60, 0.646 + 0.0154 * 60, 1.546 + 0.0154 * 60, 1.288 + 0.0154 * 60, 1.555 + 0.0154 * 60},
                                            vector<double>{8.02 + 0.0778 * 60, 0.89 + 0.0145 * 60, 0.874 + 0.0145 * 60, 1.07 + 0.0145 * 60, 0.614 + 0.0145 * 60, 0.614 + 0.0145 * 60, 1.471 + 0.0145 * 60, 1.225 + 0.0145 * 60, 1.479 + 0.0145 * 60},
@@ -387,7 +402,7 @@ void init_character_data()
     character_list.push_back(new Character("纳西妲", "nahida", "草", "法器", 10360, 299, 630, "元素精通", 115.0,
                                            6, vector<bool>{false, true, false, false, false, true, true, true}, "草", vector<double>{0.726, 0.666, 0.826, 1.051}, vector<double>{0.685, 0.629, 0.78, 0.993},
                                            "草", vector<double>{2.376}, vector<double>{2.244}, "草", vector<double>{2.81}, vector<double>{2.61},
-                                           10, 7, false, vector<bool>{false, true, false, true, false, true, true, true}, vector<double>{2.771, 2.193}, vector<double>{2.608, 2.064}, vector<double>{2.347, 1.858}, vector<double>{2.217, 1.754},
+                                           10, 3, false, vector<bool>{false, true, false, true, false, true, true, true}, vector<double>{2.771, 2.193}, vector<double>{2.608, 2.064}, vector<double>{2.347, 1.858}, vector<double>{2.217, 1.754},
                                            10, 50, false, vector<bool>{false, false, false, false, false, false, false, false}, vector<double>{}, vector<double>{}, vector<double>{}, vector<double>{},
                                            2, temp, false, false, true));
     temp.clear();
@@ -417,7 +432,7 @@ void init_character_data()
     character_list.push_back(new Character("八重神子", "yaemiko", "雷", "法器", 10372, 340, 569, "暴击率", 0.192,
                                            6, vector<bool>{false, true, false, false, false, true, true, true}, "雷", vector<double>{0.714, 0.693, 1.024}, vector<double>{0.674, 0.655, 0.967},
                                            "雷", vector<double>{2.572}, vector<double>{2.429}, "雷", vector<double>{2.81}, vector<double>{2.61},
-                                           10, 5, false, vector<bool>{false, true, false, true, false, true, true, true}, vector<double>{2.518}, vector<double>{2.37}, vector<double>{2.133}, vector<double>{2.015},
+                                           10, 1, false, vector<bool>{false, true, false, true, false, true, true, true}, vector<double>{2.518}, vector<double>{2.37}, vector<double>{2.133}, vector<double>{2.015},
                                            10, 90, false, vector<bool>{false, true, false, false, false, true, true, true}, vector<double>{5.53, 7.09}, vector<double>{5.2, 6.68}, vector<double>{4.68, 6.01}, vector<double>{4.42, 5.68},
                                            2, temp, false, false, true));//Q1+3
     temp.clear();
@@ -490,7 +505,7 @@ void init_character_data()
     character_list.push_back(new Character("钟离", "zhongli", "岩", "长柄武器", 14695, 251, 738, "伤害加成", 0.288,
                                            6, vector<bool>{}, "物理", vector<double>{}, vector<double>{},
                                            "物理", vector<double>{}, vector<double>{}, "物理", vector<double>{}, vector<double>{},
-                                           9, 6, true, vector<bool>{}, vector<double>{}, vector<double>{}, vector<double>{}, vector<double>{},
+                                           9, 0.5, true, vector<bool>{}, vector<double>{}, vector<double>{}, vector<double>{}, vector<double>{},
                                            9, 40, false, vector<bool>{}, vector<double>{}, vector<double>{}, vector<double>{}, vector<double>{},
                                            0, vector<Set *>{}, true, false, true));
     //全抗性削弱20%，护盾强效5%*5层
@@ -565,7 +580,12 @@ void init_character_data()
 //build new character(needed)
 bool Character::get_extra_special(Deployment *data) const
 {
-    if (data->c_point->name == "艾尔海森")
+    if (data->c_point->name == "胡桃")
+    {
+        if (data->attack_config->args->polearm_humo_halflife)
+            data->add_percentage("伤害加成", 0.33, (name + "_extra_special"));
+    }
+    else if (data->c_point->name == "艾尔海森")
     {
         if (data->c_point->constellation >= 6)
         {
@@ -1450,7 +1470,6 @@ bool Weapon::get_extra_special(Deployment *data) const
 }
 
 //build new weapon(all) 被转化的属性有效
-//考虑Q充能
 void Weapon::modify_useful_attribute(Deployment *data)
 {
     if (data->w_point->name == "磐岩结绿" && data->data_list[str2index_full("攻击力")]->useful)
@@ -1676,7 +1695,6 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
 }
 
 //build new artifact(all) 被转化的属性有效
-//考虑Q充能
 void Artifact::modify_useful_attribute(Deployment *data)
 {
     if (data->suit1->name == "绝缘之旗印" && data->suit2->name == "绝缘之旗印" && data->attack_config->condition->attack_way == "Q")
@@ -1684,56 +1702,55 @@ void Artifact::modify_useful_attribute(Deployment *data)
 }
 
 //build new artifact(all) 提供充能、队友加成的有效
-//考虑Q充能
-void Artifact::check_artifact_special(Deployment *data, bool &suit1_valid, bool &suit2_valid, bool if_4_piece)
+void Deployment::check_artifact_special(bool &suit1_valid, bool &suit2_valid, bool if_4_piece)
 {
     //特殊判断圣遗物套装，原来肯定-现在肯定；原来否定-现在肯定；原来肯定-现在否定；原来否定-现在否定
     if (if_4_piece)
     {
-        if (data->suit1->name == "悠古的磐岩")
+        if (suit1->name == "悠古的磐岩")
         {
-            if (data->c_point->ele_type == "岩")
+            if (c_point->ele_type == "岩")
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (data->suit1->name == "翠绿之影")
+        else if (suit1->name == "翠绿之影")
         {
-            if (data->c_point->ele_type == "风")
+            if (c_point->ele_type == "风")
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (data->suit1->name == "如雷的盛怒")
+        else if (suit1->name == "如雷的盛怒")
         {
-            if (data->c_point->ele_type == "雷")
+            if (c_point->ele_type == "雷")
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (data->suit1->name == "绝缘之旗印")
+        else if (suit1->name == "绝缘之旗印")
         {
-            if (data->attack_config->condition->attack_way == "Q")
+            if (attack_config->condition->attack_way == "Q")
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (data->suit1->name == "海染砗磲" || data->suit1->name == "被怜爱的少女")
+        else if (suit1->name == "海染砗磲" || suit1->name == "被怜爱的少女")
         {
-            if (data->c_point->heal_sustain)
+            if (c_point->heal_sustain)
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (data->suit1->name == "乐园遗落之花")
+        else if (suit1->name == "乐园遗落之花")
         {
-            if (data->attack_config->react_type.find("绽放") != string::npos)
+            if (attack_config->react_type.find("绽放") != string::npos)
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
 
             //team
-        else if (data->suit1->name == "昔日宗室之仪")
+        else if (suit1->name == "昔日宗室之仪")
         {
             suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (data->suit1->name == "千岩牢固")
+        else if (suit1->name == "千岩牢固")
         {
-            if (data->attack_config->args->qianyan_enable)
+            if (attack_config->args->qianyan_enable)
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
-        else if (data->suit1->name == "深林的记忆")
+        else if (suit1->name == "深林的记忆")
         {
-            if (data->attack_config->args->shenlin_enable)
+            if (attack_config->args->shenlin_enable)
                 suit1_valid = suit2_valid = true;//原来肯定-现在肯定；原来否定-现在肯定；
         }
 
@@ -1744,28 +1761,27 @@ void Artifact::check_artifact_special(Deployment *data, bool &suit1_valid, bool 
         //2+2
         //攻击：角斗+（追忆） 物理：染血+（苍白） 治疗：少女+（海染） 精通：乐团+（饰金） 风伤：翠绿+（沙上） 水伤：沉沦+（水仙） 生命：千岩+（花海）
         //suit1
-        if ((data->suit1->name == "追忆之注连" && data->suit2->name != "角斗士的终幕礼") || data->suit1->name == "辰砂往生录" || data->suit1->name == "来歆余响") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (data->suit1->name == "苍白之火" && data->suit2->name != "染血的骑士道") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (data->suit1->name == "海染砗磲" && data->suit2->name != "被怜爱的少女") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if ((data->suit1->name == "饰金之梦" && data->suit2->name != "流浪大地的乐团") || data->suit1->name == "乐园遗落之花") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (data->suit1->name == "沙上楼阁史话" && data->suit2->name != "翠绿之影") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if ((suit1->name == "追忆之注连" && suit2->name != "角斗士的终幕礼") || suit1->name == "辰砂往生录" || suit1->name == "来歆余响") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit1->name == "苍白之火" && suit2->name != "染血的骑士道") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit1->name == "海染砗磲" && suit2->name != "被怜爱的少女") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if ((suit1->name == "饰金之梦" && suit2->name != "流浪大地的乐团") || suit1->name == "乐园遗落之花") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit1->name == "沙上楼阁史话" && suit2->name != "翠绿之影") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
 //        //TODO:NEW
-//        if (data->suit1->name == "水仙之梦" && data->suit2->name != "沉沦之心") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-//        if (data->suit1->name == "花海甘露之光" && data->suit2->name != "千岩牢固") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+//        if (suit1->name == "水仙之梦" && suit2->name != "沉沦之心") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+//        if (suit1->name == "花海甘露之光" && suit2->name != "千岩牢固") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         //suit2
-        if ((data->suit2->name == "追忆之注连" && data->suit1->name != "角斗士的终幕礼") || data->suit2->name == "辰砂往生录" || data->suit2->name == "来歆余响") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (data->suit2->name == "苍白之火" && data->suit1->name != "染血的骑士道") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (data->suit2->name == "海染砗磲" && data->suit1->name != "被怜爱的少女") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if ((data->suit2->name == "饰金之梦" && data->suit1->name != "流浪大地的乐团") || data->suit2->name == "乐园遗落之花") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-        if (data->suit2->name == "沙上楼阁史话" && data->suit1->name != "翠绿之影") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if ((suit2->name == "追忆之注连" && suit1->name != "角斗士的终幕礼") || suit2->name == "辰砂往生录" || suit2->name == "来歆余响") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit2->name == "苍白之火" && suit1->name != "染血的骑士道") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit2->name == "海染砗磲" && suit1->name != "被怜爱的少女") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if ((suit2->name == "饰金之梦" && suit1->name != "流浪大地的乐团") || suit2->name == "乐园遗落之花") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit2->name == "沙上楼阁史话" && suit1->name != "翠绿之影") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
 //        //TODO:NEW
-//        if (data->suit2->name == "水仙之梦" && data->suit1->name != "沉沦之心") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-//        if (data->suit2->name == "花海甘露之光" && data->suit1->name != "千岩牢固") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+//        if (suit2->name == "水仙之梦" && suit1->name != "沉沦之心") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+//        if (suit2->name == "花海甘露之光" && suit1->name != "千岩牢固") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
     }
 }
 
 //build new character(needed)||build new weapon(all)||build new artifact(all) 所有转化类属性的有效百分比决定开关
-//考虑Q充能
 void Deployment::check_useful_attribute()
 {
     //实际上应该采用（武器-圣遗物）对的形式考虑还原useful
@@ -2200,9 +2216,9 @@ void Deployment::satisfy_recharge_requirement()
     double energy = monster_drop;
     double converted_recharge = 0;
     //队友E
-    energy += team_config->E_release_data[1].second * team_config->E_release_data[1].first->E_energy * back * ((team_config->E_release_data[1].first->ele_type == c_point->ele_type) ? same : diff);
-    energy += team_config->E_release_data[2].second * team_config->E_release_data[2].first->E_energy * back * ((team_config->E_release_data[2].first->ele_type == c_point->ele_type) ? same : diff);
-    energy += team_config->E_release_data[3].second * team_config->E_release_data[3].first->E_energy * back * ((team_config->E_release_data[3].first->ele_type == c_point->ele_type) ? same : diff);
+    energy += team_config->E_energy_times_data[1].second * team_config->E_energy_times_data[1].first->E_energy * back * ((team_config->E_energy_times_data[1].first->ele_type == c_point->ele_type) ? same : diff);
+    energy += team_config->E_energy_times_data[2].second * team_config->E_energy_times_data[2].first->E_energy * back * ((team_config->E_energy_times_data[2].first->ele_type == c_point->ele_type) ? same : diff);
+    energy += team_config->E_energy_times_data[3].second * team_config->E_energy_times_data[3].first->E_energy * back * ((team_config->E_energy_times_data[3].first->ele_type == c_point->ele_type) ? same : diff);
     //队友特殊
     if (team_config->teammate_all.find("雷电将军") != string::npos) Q_energy_modify -= 24;
     if (team_config->teammate_all.find("温迪") != string::npos && team_config->ele_allow_spread.find(c_point->ele_type) != string::npos) Q_energy_modify -= 15;//扩散与元素附着
@@ -2239,7 +2255,7 @@ void Deployment::satisfy_recharge_requirement()
     if (c_point->name == "胡桃")
     {
         //Q 60 E 5f 2E/Q
-        energy += team_config->E_release_data[0].second * c_point->E_energy * front * same;
+        energy += team_config->E_energy_times_data[0].second * c_point->E_energy * front * same;
 
         if (w_point->name == "西风长枪") energy += 3 * front * white;
         else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
@@ -2247,18 +2263,18 @@ void Deployment::satisfy_recharge_requirement()
     else if (c_point->name == "艾尔海森")
     {
         //Q 70 E 5f 1E/Q
-        energy += team_config->E_release_data[0].second * c_point->E_energy * front * same;
+        energy += team_config->E_energy_times_data[0].second * c_point->E_energy * front * same;
 
         if (w_point->name == "西风剑") energy += 3 * front * white;
         else if (w_point->name == "祭礼剑") energy += 0;
-        else if (w_point->name == "天目影打刀") Q_energy_modify -= team_config->E_release_data[0].second * 12;
+        else if (w_point->name == "天目影打刀") Q_energy_modify -= 12;
         else if (w_point->name == "西福斯的月光") converted_recharge += data_list[str2index_full("元素精通")]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
     }
     else if (c_point->name == "雷电将军")
     {
         //Q 90-24=66 E 10b 1E/Q
         Q_energy_modify -= 24;
-        energy += team_config->E_release_data[0].second * c_point->E_energy * back * same;
+        energy += team_config->E_energy_times_data[0].second * c_point->E_energy * back * same;
 
         if (w_point->name == "西风长枪") energy += 3 * front * white;
         else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
@@ -2268,17 +2284,17 @@ void Deployment::satisfy_recharge_requirement()
     else if (c_point->name == "神里绫华")
     {
         //Q 80 E 4.5f 2E/Q
-        energy += team_config->E_release_data[0].second * c_point->E_energy * front * same;
+        energy += team_config->E_energy_times_data[0].second * c_point->E_energy * front * same;
 
         if (w_point->name == "西风剑") energy += 3 * front * white;
         else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
-        else if (w_point->name == "天目影打刀") Q_energy_modify -= team_config->E_release_data[0].second * 12;
+        else if (w_point->name == "天目影打刀") Q_energy_modify -= team_config->E_energy_times_data[0].second * 12;
         else if (w_point->name == "西福斯的月光") converted_recharge += data_list[str2index_full("元素精通")]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
     }
     else if (c_point->name == "甘雨")
     {
         //Q 60 E 2f+2b 2E/Q
-        energy += team_config->E_release_data[0].second * c_point->E_energy * (front / 2 + back / 2) * same;
+        energy += team_config->E_energy_times_data[0].second * c_point->E_energy * (front / 2 + back / 2) * same;
 
         if (w_point->name == "西风猎弓") energy += 3 * front * white;
         else if (w_point->name == "祭礼弓") energy += c_point->E_energy * (front / 2 + back / 2) * same;
@@ -2286,7 +2302,7 @@ void Deployment::satisfy_recharge_requirement()
     else if (c_point->name == "纳西妲")
     {
         //Q 50 E 6b 2E/Q
-        energy += team_config->E_release_data[0].second * c_point->E_energy * back * same;
+        energy += team_config->E_energy_times_data[0].second * c_point->E_energy * back * same;
 
         if (w_point->name == "西风秘典") energy += 3 * front * white;
         else if (w_point->name == "祭礼残章") energy += 0;
@@ -2298,7 +2314,7 @@ void Deployment::satisfy_recharge_requirement()
     else if (c_point->name == "夜兰")
     {
         //Q 70 E 4f 1E/Q
-        energy += team_config->E_release_data[0].second * c_point->E_energy * front * same;
+        energy += team_config->E_energy_times_data[0].second * c_point->E_energy * front * same;
 
         if (w_point->name == "西风猎弓") energy += 3 * front * white;
         else if (w_point->name == "祭礼弓") energy += c_point->E_energy * front * same;
@@ -2307,7 +2323,7 @@ void Deployment::satisfy_recharge_requirement()
     {
         //Q 90-24=66 E 5b 1E/Q
         Q_energy_modify -= 24;
-        energy += team_config->E_release_data[0].second * c_point->E_energy * back * same;
+        energy += team_config->E_energy_times_data[0].second * c_point->E_energy * back * same;
 
         if (w_point->name == "西风秘典") energy += 3 * front * white;
         else if (w_point->name == "祭礼残章") energy += 0;
@@ -2319,7 +2335,7 @@ void Deployment::satisfy_recharge_requirement()
     else if (c_point->name == "香菱")
     {
         //Q 80 E 4b 1E/Q
-        energy += team_config->E_release_data[0].second * c_point->E_energy * back * same;
+        energy += team_config->E_energy_times_data[0].second * c_point->E_energy * back * same;
 
         if (w_point->name == "西风长枪") energy += 3 * front * white;
         else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
@@ -2328,11 +2344,11 @@ void Deployment::satisfy_recharge_requirement()
     {
         //Q 80-3*5=65 E 5f 1E/Q
         Q_energy_modify -= 12;
-        energy += team_config->E_release_data[0].second * c_point->E_energy * front * same;
+        energy += team_config->E_energy_times_data[0].second * c_point->E_energy * front * same;
 
         if (w_point->name == "西风剑") energy += 3 * front * white;
         else if (w_point->name == "祭礼剑") energy += c_point->E_energy * front * same;
-        else if (w_point->name == "天目影打刀") Q_energy_modify -= team_config->E_release_data[0].second * 12;
+        else if (w_point->name == "天目影打刀") Q_energy_modify -= team_config->E_energy_times_data[0].second * 12;
         else if (w_point->name == "西福斯的月光") converted_recharge += data_list[str2index_full("元素精通")]->percentage * 0.00036 * (0.75 + w_point->level * 0.25);
     }
     else energy = Q_energy_modify;
@@ -2644,8 +2660,9 @@ void Deployment::get_react_value(double mastery, double &extrarate, double &grow
 bool out_debug = false;
 double out_filter_percentage = 0.95;//0.95*(1+2.5%)*(1+2.5%)=1 2词条
 int max_recharge_substat_num = 9;
-string filepath = "./RESULTS/";
-string runpath = R"(C:\Users\Maxwell\Desktop\Genshin\GenshinData\gcsim\)";
+string mac_data_path = "/Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinData/";
+string win_data_path = R"(C:\Users\Maxwell\Desktop\Genshin\GenshinData\)";
+string os_type;
 
 size_t replace_all(string &inout, string_view what, string_view with)
 {
@@ -2658,7 +2675,8 @@ size_t replace_all(string &inout, string_view what, string_view with)
 void read_config_file(string team_name)
 {
     ifstream infile;
-    infile.open(filepath + team_name + "/" + team_name + ".txt");
+    if (os_type == "MAC") infile.open(mac_data_path + team_name + "/" + team_name + ".txt");
+    else if (os_type == "WIN") infile.open(win_data_path + team_name + R"(\)" + team_name + ".txt");
 
     string c_name1;
     string c_name2;
@@ -2666,169 +2684,155 @@ void read_config_file(string team_name)
     string c_name4;
     infile >> c_name1 >> c_name2 >> c_name3 >> c_name4;
 
-    vector<string> c1_gcsim_script_info;
-    vector<string> c2_gcsim_script_info;
-    vector<string> c3_gcsim_script_info;
-    vector<string> c4_gcsim_script_info;
     string options_info;
     string target_info;
     vector<string> attack_list_info;
-    string c1_cal_all_info;
+
+    vector<string> c1_gcsim_script_info;
+    vector<string> c1_cal_all_info;
+    vector<string> c1_cal_artifact_info;
     string c1_team_info;
     vector<string> c1_attack_config_info;
-    string c2_cal_all_info;
+
+    vector<string> c2_gcsim_script_info;
+    vector<string> c2_cal_all_info;
+    vector<string> c2_cal_artifact_info;
     string c2_team_info;
     vector<string> c2_attack_config_info;
-    string c3_cal_all_info;
+
+    vector<string> c3_gcsim_script_info;
+    vector<string> c3_cal_all_info;
+    vector<string> c3_cal_artifact_info;
     string c3_team_info;
     vector<string> c3_attack_config_info;
-    string c4_cal_all_info;
+
+    vector<string> c4_gcsim_script_info;
+    vector<string> c4_cal_all_info;
+    vector<string> c4_cal_artifact_info;
     string c4_team_info;
     vector<string> c4_attack_config_info;
 
     string info;
+    int pos;
     getline(infile, info);
     while (!infile.eof())
     {
         getline(infile, info);
-        if (info == "gcsim_config:")
+        pos = (info.find(' ', 0) != -1) ? (int) info.find(' ', 0) : (int) info.length();
+        string c_name = info.substr(0, pos);
+        info = info.substr((pos + 1 <= info.length()) ? pos + 1 : info.length());
+        pos = (info.find(' ', 0) != -1) ? (int) info.find(' ', 0) : (int) info.length();
+        info = info.substr((pos + 1 <= info.length()) ? pos + 1 : info.length());
+        pos = (info.find(' ', 0) != -1) ? (int) info.find(' ', 0) : (int) info.length();
+        string type = info.substr(0, pos);
+        info = info.substr((pos + 1 <= info.length()) ? pos + 1 : info.length());
+        if (c_name == c_name1)
         {
-            while (true)
-            {
-                getline(infile, info);
-                if (info == "BREAK") break;
-                c1_gcsim_script_info.push_back(info);
-            }
-            while (true)
-            {
-                getline(infile, info);
-                if (info == "BREAK") break;
-                c2_gcsim_script_info.push_back(info);
-            }
-            while (true)
-            {
-                getline(infile, info);
-                if (info == "BREAK") break;
-                c3_gcsim_script_info.push_back(info);
-            }
-            while (true)
-            {
-                getline(infile, info);
-                if (info == "BREAK") break;
-                c4_gcsim_script_info.push_back(info);
-            }
+            if (type == "gcsim_config") c1_gcsim_script_info.push_back(info);
+            else if (type == "cal_all_restriction") c1_cal_all_info.push_back(info);
+            else if (type == "cal_artifact_restriction") c1_cal_artifact_info.push_back(info);
+            else if (type == "team_config" && c1_team_info.empty()) c1_team_info = info;
+            else if (type == "attack_config") c1_attack_config_info.push_back(info);
         }
-        else if (info == "options:") getline(infile, options_info);
-        else if (info == "target:") getline(infile, target_info);
-        else if (info == "attack_list:")
+        else if (c_name == c_name2)
         {
-            while (true)
-            {
-                getline(infile, info);
-                if (info == "BREAK") break;
-                replace_all(info, c_name1, find_character_by_name(c_name1)->english_name);
-                replace_all(info, c_name2, find_character_by_name(c_name2)->english_name);
-                replace_all(info, c_name3, find_character_by_name(c_name3)->english_name);
-                replace_all(info, c_name4, find_character_by_name(c_name4)->english_name);
-                replace_all(info, "平A", "attack");
-                replace_all(info, "重A", "charge");
-                replace_all(info, "下落A", "high_plunge");
-                replace_all(info, "长E", "skill[hold=1]");
-                replace_all(info, "E", "skill");
-                replace_all(info, "Q", "burst");
-                replace_all(info, "冲刺", "dash");
-                replace_all(info, "跳跃", "jump");
-                attack_list_info.push_back(info);
-            }
+            if (type == "gcsim_config") c2_gcsim_script_info.push_back(info);
+            else if (type == "cal_all_restriction") c2_cal_all_info.push_back(info);
+            else if (type == "cal_artifact_restriction") c2_cal_artifact_info.push_back(info);
+            else if (type == "team_config" && c2_team_info.empty()) c2_team_info = info;
+            else if (type == "attack_config") c2_attack_config_info.push_back(info);
         }
-        else if (info == "restrictions/team_config/attack_config:")
+        else if (c_name == c_name3)
         {
-            getline(infile, c1_cal_all_info);
-            getline(infile, c1_team_info);
-            while (true)
+            if (type == "gcsim_config") c3_gcsim_script_info.push_back(info);
+            else if (type == "cal_all_restriction") c3_cal_all_info.push_back(info);
+            else if (type == "cal_artifact_restriction") c3_cal_artifact_info.push_back(info);
+            else if (type == "team_config" && c3_team_info.empty()) c3_team_info = info;
+            else if (type == "attack_config") c3_attack_config_info.push_back(info);
+        }
+        else if (c_name == c_name4)
+        {
+            if (type == "gcsim_config") c4_gcsim_script_info.push_back(info);
+            else if (type == "cal_all_restriction") c4_cal_all_info.push_back(info);
+            else if (type == "cal_artifact_restriction") c4_cal_artifact_info.push_back(info);
+            else if (type == "team_config" && c4_team_info.empty()) c4_team_info = info;
+            else if (type == "attack_config") c4_attack_config_info.push_back(info);
+        }
+        else if (c_name == "all")
+        {
+            if (type == "options") options_info = info;
+            else if (type == "target") target_info = info;
+            else if (type == "attack_list")
             {
-                getline(infile, info);
-                if (info == "BREAK") break;
-                c1_attack_config_info.push_back(info);
-            }
-            getline(infile, c2_cal_all_info);
-            getline(infile, c2_team_info);
-            while (true)
-            {
-                getline(infile, info);
-                if (info == "BREAK") break;
-                c2_attack_config_info.push_back(info);
-            }
-            getline(infile, c3_cal_all_info);
-            getline(infile, c3_team_info);
-            while (true)
-            {
-                getline(infile, info);
-                if (info == "BREAK") break;
-                c3_attack_config_info.push_back(info);
-            }
-            getline(infile, c4_cal_all_info);
-            getline(infile, c4_team_info);
-            while (true)
-            {
-                getline(infile, info);
-                if (info == "BREAK") break;
-                c4_attack_config_info.push_back(info);
+                while (true)
+                {
+                    getline(infile, info);
+                    if (info == "ATTACK_LIST END") break;
+                    replace_all(info, c_name1, find_character_by_name(c_name1)->english_name);
+                    replace_all(info, c_name2, find_character_by_name(c_name2)->english_name);
+                    replace_all(info, c_name3, find_character_by_name(c_name3)->english_name);
+                    replace_all(info, c_name4, find_character_by_name(c_name4)->english_name);
+                    replace_all(info, "平A", "attack");
+                    replace_all(info, "重A", "charge");
+                    replace_all(info, "下落A", "high_plunge");
+                    replace_all(info, "长E", "skill[hold=1]");
+                    replace_all(info, "E", "skill");
+                    replace_all(info, "Q", "burst");
+                    replace_all(info, "冲刺", "dash");
+                    replace_all(info, "跳跃", "jump");
+                    attack_list_info.push_back(info);
+                }
             }
         }
     }
-    infile.close();
 
     full_config = new config_file(team_name, find_character_by_name(c_name1), find_character_by_name(c_name2), find_character_by_name(c_name3), find_character_by_name(c_name4),
                                   options_info, target_info, attack_list_info,
-                                  c1_cal_all_info, c1_team_info, c1_attack_config_info, c1_gcsim_script_info,
-                                  c2_cal_all_info, c2_team_info, c2_attack_config_info, c2_gcsim_script_info,
-                                  c3_cal_all_info, c3_team_info, c3_attack_config_info, c3_gcsim_script_info,
-                                  c4_cal_all_info, c4_team_info, c4_attack_config_info, c4_gcsim_script_info);
+                                  c1_gcsim_script_info, c1_cal_all_info, c1_cal_artifact_info, c1_team_info, c1_attack_config_info,
+                                  c2_gcsim_script_info, c2_cal_all_info, c2_cal_artifact_info, c2_team_info, c2_attack_config_info,
+                                  c3_gcsim_script_info, c3_cal_all_info, c3_cal_artifact_info, c3_team_info, c3_attack_config_info,
+                                  c4_gcsim_script_info, c4_cal_all_info, c4_cal_artifact_info, c4_team_info, c4_attack_config_info);
 }
 
 //function 1 generate config sample
 void generate_sample_config()
 {
     ofstream outfile;
-    outfile.open(filepath + "sample_config.txt");
+    if (os_type == "MAC") outfile.open(mac_data_path + "sample_config.txt");
+    else if (os_type == "WIN") outfile.open(win_data_path + "sample_config.txt");
 
     outfile << "A B C D" << endl;
-    outfile << "gcsim_config:" << endl;
-    outfile << "weapon= suit1= suit2= main3= main4= main5=" << endl;
-    outfile << "BREAK" << endl;
-    outfile << "weapon= suit1= suit2= main3= main4= main5=" << endl;
-    outfile << "BREAK" << endl;
-    outfile << "weapon= suit1= suit2= main3= main4= main5=" << endl;
-    outfile << "BREAK" << endl;
-    outfile << "weapon= suit1= suit2= main3= main4= main5=" << endl;
-    outfile << "BREAK" << endl;
-    outfile << "options:" << endl;
-    outfile << "" << endl;
-    outfile << "target:" << endl;
-    outfile << "" << endl;
-    outfile << "attack_list:" << endl;
+    outfile << "all add options " << endl;
+    outfile << "all add target " << endl;
+    outfile << "all add attack_list" << endl;
     outfile << "rotation_start" << endl;
     outfile << "" << endl;
     outfile << "rotation_end" << endl;
-    outfile << "BREAK" << endl;
-    outfile << "restrictions/team_config/attack_config:" << endl;
-    outfile << "weapon= suit1= suit2= main3= main4= main5= recharge=" << endl;
-    outfile << "E_release_times= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
-    outfile << "attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
-    outfile << "BREAK" << endl;
-    outfile << "weapon= suit1= suit2= main3= main4= main5= recharge=" << endl;
-    outfile << "E_release_times= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
-    outfile << "attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
-    outfile << "BREAK" << endl;
-    outfile << "weapon= suit1= suit2= main3= main4= main5= recharge=" << endl;
-    outfile << "E_release_times= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
-    outfile << "attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
-    outfile << "BREAK" << endl;
-    outfile << "weapon= suit1= suit2= main3= main4= main5= recharge=" << endl;
-    outfile << "E_release_times= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
-    outfile << "attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
-    outfile << "BREAK";
+    outfile << "ATTACK_LIST END" << endl;
+    outfile << endl;
+    outfile << "A add gcsim_config weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "A add cal_all_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "A add cal_artifact_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "A add team_config E_energy_times= recharge= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
+    outfile << "A add attack_config attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
+    outfile << endl;
+    outfile << "B add gcsim_config weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "B add cal_all_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "B add cal_artifact_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "B add team_config E_energy_times= recharge= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
+    outfile << "B add attack_config attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
+    outfile << endl;
+    outfile << "C add gcsim_config weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "C add cal_all_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "C add cal_artifact_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "C add team_config E_energy_times= recharge= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
+    outfile << "C add attack_config attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
+    outfile << endl;
+    outfile << "D add gcsim_config weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "D add cal_all_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "D add cal_artifact_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
+    outfile << "D add team_config E_energy_times= recharge= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
+    outfile << "D add attack_config attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=";
 
     outfile.close();
 }
@@ -2858,11 +2862,13 @@ pair<string, string> main_convert(string ele_type, string main)
 void generate_gcsim_script(string team_name)
 {
     ofstream outfile_run_substat_optimizer;
-    outfile_run_substat_optimizer.open(filepath + team_name + "/run_substat_optimizer.bat");
-    outfile_run_substat_optimizer << R"(mkdir )" << runpath << team_name << R"(\optimized_config && )";
+    if (os_type == "MAC") outfile_run_substat_optimizer.open(mac_data_path + team_name + "/run_substat_optimizer.bat");
+    else if (os_type == "WIN") outfile_run_substat_optimizer.open(win_data_path + team_name + R"(\run_substat_optimizer.bat)");
+    outfile_run_substat_optimizer << R"(mkdir )" << win_data_path << team_name << R"(\optimized_config & )";
     ofstream outfile_run_optimized_config;
-    outfile_run_optimized_config.open(filepath + team_name + "/run_optimized_config.bat");
-    outfile_run_optimized_config << R"(mkdir )" << runpath << team_name << R"(\viewer_gz && mkdir )" << runpath << team_name << R"(\logs && )";
+    if (os_type == "MAC") outfile_run_optimized_config.open(mac_data_path + team_name + "/run_optimized_config.bat");
+    else if (os_type == "WIN") outfile_run_optimized_config.open(win_data_path + team_name + R"(\run_optimized_config.bat)");
+    outfile_run_optimized_config << R"(mkdir )" << win_data_path << team_name << R"(\viewer_gz & mkdir )" << win_data_path << team_name << R"(\logs & )";
 
     int filecount = 1;
     for (auto &combination_1: full_config->c1->gcsim_combinations)
@@ -2870,13 +2876,15 @@ void generate_gcsim_script(string team_name)
             for (auto &combination_3: full_config->c3->gcsim_combinations)
                 for (auto &combination_4: full_config->c4->gcsim_combinations)
                 {
-                    outfile_run_substat_optimizer << R"(")" << runpath << R"(gcsim.exe" -c=")" << runpath << team_name << R"(\config\)" << team_name << "_" << to_string(filecount) << R"(.txt" -substatOptim=true -out=")" << runpath << team_name << R"(\optimized_config\)"
-                                                  << team_name << "_" << to_string(filecount) << R"(.txt" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" & )";
-                    outfile_run_optimized_config << R"(")" << runpath << R"(gcsim.exe" -c=")" << runpath << team_name << R"(\optimized_config\)" << team_name << "_" << to_string(filecount) << R"(.txt" -out=")" << runpath << team_name << R"(\viewer_gz\)" << team_name << "_"
-                                                 << to_string(filecount) << R"(.json" -gz="true" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" > )" << runpath << team_name << R"(\logs\)" << team_name << "_" << to_string(filecount) << ".txt & ";
+                    outfile_run_substat_optimizer << R"(")" << win_data_path << R"(gcsim.exe" -c=")" << win_data_path << team_name << R"(\config\)" << team_name << "_" << to_string(filecount) << R"(.txt" -substatOptim=true -out=")" << win_data_path << team_name
+                                                  << R"(\optimized_config\)" << team_name << "_" << to_string(filecount) << R"(.txt" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" & )";
+                    outfile_run_optimized_config << R"(")" << win_data_path << R"(gcsim.exe" -c=")" << win_data_path << team_name << R"(\optimized_config\)" << team_name << "_" << to_string(filecount) << R"(.txt" -out=")" << win_data_path << team_name << R"(\viewer_gz\)"
+                                                 << team_name << "_" << to_string(filecount) << R"(.json" -gz="true" "-options="total_liquid_substats=30;indiv_liquid_cap=12;fixed_substats_count=0;"" > )" << win_data_path << team_name << R"(\logs\)" << team_name << "_"
+                                                 << to_string(filecount) << ".txt & ";
 
                     //config
-                    outfile_result.open(filepath + team_name + "/config/" + team_name + "_" + to_string(filecount) + ".txt");
+                    if (os_type == "MAC") outfile_result.open(mac_data_path + team_name + "/config/" + team_name + "_" + to_string(filecount) + ".txt");
+                    else if (os_type == "WIN") outfile_result.open(win_data_path + team_name + R"(\config\)" + team_name + "_" + to_string(filecount) + ".txt");
                     Character *c;
                     Weapon *w;
                     Artifact *a1;
@@ -3027,7 +3035,9 @@ void generate_gcsim_script(string team_name)
                     filecount++;
                 }
     outfile_run_substat_optimizer << "pause";
+    outfile_run_substat_optimizer.close();
     outfile_run_optimized_config << "pause";
+    outfile_run_optimized_config.close();
 }
 
 //function 3 cal_optimal_substats
@@ -3040,84 +3050,84 @@ bool cmp_func(Group *a, Group *b)
 //注意圣遗物限定2+2有顺序
 void cal_optimal_substats(character_info *characterInfo)
 {
-    //don't calculate
-    if (characterInfo->attack_config_list[0]->condition->attack_way.empty()) return;
-
     vector<Group *> comb_out_data;
     auto total_start = chrono::system_clock::now();
 
     for (auto &w_index: weapon_list)
     {
         if (characterInfo->c_point->weapon_type != w_index->weapon_type) continue;
-        if (!characterInfo->cal_all_restriction->weapon.empty() && characterInfo->cal_all_restriction->weapon.find(w_index->name) == string::npos) continue;
 
         vector<Group *> c_w_pair;
         vector<thread> ths;
         auto start = chrono::system_clock::now();
 
-        for (int a_index1 = 0; a_index1 < artifact_list.size(); a_index1++)
+        for (auto &res_index: characterInfo->cal_all_restriction)
         {
-            if (!characterInfo->cal_all_restriction->suit1.empty() && characterInfo->cal_all_restriction->suit1.find(artifact_list[a_index1]->name) == string::npos) continue;
-            for (int a_index2 = a_index1; a_index2 < artifact_list.size(); a_index2++)
+            if (!res_index->weapon.empty() && res_index->weapon.find(w_index->name) == string::npos) continue;
+            for (int a_index1 = 0; a_index1 < artifact_list.size(); a_index1++)
             {
-                if (!characterInfo->cal_all_restriction->suit2.empty() && characterInfo->cal_all_restriction->suit2.find(artifact_list[a_index2]->name) == string::npos) continue;
-                for (int main3_index = 0; main3_index < 5; main3_index++)
+                if (!res_index->suit1.empty() && res_index->suit1.find(artifact_list[a_index1]->name) == string::npos) continue;
+                for (int a_index2 = a_index1; a_index2 < artifact_list.size(); a_index2++)
                 {
-                    if (!characterInfo->cal_all_restriction->main3.empty() && characterInfo->cal_all_restriction->main3.find(a_main3[main3_index]) == string::npos) continue;
-                    for (int main4_index = (main3_index == 4) ? 0 : main3_index; main4_index < 5; main4_index++)
+                    if (!res_index->suit2.empty() && res_index->suit2.find(artifact_list[a_index2]->name) == string::npos) continue;
+                    for (int main3_index = 0; main3_index < 5; main3_index++)
                     {
-                        if (!characterInfo->cal_all_restriction->main4.empty() && characterInfo->cal_all_restriction->main4.find(a_main4[main4_index]) == string::npos) continue;
-                        for (int main5_index = (main4_index == 4) ? ((main3_index == 4) ? 0 : main3_index) : main4_index; main5_index < 7; main5_index++)
+                        if (!res_index->main3.empty() && res_index->main3.find(a_main3[main3_index]) == string::npos) continue;
+                        for (int main4_index = (main3_index == 4) ? 0 : main3_index; main4_index < 5; main4_index++)
                         {
-                            if (!characterInfo->cal_all_restriction->main5.empty() && characterInfo->cal_all_restriction->main5.find(a_main5[main5_index]) == string::npos) continue;
+                            if (!res_index->main4.empty() && res_index->main4.find(a_main4[main4_index]) == string::npos) continue;
+                            for (int main5_index = (main4_index == 4) ? ((main3_index == 4) ? 0 : main3_index) : main4_index; main5_index < 7; main5_index++)
+                            {
+                                if (!res_index->main5.empty() && res_index->main5.find(a_main5[main5_index]) == string::npos) continue;
 
-                            auto *temp = new Group(characterInfo->c_point, w_index, artifact_list[a_index1], artifact_list[a_index2], a_main3[main3_index], a_main4[main4_index], a_main5[main5_index],
-                                                   characterInfo->team_config, characterInfo->attack_config_list, characterInfo->recharge_restriction);
-                            int check_num = temp->init_check_data("cal_optimal_substats");
-                            if (check_num == 0)//pass
-                            {
-                                c_w_pair.push_back(temp);
-                                ths.emplace_back(&Group::cal_damage_entry_num, temp);
+                                auto *temp = new Group(characterInfo->c_point, w_index, artifact_list[a_index1], artifact_list[a_index2], a_main3[main3_index], a_main4[main4_index], a_main5[main5_index],
+                                                       characterInfo->team_config, characterInfo->attack_config_list, characterInfo->recharge_restriction);
+                                int check_num = temp->init_check_data("cal_optimal_substats");
+                                if (check_num == 0)//pass
+                                {
+                                    c_w_pair.push_back(temp);
+                                    ths.emplace_back(&Group::cal_damage_entry_num, temp);
+                                }
+                                else if (check_num == 1)//error:suit1
+                                {
+                                    delete temp;
+                                    goto NEXTARTIFACT1;
+                                }
+                                else if (check_num == 2)//error:suit2
+                                {
+                                    delete temp;
+                                    goto NEXTARTIFACT2;
+                                }
+                                else if (check_num == 3)//error:main3
+                                {
+                                    delete temp;
+                                    goto NEXTMAIN3;
+                                }
+                                else if (check_num == 4)//error:main4
+                                {
+                                    delete temp;
+                                    goto NEXTMAIN4;
+                                }
+                                else if (check_num == 5)//error:main5
+                                {
+                                    delete temp;
+                                    goto NEXTMAIN5;
+                                }
+                                else if (check_num == 6)//error:recharge
+                                {
+                                    delete temp;
+                                    goto NEXTMAIN5;
+                                }
+                                NEXTMAIN5:;
                             }
-                            else if (check_num == 1)//error:suit1
-                            {
-                                delete temp;
-                                goto NEXTARTIFACT1;
-                            }
-                            else if (check_num == 2)//error:suit2
-                            {
-                                delete temp;
-                                goto NEXTARTIFACT2;
-                            }
-                            else if (check_num == 3)//error:main3
-                            {
-                                delete temp;
-                                goto NEXTMAIN3;
-                            }
-                            else if (check_num == 4)//error:main4
-                            {
-                                delete temp;
-                                goto NEXTMAIN4;
-                            }
-                            else if (check_num == 5)//error:main5
-                            {
-                                delete temp;
-                                goto NEXTMAIN5;
-                            }
-                            else if (check_num == 6)//error:recharge
-                            {
-                                delete temp;
-                                goto NEXTMAIN5;
-                            }
-                            NEXTMAIN5:;
+                            NEXTMAIN4:;
                         }
-                        NEXTMAIN4:;
+                        NEXTMAIN3:;
                     }
-                    NEXTMAIN3:;
+                    NEXTARTIFACT2:;
                 }
-                NEXTARTIFACT2:;
+                NEXTARTIFACT1:;
             }
-            NEXTARTIFACT1:;
         }
 
         for (auto &th: ths) th.join();
@@ -3158,51 +3168,97 @@ void cal_optimal_substats(character_info *characterInfo)
 }
 
 //function 4 cal_optimal_artifact
-vector<vector<Reinforced_Artifact *>> reinforced_artifact_list;
-
-//TODO:integrate filter artifact
-void read_artifact()
+void read_artifact_json()
 {
     ifstream infile;
-    infile.open(filepath + "artifacts.txt");
-    vector<Reinforced_Artifact *> pos1;
-    vector<Reinforced_Artifact *> pos2;
-    vector<Reinforced_Artifact *> pos3;
-    vector<Reinforced_Artifact *> pos4;
-    vector<Reinforced_Artifact *> pos5;
+    if (os_type == "MAC") infile.open(mac_data_path + "artifacts.genshinart.json", ios::binary);
+    else if (os_type == "WIN") infile.open(win_data_path + "artifacts.genshinart.json", ios::binary);
+    Json::Reader json_reader;
+    Json::Value root;
 
-    while (!infile.eof())
+    string pos_name[5] = {"flower", "feather", "sand", "cup", "head"};
+    string suit_name;
+    string main_type;
+    string entry1_type;
+    double entry1_value;
+    string entry2_type;
+    double entry2_value;
+    string entry3_type;
+    double entry3_value;
+    string entry4_type;
+    double entry4_value;
+
+    if (json_reader.parse(infile, root, false))
     {
-        int pos;
-        string suit_name;
-        string main_type;
-        string entry1_type;
-        double entry1_value;
-        string entry2_type;
-        double entry2_value;
-        string entry3_type;
-        double entry3_value;
-        string entry4_type;
-        double entry4_value;
-        string character_belong;
-
-        infile >> pos >> suit_name >> main_type >> entry1_type >> entry1_value >> entry2_type >> entry2_value >> entry3_type >> entry3_value >> entry4_type >> entry4_value >> character_belong;
-        auto *temp = new Reinforced_Artifact(pos, suit_name, main_type, entry1_type, entry1_value, entry2_type, entry2_value,
-                                             entry3_type, entry3_value, entry4_type, entry4_value, character_belong);
-        if (pos == 1) pos1.push_back(temp);
-        else if (pos == 2) pos2.push_back(temp);
-        else if (pos == 3) pos3.push_back(temp);
-        else if (pos == 4) pos4.push_back(temp);
-        else if (pos == 5) pos5.push_back(temp);
+        for (auto &i: pos_name)
+        {
+            vector<Reinforced_Artifact *> artifact_data;
+            for (auto &j: root[i])
+            {
+                suit_name = j["setName"].asString();
+                main_type = j["mainTag"]["name"].asString();
+                entry1_type = j["normalTags"][0]["name"].asString();
+                entry1_value = j["normalTags"][0]["value"].asDouble();
+                entry2_type = j["normalTags"][1]["name"].asString();
+                entry2_value = j["normalTags"][1]["value"].asDouble();
+                entry3_type = j["normalTags"][2]["name"].asString();
+                entry3_value = j["normalTags"][2]["value"].asDouble();
+                entry4_type = j["normalTags"][3]["name"].asString();
+                entry4_value = j["normalTags"][3]["value"].asDouble();
+                artifact_data.push_back(new Reinforced_Artifact(suit_name, main_type, entry1_type, entry1_value, entry2_type, entry2_value,
+                                                                entry3_type, entry3_value, entry4_type, entry4_value));
+            }
+            reinforced_artifact_list.push_back(artifact_data);
+        }
     }
-    reinforced_artifact_list.push_back(pos1);
-    reinforced_artifact_list.push_back(pos2);
-    reinforced_artifact_list.push_back(pos3);
-    reinforced_artifact_list.push_back(pos4);
-    reinforced_artifact_list.push_back(pos5);
+
+    infile.close();
 }
 
-void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_Artifact *pos3, Reinforced_Artifact *pos4, Reinforced_Artifact *pos5, Artifact *&suit1, Artifact *&suit2)
+void reinforced_artifact_simple_judge()
+{
+    ofstream outfile_artifact_judge;
+    if (os_type == "MAC") outfile_artifact_judge.open(mac_data_path + "artifact.csv");
+    else if (os_type == "WIN") outfile_artifact_judge.open(win_data_path + "artifact.csv");
+    outfile_artifact_judge << "索引,套装,主属性,副属性1,副属性1数值,副属性2,副属性2数值,副属性3,副属性3数值,副属性4,副属性4数值,生命词条,攻击词条,防御词条,精通词条,充能词条,暴击词条,爆伤词条";
+    //judge standard
+    outfile_artifact_judge << ",生暴爆,生暴爆(反应),攻暴爆,攻暴爆(反应),精暴爆" << endl;
+    double standard[5] = {6.5, 6.5, 5.5, 5, 5};
+
+    for (int i = 0; i < reinforced_artifact_list.size(); ++i)
+    {
+        for (int j = 0; j < reinforced_artifact_list[i].size(); ++j)
+        {
+            string life = (reinforced_artifact_list[i][j]->entry_num["生命值"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"]) > standard[i] ? "TRUE" : "FALSE";
+            if (reinforced_artifact_list[i][j]->main_type == "攻击力" || reinforced_artifact_list[i][j]->main_type == "防御力") life = "FALSE";
+
+            string life_react = (reinforced_artifact_list[i][j]->entry_num["生命值"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"] + reinforced_artifact_list[i][j]->entry_num["元素精通"]) > standard[i] ? "TRUE" : "FALSE";
+            if (reinforced_artifact_list[i][j]->main_type == "攻击力" || reinforced_artifact_list[i][j]->main_type == "防御力") life_react = "FALSE";
+
+            string atk = (reinforced_artifact_list[i][j]->entry_num["攻击力"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"]) > standard[i] ? "TRUE" : "FALSE";
+            if (reinforced_artifact_list[i][j]->main_type == "生命值" || reinforced_artifact_list[i][j]->main_type == "防御力") life = "FALSE";
+
+            string atk_react = (reinforced_artifact_list[i][j]->entry_num["攻击力"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"] + reinforced_artifact_list[i][j]->entry_num["元素精通"]) > standard[i] ? "TRUE" : "FALSE";
+            if (reinforced_artifact_list[i][j]->main_type == "生命值" || reinforced_artifact_list[i][j]->main_type == "防御力") life_react = "FALSE";
+
+            string mastery = (reinforced_artifact_list[i][j]->entry_num["元素精通"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"]) > standard[i] ? "TRUE" : "FALSE";
+            if (reinforced_artifact_list[i][j]->main_type == "生命值" || reinforced_artifact_list[i][j]->main_type == "攻击力" || reinforced_artifact_list[i][j]->main_type == "防御力") life = "FALSE";
+
+            outfile_artifact_judge << i + 1 << "." << j << "," << reinforced_artifact_list[i][j]->suit_name << "," << reinforced_artifact_list[i][j]->main_type << ","
+                                   << reinforced_artifact_list[i][j]->entry[0].first << "," << reinforced_artifact_list[i][j]->entry[0].second << ","
+                                   << reinforced_artifact_list[i][j]->entry[1].first << "," << reinforced_artifact_list[i][j]->entry[1].second << ","
+                                   << reinforced_artifact_list[i][j]->entry[2].first << "," << reinforced_artifact_list[i][j]->entry[2].second << ","
+                                   << reinforced_artifact_list[i][j]->entry[3].first << "," << reinforced_artifact_list[i][j]->entry[3].second << ","
+                                   << reinforced_artifact_list[i][j]->entry_num["生命值"] << "," << reinforced_artifact_list[i][j]->entry_num["攻击力"] << "," << reinforced_artifact_list[i][j]->entry_num["防御力"] << "," << reinforced_artifact_list[i][j]->entry_num["元素精通"] << ","
+                                   << reinforced_artifact_list[i][j]->entry_num["元素充能效率"] << "," << reinforced_artifact_list[i][j]->entry_num["暴击率"] << "," << reinforced_artifact_list[i][j]->entry_num["暴击伤害"]
+                                   << "," << life << "," << life_react << "," << atk << "," << atk_react << "," << mastery << endl;
+        }
+    }
+
+    outfile_artifact_judge.close();
+}
+
+void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_Artifact *pos3, Reinforced_Artifact *pos4, Reinforced_Artifact *pos5, string &suit1_name, string &suit2_name)
 {
     int pos1_count = 1;
     int pos2_count = 1;
@@ -3235,15 +3291,15 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
     }
     if (pos1_count >= 4)
     {
-        suit1 = suit2 = find_artifact_by_name(pos1->suit_name);
+        suit1_name = suit2_name = pos1->suit_name;
         return;
     }
     else if (pos1_count >= 2)
     {
-        if (suit1 == nullptr) suit1 = find_artifact_by_name(pos1->suit_name);
-        else if (suit2 == nullptr)
+        if (suit1_name.empty()) suit1_name = pos1->suit_name;
+        else if (suit2_name.empty())
         {
-            suit2 = find_artifact_by_name(pos1->suit_name);
+            suit2_name = pos1->suit_name;
             return;
         }
     }
@@ -3268,15 +3324,15 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
     }
     if (pos2_count >= 4)
     {
-        suit1 = suit2 = find_artifact_by_name(pos2->suit_name);
+        suit1_name = suit2_name = pos2->suit_name;
         return;
     }
     else if (pos2_count >= 2)
     {
-        if (suit1 == nullptr) suit1 = find_artifact_by_name(pos2->suit_name);
-        else if (suit2 == nullptr)
+        if (suit1_name.empty()) suit1_name = pos2->suit_name;
+        else if (suit2_name.empty())
         {
-            suit2 = find_artifact_by_name(pos2->suit_name);
+            suit2_name = pos2->suit_name;
             return;
         }
     }
@@ -3296,15 +3352,15 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
     }
     if (pos3_count >= 4)
     {
-        suit1 = suit2 = find_artifact_by_name(pos3->suit_name);
+        suit1_name = suit2_name = pos3->suit_name;
         return;
     }
     else if (pos3_count >= 2)
     {
-        if (suit1 == nullptr) suit1 = find_artifact_by_name(pos3->suit_name);
-        else if (suit2 == nullptr)
+        if (suit1_name.empty()) suit1_name = pos3->suit_name;
+        else if (suit2_name.empty())
         {
-            suit2 = find_artifact_by_name(pos3->suit_name);
+            suit2_name = pos3->suit_name;
             return;
         }
     }
@@ -3319,156 +3375,145 @@ void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_A
     }
     if (pos4_count >= 4)
     {
-        suit1 = suit2 = find_artifact_by_name(pos4->suit_name);
+        suit1_name = suit2_name = pos4->suit_name;
         return;
     }
     else if (pos4_count >= 2)
     {
-        if (suit1 == nullptr) suit1 = find_artifact_by_name(pos4->suit_name);
-        else if (suit2 == nullptr)
+        if (suit1_name.empty()) suit1_name = pos4->suit_name;
+        else if (suit2_name.empty())
         {
-            suit2 = find_artifact_by_name(pos4->suit_name);
+            suit2_name = pos4->suit_name;
             return;
         }
     }
-
-    if (suit1 == nullptr) suit1 = find_artifact_by_name("EMPTY");
-    if (suit2 == nullptr) suit2 = find_artifact_by_name("EMPTY");
 }
 
-struct cmp
+bool cmp_func_2(pair<string, double> a, pair<string, double> b)
 {
-    bool operator()(Group *a, Group *b)
-    {
-        if (a->total_damage > b->total_damage) return true;
-        else return false;
-    }
-};
+    if (a.second > b.second) return true;
+    else return false;
+}
 
-//TODO:optimize accelerate
 void cal_optimal_artifact(character_info *characterInfo)
 {
-    //don't calculate
-    if (characterInfo->attack_config_list[0]->condition->attack_way.empty()) return;
-
-    for (auto &comb_index: characterInfo->artifact_combinations)
+    if (out_header)
     {
-        Group *optimal = nullptr;
-        priority_queue<Group *, vector<Group *>, cmp> c_w_pair;
+        outfile_result << "人物名称,队友信息,圣遗物套装1,圣遗物套装2,圣遗物1索引,圣遗物2索引,圣遗物3索引,圣遗物4索引,圣遗物5索引,期望伤害,RATIO" << endl;
+        out_header = false;
+    }
+
+    vector<pair<string, double>> comb_out_data;
+    auto total_start = chrono::system_clock::now();
+
+    for (auto &w_index: weapon_list)
+    {
+        if (characterInfo->c_point->weapon_type != w_index->weapon_type) continue;
 
         auto start = chrono::system_clock::now();
 
-        for (int pos1_index = 0; pos1_index < reinforced_artifact_list[0].size(); ++pos1_index)
+        for (auto &res_index: characterInfo->cal_artifact_restriction)
         {
-            if (reinforced_artifact_list[0][pos1_index]->character_belong != "none") continue;
-            for (int pos2_index = 0; pos2_index < reinforced_artifact_list[1].size(); ++pos2_index)
-            {
-                if (reinforced_artifact_list[1][pos2_index]->character_belong != "none") continue;
-                for (int pos3_index = 0; pos3_index < reinforced_artifact_list[2].size(); ++pos3_index)
-                {
-                    if (reinforced_artifact_list[2][pos3_index]->character_belong != "none") continue;
-                    for (int pos4_index = 0; pos4_index < reinforced_artifact_list[3].size(); ++pos4_index)
+            if (!res_index->weapon.empty() && res_index->weapon.find(w_index->name) == string::npos) continue;
+            for (int pos1_index = 0; pos1_index < reinforced_artifact_list[0].size(); ++pos1_index)
+                for (int pos2_index = 0; pos2_index < reinforced_artifact_list[1].size(); ++pos2_index)
+                    for (int pos3_index = 0; pos3_index < reinforced_artifact_list[2].size(); ++pos3_index)
                     {
-                        if (reinforced_artifact_list[3][pos4_index]->character_belong != "none") continue;
-                        if (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos && reinforced_artifact_list[3][pos4_index]->main_type != (characterInfo->c_point->ele_type + "伤害加成")) continue;
-                        for (int pos5_index = 0; pos5_index < reinforced_artifact_list[4].size(); ++pos5_index)
+                        if (!res_index->main3.empty() && res_index->main3.find(reinforced_artifact_list[2][pos3_index]->main_type) == string::npos) continue;
+                        for (int pos4_index = 0; pos4_index < reinforced_artifact_list[3].size(); ++pos4_index)
                         {
-                            if (reinforced_artifact_list[4][pos5_index]->character_belong != "none") continue;
-
-                            Artifact *suit1 = nullptr;
-                            Artifact *suit2 = nullptr;
-                            get_suit(reinforced_artifact_list[0][pos1_index], reinforced_artifact_list[1][pos2_index], reinforced_artifact_list[2][pos3_index],
-                                     reinforced_artifact_list[3][pos4_index], reinforced_artifact_list[4][pos5_index], suit1, suit2);
-                            string main3 = reinforced_artifact_list[2][pos3_index]->main_type;
-                            string main4 = (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos) ? "伤害加成" : reinforced_artifact_list[3][pos4_index]->main_type;
-                            string main5 = reinforced_artifact_list[4][pos5_index]->main_type;
-
-                            //check config restrictions
-                            bool valid = false;
-                            if ((comb_index->suit1.empty() || comb_index->suit1 == suit1->name) && (comb_index->suit2.empty() || comb_index->suit2 == suit2->name)) valid = true;
-                            if ((comb_index->suit1.empty() || comb_index->suit1 == suit2->name) && (comb_index->suit2.empty() || comb_index->suit2 == suit1->name)) valid = true;
-                            if (!valid) continue;
-                            if (!comb_index->main3.empty() && comb_index->main3 != main3) continue;
-                            if (!comb_index->main4.empty() && comb_index->main4 != main4) continue;
-                            if (!comb_index->main5.empty() && comb_index->main5 != main5) continue;
-
-                            auto *temp = new Group(characterInfo->c_point, find_weapon_by_name(comb_index->weapon), suit1, suit2, main3, main4, main5,
-                                                   characterInfo->team_config, characterInfo->attack_config_list, characterInfo->recharge_restriction);
-                            temp->data[0] = reinforced_artifact_list[0][pos1_index];
-                            temp->data[1] = reinforced_artifact_list[1][pos2_index];
-                            temp->data[2] = reinforced_artifact_list[2][pos3_index];
-                            temp->data[3] = reinforced_artifact_list[3][pos4_index];
-                            temp->data[4] = reinforced_artifact_list[4][pos5_index];
-
-                            int check_num = temp->init_check_data("cal_optimal_artifact");
-                            if (check_num == 0)//pass
+                            if (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos)
                             {
-                                temp->cal_assigned_artifact_damage();
-                                c_w_pair.push(temp);
+                                if (!res_index->main4.empty() && res_index->main4.find("伤害加成") == string::npos) continue;
+                                if (reinforced_artifact_list[3][pos4_index]->main_type != (characterInfo->c_point->ele_type + "伤害加成")) continue;
+                            }
+                            else if (!res_index->main4.empty() && res_index->main4.find(reinforced_artifact_list[3][pos4_index]->main_type) == string::npos) continue;
+                            for (int pos5_index = 0; pos5_index < reinforced_artifact_list[4].size(); ++pos5_index)
+                            {
+                                if (!res_index->main5.empty() && res_index->main5.find(reinforced_artifact_list[4][pos5_index]->main_type) == string::npos) continue;
 
-                                if (optimal == nullptr || optimal->total_damage < temp->total_damage) optimal = temp;
-                                while (!c_w_pair.empty())
+                                string suit1_name;
+                                string suit2_name;
+                                get_suit(reinforced_artifact_list[0][pos1_index], reinforced_artifact_list[1][pos2_index], reinforced_artifact_list[2][pos3_index],
+                                         reinforced_artifact_list[3][pos4_index], reinforced_artifact_list[4][pos5_index], suit1_name, suit2_name);
+
+                                if (suit1_name.empty() || suit2_name.empty()) continue;
+                                if (!((res_index->suit1.empty() || res_index->suit1.find(suit1_name) != string::npos) && (res_index->suit2.empty() || res_index->suit2.find(suit2_name) != string::npos)) &&
+                                    !((res_index->suit1.empty() || res_index->suit1.find(suit2_name) != string::npos) && (res_index->suit2.empty() || res_index->suit2.find(suit1_name) != string::npos)))
+                                    continue;
+
+                                auto *temp = new Group(characterInfo->c_point, w_index, find_artifact_by_name(suit1_name), find_artifact_by_name(suit2_name),
+                                                       reinforced_artifact_list[2][pos3_index]->main_type,
+                                                       (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos) ? "伤害加成" : reinforced_artifact_list[3][pos4_index]->main_type,
+                                                       reinforced_artifact_list[4][pos5_index]->main_type,
+                                                       characterInfo->team_config, characterInfo->attack_config_list, characterInfo->recharge_restriction);
+                                temp->data[0] = reinforced_artifact_list[0][pos1_index];
+                                temp->data[1] = reinforced_artifact_list[1][pos2_index];
+                                temp->data[2] = reinforced_artifact_list[2][pos3_index];
+                                temp->data[3] = reinforced_artifact_list[3][pos4_index];
+                                temp->data[4] = reinforced_artifact_list[4][pos5_index];
+
+                                int check_num = temp->init_check_data("cal_optimal_artifact");
+                                if (check_num == 0)//pass
                                 {
-                                    Group *c_w = c_w_pair.top();
-                                    if (c_w->total_damage / optimal->total_damage < out_filter_percentage)
-                                    {
-                                        c_w_pair.pop();
-                                        delete c_w;
-                                    }
-                                    else break;
+                                    temp->cal_assigned_artifact_damage();
+                                    string info = temp->c_point->name + "," + temp->team_config->teammate_all + "," + suit1_name + "," + suit2_name
+                                                  + ",1." + to_string(pos1_index) + ",2." + to_string(pos2_index) + ",3." + to_string(pos3_index) + ",4." + to_string(pos4_index) + ",5." + to_string(pos5_index);
+                                    comb_out_data.emplace_back(info, temp->total_damage);
+                                    delete temp;
                                 }
+                                else if (check_num == 1)//error:suit1
+                                {
+                                    delete temp;
+                                    goto NEXTPOS5;
+                                }
+                                else if (check_num == 2)//error:suit2
+                                {
+                                    delete temp;
+                                    goto NEXTPOS5;
+                                }
+                                else if (check_num == 3)//error:pos3
+                                {
+                                    delete temp;
+                                    goto NEXTPOS3;
+                                }
+                                else if (check_num == 4)//error:pos4
+                                {
+                                    delete temp;
+                                    goto NEXTPOS4;
+                                }
+                                else if (check_num == 5)//error:pos5
+                                {
+                                    delete temp;
+                                    goto NEXTPOS5;
+                                }
+                                else if (check_num == 6)//error:recharge
+                                {
+                                    delete temp;
+                                    goto NEXTPOS5;
+                                }
+                                NEXTPOS5:;
                             }
-                            else if (check_num == 1)//error:suit1
-                            {
-                                delete temp;
-                                goto NEXTPOS5;
-                            }
-                            else if (check_num == 2)//error:suit2
-                            {
-                                delete temp;
-                                goto NEXTPOS5;
-                            }
-                            else if (check_num == 3)//error:pos3
-                            {
-                                delete temp;
-                                goto NEXTPOS3;
-                            }
-                            else if (check_num == 4)//error:pos4
-                            {
-                                delete temp;
-                                goto NEXTPOS4;
-                            }
-                            else if (check_num == 5)//error:pos5
-                            {
-                                delete temp;
-                                goto NEXTPOS5;
-                            }
-                            else if (check_num == 6)//error:recharge
-                            {
-                                delete temp;
-                                goto NEXTPOS5;
-                            }
-                            NEXTPOS5:;
+                            NEXTPOS4:;
                         }
-                        NEXTPOS4:;
+                        NEXTPOS3:;
                     }
-                    NEXTPOS3:;
-                }
-            }
         }
 
         chrono::duration<double> time = chrono::system_clock::now() - start;
-
-        while (!c_w_pair.empty())
-        {
-            Group *c_w = c_w_pair.top();
-            c_w_pair.pop();
-            c_w->out_assigned_artifact();
-            delete c_w;
-        }
-
-        cout << characterInfo->c_point->name << " " << comb_index->weapon << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << " ";
+        cout << characterInfo->c_point->name << " " << w_index->name << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << " ";
     }
+
+    if (!comb_out_data.empty())
+    {
+        stable_sort(comb_out_data.begin(), comb_out_data.end(), cmp_func_2);
+        double total_damage_baseline = comb_out_data[0].second;
+        for (auto &i: comb_out_data) outfile_result << i.first << "," << i.second << "," << (i.second / total_damage_baseline) << endl;
+    }
+    comb_out_data.clear();
+
+    chrono::duration<double> total_time = chrono::system_clock::now() - total_start;
+    cout << "total_time:" << total_time.count() << "s" << endl;
 }
 
 int main()
@@ -3476,6 +3521,9 @@ int main()
     init_character_data();
     init_weapon_data();
     init_artifact_data();
+
+    cout << "系统类型(MAC/WIN):";
+    cin >> os_type;
 
     int mode = 0;
     cout << "计算模式(1:generate_sample_config 2:generate_gcsim_script 3:cal_optimal_substats 4:cal_optimal_artifact):";
@@ -3515,8 +3563,10 @@ int main()
         for (auto &i: team_list)
         {
             read_config_file(i);
-            outfile_result.open(filepath + i + "/optimized_substats.csv");
-            if (out_debug) outfile_debug.open(filepath + i + "/optimized_substats_log.csv");
+            if (os_type == "MAC") outfile_result.open(mac_data_path + i + "/optimized_substats.csv");
+            else if (os_type == "WIN") outfile_result.open(win_data_path + i + R"(\optimized_substats.csv)");
+            if (os_type == "MAC" && out_debug) outfile_debug.open(mac_data_path + i + "/optimized_substats_log.csv");
+            else if (os_type == "WIN" && out_debug) outfile_debug.open(win_data_path + i + R"(\optimized_substats_log.csv)");
             cout << i << ":" << endl;
             cal_optimal_substats(full_config->c1);
             cal_optimal_substats(full_config->c2);
@@ -3529,8 +3579,6 @@ int main()
     }
     else if (mode == 4)
     {
-        return 0;
-
         vector<string> team_list;
         string team_name;
         getline(cin, team_name);
@@ -3542,21 +3590,25 @@ int main()
             team_list.push_back(team_name);
         }
 
-        read_artifact();
+        read_artifact_json();
+        reinforced_artifact_simple_judge();
+
+        if (os_type == "MAC") outfile_result.open(mac_data_path + "/artifact_results.csv");
+        else if (os_type == "WIN") outfile_result.open(win_data_path + R"(\artifact_results.csv)");
+        if (os_type == "MAC" && out_debug) outfile_debug.open(mac_data_path + "/artifact_results_log.csv");
+        else if (os_type == "WIN" && out_debug) outfile_debug.open(win_data_path + R"(\artifact_results_log.csv)");
         for (auto &i: team_list)
         {
             read_config_file(i);
-            outfile_result.open(filepath + i + "/optimized_artifact.csv");
-            if (out_debug) outfile_debug.open(filepath + i + "/optimized_artifact_log.csv");
             cout << i << ":" << endl;
             cal_optimal_artifact(full_config->c1);
             cal_optimal_artifact(full_config->c2);
             cal_optimal_artifact(full_config->c3);
             cal_optimal_artifact(full_config->c4);
-            outfile_debug.close();
-            outfile_result.close();
             delete full_config;
         }
+        outfile_debug.close();
+        outfile_result.close();
     }
     return 0;
 }

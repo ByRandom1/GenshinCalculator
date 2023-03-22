@@ -49,36 +49,42 @@ build cmake_object_order_depends_target_GenshinCalculator: phony || CMakeFiles/G
 build CMakeFiles/GenshinCalculator.dir/main.cpp.o: CXX_COMPILER__GenshinCalculator_Debug /Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinCalculator/main.cpp || cmake_object_order_depends_target_GenshinCalculator
   DEP_FILE = CMakeFiles/GenshinCalculator.dir/main.cpp.o.d
   FLAGS = -g -std=gnu++17
+  INCLUDES = -I/usr/local/Cellar/jsoncpp/1.9.5/include
   OBJECT_DIR = CMakeFiles/GenshinCalculator.dir
   OBJECT_FILE_DIR = CMakeFiles/GenshinCalculator.dir
 
 build CMakeFiles/GenshinCalculator.dir/Artifact.cpp.o: CXX_COMPILER__GenshinCalculator_Debug /Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinCalculator/Artifact.cpp || cmake_object_order_depends_target_GenshinCalculator
   DEP_FILE = CMakeFiles/GenshinCalculator.dir/Artifact.cpp.o.d
   FLAGS = -g -std=gnu++17
+  INCLUDES = -I/usr/local/Cellar/jsoncpp/1.9.5/include
   OBJECT_DIR = CMakeFiles/GenshinCalculator.dir
   OBJECT_FILE_DIR = CMakeFiles/GenshinCalculator.dir
 
 build CMakeFiles/GenshinCalculator.dir/Character.cpp.o: CXX_COMPILER__GenshinCalculator_Debug /Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinCalculator/Character.cpp || cmake_object_order_depends_target_GenshinCalculator
   DEP_FILE = CMakeFiles/GenshinCalculator.dir/Character.cpp.o.d
   FLAGS = -g -std=gnu++17
+  INCLUDES = -I/usr/local/Cellar/jsoncpp/1.9.5/include
   OBJECT_DIR = CMakeFiles/GenshinCalculator.dir
   OBJECT_FILE_DIR = CMakeFiles/GenshinCalculator.dir
 
 build CMakeFiles/GenshinCalculator.dir/Weapon.cpp.o: CXX_COMPILER__GenshinCalculator_Debug /Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinCalculator/Weapon.cpp || cmake_object_order_depends_target_GenshinCalculator
   DEP_FILE = CMakeFiles/GenshinCalculator.dir/Weapon.cpp.o.d
   FLAGS = -g -std=gnu++17
+  INCLUDES = -I/usr/local/Cellar/jsoncpp/1.9.5/include
   OBJECT_DIR = CMakeFiles/GenshinCalculator.dir
   OBJECT_FILE_DIR = CMakeFiles/GenshinCalculator.dir
 
 build CMakeFiles/GenshinCalculator.dir/Group.cpp.o: CXX_COMPILER__GenshinCalculator_Debug /Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinCalculator/Group.cpp || cmake_object_order_depends_target_GenshinCalculator
   DEP_FILE = CMakeFiles/GenshinCalculator.dir/Group.cpp.o.d
   FLAGS = -g -std=gnu++17
+  INCLUDES = -I/usr/local/Cellar/jsoncpp/1.9.5/include
   OBJECT_DIR = CMakeFiles/GenshinCalculator.dir
   OBJECT_FILE_DIR = CMakeFiles/GenshinCalculator.dir
 
 build CMakeFiles/GenshinCalculator.dir/Reinforced_Artifact.cpp.o: CXX_COMPILER__GenshinCalculator_Debug /Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinCalculator/Reinforced_Artifact.cpp || cmake_object_order_depends_target_GenshinCalculator
   DEP_FILE = CMakeFiles/GenshinCalculator.dir/Reinforced_Artifact.cpp.o.d
   FLAGS = -g -std=gnu++17
+  INCLUDES = -I/usr/local/Cellar/jsoncpp/1.9.5/include
   OBJECT_DIR = CMakeFiles/GenshinCalculator.dir
   OBJECT_FILE_DIR = CMakeFiles/GenshinCalculator.dir
 
@@ -90,8 +96,9 @@ build CMakeFiles/GenshinCalculator.dir/Reinforced_Artifact.cpp.o: CXX_COMPILER__
 #############################################
 # Link the executable GenshinCalculator
 
-build GenshinCalculator: CXX_EXECUTABLE_LINKER__GenshinCalculator_Debug CMakeFiles/GenshinCalculator.dir/main.cpp.o CMakeFiles/GenshinCalculator.dir/Artifact.cpp.o CMakeFiles/GenshinCalculator.dir/Character.cpp.o CMakeFiles/GenshinCalculator.dir/Weapon.cpp.o CMakeFiles/GenshinCalculator.dir/Group.cpp.o CMakeFiles/GenshinCalculator.dir/Reinforced_Artifact.cpp.o
+build GenshinCalculator: CXX_EXECUTABLE_LINKER__GenshinCalculator_Debug CMakeFiles/GenshinCalculator.dir/main.cpp.o CMakeFiles/GenshinCalculator.dir/Artifact.cpp.o CMakeFiles/GenshinCalculator.dir/Character.cpp.o CMakeFiles/GenshinCalculator.dir/Weapon.cpp.o CMakeFiles/GenshinCalculator.dir/Group.cpp.o CMakeFiles/GenshinCalculator.dir/Reinforced_Artifact.cpp.o | /usr/local/Cellar/jsoncpp/1.9.5/lib/libjsoncpp.25.dylib /usr/local/Cellar/jsoncpp/1.9.5/lib/libjsoncpp.dylib
   FLAGS = -g
+  LINK_LIBRARIES = /usr/local/Cellar/jsoncpp/1.9.5/lib/libjsoncpp.25.dylib  /usr/local/Cellar/jsoncpp/1.9.5/lib/libjsoncpp.dylib
   OBJECT_DIR = CMakeFiles/GenshinCalculator.dir
   POST_BUILD = :
   PRE_LINK = :

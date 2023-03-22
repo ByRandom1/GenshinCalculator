@@ -10,7 +10,9 @@
 	{
 		"commands" : 
 		[
-			"add_executable"
+			"add_executable",
+			"TARGET_LINK_LIBRARIES",
+			"INCLUDE_DIRECTORIES"
 		],
 		"files" : 
 		[
@@ -26,6 +28,18 @@
 				"file" : 0,
 				"line" : 6,
 				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 14,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 8,
+				"parent" : 0
 			}
 		]
 	},
@@ -39,6 +53,13 @@
 				},
 				{
 					"fragment" : "-std=gnu++17"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 3,
+					"path" : "/usr/local/Cellar/jsoncpp/1.9.5/include"
 				}
 			],
 			"language" : "CXX",
@@ -73,6 +94,16 @@
 			{
 				"fragment" : "",
 				"role" : "flags"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/local/Cellar/jsoncpp/1.9.5/lib/libjsoncpp.25.dylib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "/usr/local/Cellar/jsoncpp/1.9.5/lib/libjsoncpp.dylib",
+				"role" : "libraries"
 			}
 		],
 		"language" : "CXX"
