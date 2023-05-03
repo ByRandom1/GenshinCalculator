@@ -59,9 +59,8 @@ string Reinforced_Artifact::suit_name_convert(string suit_name_)
     else if (suit_name_ == "GildedDreams") return "饰金之梦";
     else if (suit_name_ == "desertpavilionchronicle") return "沙上楼阁史话";//?
     else if (suit_name_ == "flowerofparadiselost") return "乐园遗落之花";//?
-        //TODO:NEW
-//    else if (suit_name_ == "nymphsdream") return "水仙之梦";//?
-//    else if (suit_name_ == "dewflowersglow") return "花海甘露之光";//?
+    else if (suit_name_ == "nymphsdream") return "水仙之梦";//?
+    else if (suit_name_ == "dewflowersglow") return "花海甘露之光";//?
     else
     {
         cout << suit_name_ << endl;

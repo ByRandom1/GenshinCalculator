@@ -789,11 +789,10 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("不灭月华", "everlastingmoonglow", "法器", 608, "生命值", 0.496, 1, temp));
     temp.clear();
 
-//    //TODO:NEW
-//    //(recharge)
-//    //(convert)
-//    weapon_list.push_back(new Weapon("碧落之珑", "jadefallssplendor", "法器", 608, "生命值", 0.496, 1, temp));
-//    temp.clear();
+    //(recharge)
+    //(convert)
+    weapon_list.push_back(new Weapon("碧落之珑", "jadefallssplendor", "法器", 608, "生命值", 0.496, 1, temp));
+    temp.clear();
 
     //(special)
     //(get_team)
@@ -1484,9 +1483,8 @@ void Weapon::modify_useful_attribute(Deployment *data)
         data->data_list[str2index_full("元素精通")]->useful = true;
     else if (data->w_point->name == "不灭月华" && data->attack_config->condition->attack_way == "平A")
         data->data_list[str2index_full("生命值")]->useful = true;
-//        //TODO:NEW
-//    else if (data->w_point->name == "碧落之珑" && data->attack_config->args->catalyst_biluo_enable)
-//        data->data_list[str2index_full("生命值")]->useful = true;
+    else if (data->w_point->name == "碧落之珑" && data->attack_config->args->catalyst_biluo_enable)
+        data->data_list[str2index_full("生命值")]->useful = true;
     else if (data->w_point->name == "流浪的晚星" && data->data_list[str2index_full("攻击力")]->useful)
         data->data_list[str2index_full("元素精通")]->useful = true;
     else if (data->w_point->name == "猎人之径" && data->attack_config->condition->attack_way == "重A")
@@ -1558,11 +1556,10 @@ void init_artifact_data()
                                          nullptr));
     artifact_list.push_back(new Artifact("乐园遗落之花", "flowerofparadiselost", new Set(new Condition("ALL", "ALL", "ALL"), "元素精通", 80.0),
                                          nullptr));//(react)
-//    //TODO:NEW
-//    artifact_list.push_back(new Artifact("水仙之梦", "nymphsdream", new Set(new Condition("水", "ALL", "ALL"), "伤害加成", 0.15),
-//                                         nullptr));//(special)
-//    artifact_list.push_back(new Artifact("花海甘露之光", "dewflowersglow", new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2),
-//                                         nullptr));//(special)
+    artifact_list.push_back(new Artifact("水仙之梦", "nymphsdream", new Set(new Condition("水", "ALL", "ALL"), "伤害加成", 0.15),
+                                         nullptr));//(special)
+    artifact_list.push_back(new Artifact("花海甘露之光", "dewflowersglow", new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2),
+                                         nullptr));//(special)
 }
 
 //build new artifact(all) 保证二件套效果和四件套效果分开
@@ -1662,35 +1659,34 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
             if (data->attack_config->condition->attack_way == "平A" || data->attack_config->condition->attack_way == "重A" || data->attack_config->condition->attack_way == "下落A")
                 data->add_percentage("伤害加成", 0.4, (name + "_extra_special"));
     }
-//        //TODO:NEW
-//    else if (if_4_piece && name == "水仙之梦")
-//    {
-//        if (data->attack_config->args->shuixian_level == 1)
-//        {
-//            data->add_percentage("攻击力", 0.07, (name + "_extra_special"));
-//            if (data->attack_config->condition->ele_type == "水") data->add_percentage("伤害加成", 0.04, (name + "_extra_special"));
-//        }
-//        else if (data->attack_config->args->shuixian_level == 2)
-//        {
-//            data->add_percentage("攻击力", 0.16, (name + "_extra_special"));
-//            if (data->attack_config->condition->ele_type == "水") data->add_percentage("伤害加成", 0.09, (name + "_extra_special"));
-//        }
-//        else if (data->attack_config->args->shuixian_level >= 3)
-//        {
-//            data->add_percentage("攻击力", 0.25, (name + "_extra_special"));
-//            if (data->attack_config->condition->ele_type == "水") data->add_percentage("伤害加成", 0.15, (name + "_extra_special"));
-//        }
-//    }
-//    else if (if_4_piece && name == "花海甘露之光")
-//    {
-//        if (data->attack_config->condition->attack_way == "E" || data->attack_config->condition->attack_way == "Q")
-//        {
-//            if (!data->attack_config->background && !data->c_point->shield_sustain && !data->team_config->teammate_1->shield_sustain && !data->team_config->teammate_2->shield_sustain && !data->team_config->teammate_3->shield_sustain)
-//                data->add_percentage("伤害加成", 0.5, (name + "_extra_special"));
-//            else
-//                data->add_percentage("伤害加成", 0.1, (name + "_extra_special"));
-//        }
-//    }
+    else if (if_4_piece && name == "水仙之梦")
+    {
+        if (data->attack_config->args->shuixian_level == 1)
+        {
+            data->add_percentage("攻击力", 0.07, (name + "_extra_special"));
+            if (data->attack_config->condition->ele_type == "水") data->add_percentage("伤害加成", 0.04, (name + "_extra_special"));
+        }
+        else if (data->attack_config->args->shuixian_level == 2)
+        {
+            data->add_percentage("攻击力", 0.16, (name + "_extra_special"));
+            if (data->attack_config->condition->ele_type == "水") data->add_percentage("伤害加成", 0.09, (name + "_extra_special"));
+        }
+        else if (data->attack_config->args->shuixian_level >= 3)
+        {
+            data->add_percentage("攻击力", 0.25, (name + "_extra_special"));
+            if (data->attack_config->condition->ele_type == "水") data->add_percentage("伤害加成", 0.15, (name + "_extra_special"));
+        }
+    }
+    else if (if_4_piece && name == "花海甘露之光")
+    {
+        if (data->attack_config->condition->attack_way == "E" || data->attack_config->condition->attack_way == "Q")
+        {
+            if (!data->attack_config->background && !data->c_point->shield_sustain && !data->team_config->teammate_1->shield_sustain && !data->team_config->teammate_2->shield_sustain && !data->team_config->teammate_3->shield_sustain)
+                data->add_percentage("伤害加成", 0.5, (name + "_extra_special"));
+            else
+                data->add_percentage("伤害加成", 0.1, (name + "_extra_special"));
+        }
+    }
     return true;
 }
 
@@ -1766,18 +1762,16 @@ void Deployment::check_artifact_special(bool &suit1_valid, bool &suit2_valid, bo
         if (suit1->name == "海染砗磲" && suit2->name != "被怜爱的少女") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if ((suit1->name == "饰金之梦" && suit2->name != "流浪大地的乐团") || suit1->name == "乐园遗落之花") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (suit1->name == "沙上楼阁史话" && suit2->name != "翠绿之影") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-//        //TODO:NEW
-//        if (suit1->name == "水仙之梦" && suit2->name != "沉沦之心") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
-//        if (suit1->name == "花海甘露之光" && suit2->name != "千岩牢固") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit1->name == "水仙之梦" && suit2->name != "沉沦之心") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit1->name == "花海甘露之光" && suit2->name != "千岩牢固") suit1_valid = false;//原来肯定-现在否定；原来否定-现在否定
         //suit2
         if ((suit2->name == "追忆之注连" && suit1->name != "角斗士的终幕礼") || suit2->name == "辰砂往生录" || suit2->name == "来歆余响") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (suit2->name == "苍白之火" && suit1->name != "染血的骑士道") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (suit2->name == "海染砗磲" && suit1->name != "被怜爱的少女") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if ((suit2->name == "饰金之梦" && suit1->name != "流浪大地的乐团") || suit2->name == "乐园遗落之花") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
         if (suit2->name == "沙上楼阁史话" && suit1->name != "翠绿之影") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-//        //TODO:NEW
-//        if (suit2->name == "水仙之梦" && suit1->name != "沉沦之心") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
-//        if (suit2->name == "花海甘露之光" && suit1->name != "千岩牢固") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit2->name == "水仙之梦" && suit1->name != "沉沦之心") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
+        if (suit2->name == "花海甘露之光" && suit1->name != "千岩牢固") suit2_valid = false;//原来肯定-现在否定；原来否定-现在否定
     }
 }
 
@@ -2308,8 +2302,7 @@ void Deployment::satisfy_recharge_requirement()
         else if (w_point->name == "祭礼残章") energy += 0;
         else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
         else if (w_point->name == "不灭月华") Q_energy_modify -= 0;
-//            //TODO:NEW
-//        else if (w_point->name == "碧落之珑") Q_energy_modify -= 4;
+        else if (w_point->name == "碧落之珑") Q_energy_modify -= 4.5;
     }
     else if (c_point->name == "夜兰")
     {
@@ -2329,8 +2322,7 @@ void Deployment::satisfy_recharge_requirement()
         else if (w_point->name == "祭礼残章") energy += 0;
         else if (w_point->name == "试作金珀") Q_energy_modify -= 18;
         else if (w_point->name == "不灭月华") Q_energy_modify -= 0;
-//            //TODO:NEW
-//        else if (w_point->name == "碧落之珑") Q_energy_modify -= 4;
+        else if (w_point->name == "碧落之珑") Q_energy_modify -= 4.5;
     }
     else if (c_point->name == "香菱")
     {
@@ -2397,9 +2389,8 @@ void Deployment::get_convert_value(double &life, double &atk, double &def, doubl
     }
     else if (w_point->name == "西福斯的月光")//精通->充能
         recharge_add += mastery * 0.00036 * (0.75 + w_point->level * 0.25);//精通->充能
-//        //TODO:NEW
-//    else if (w_point->name == "碧落之珑" && attack_config->args->catalyst_biluo_enable)//生命->增伤
-//        damplus_add += min(life * (0.0015 + w_point->level * 0.0015) * base_life / 1000, 0.06 + w_point->level * 0.06);//生命->增伤
+    else if (w_point->name == "碧落之珑" && attack_config->args->catalyst_biluo_enable)//生命->增伤
+        damplus_add += min(life * (0.001 + w_point->level * 0.002) * base_life / 1000, 0.04 + w_point->level * 0.08);//生命->增伤
     else if (w_point->name == "流浪的晚星")//精通->攻击
         atk_add += mastery * 0.24 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
     else if (w_point->name == "玛海菈的水色")//精通->攻击
@@ -3222,36 +3213,41 @@ void reinforced_artifact_simple_judge()
     else if (os_type == "WIN") outfile_artifact_judge.open(win_data_path + "artifact.csv");
     outfile_artifact_judge << "索引,套装,主属性,副属性1,副属性1数值,副属性2,副属性2数值,副属性3,副属性3数值,副属性4,副属性4数值,生命词条,攻击词条,防御词条,精通词条,充能词条,暴击词条,爆伤词条";
     //judge standard
-    outfile_artifact_judge << ",生暴爆,生暴爆(反应),攻暴爆,攻暴爆(反应),精暴爆" << endl;
+    outfile_artifact_judge << ",生暴爆数量,生暴爆,生暴爆(反应)数量,生暴爆(反应),攻暴爆数量,攻暴爆,攻暴爆(反应)数量,攻暴爆(反应),精暴爆数量,精暴爆" << endl;
     double standard[5] = {6.5, 6.5, 5.5, 5, 5};
 
     for (int i = 0; i < reinforced_artifact_list.size(); ++i)
     {
         for (int j = 0; j < reinforced_artifact_list[i].size(); ++j)
         {
-            string life = (reinforced_artifact_list[i][j]->entry_num["生命值"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"]) > standard[i] ? "TRUE" : "FALSE";
+            double life_vice_num = reinforced_artifact_list[i][j]->entry_num["生命值"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"];
+            string life = life_vice_num >= standard[i] ? "TRUE" : "FALSE";
             if (reinforced_artifact_list[i][j]->main_type == "攻击力" || reinforced_artifact_list[i][j]->main_type == "防御力") life = "FALSE";
 
-            string life_react = (reinforced_artifact_list[i][j]->entry_num["生命值"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"] + reinforced_artifact_list[i][j]->entry_num["元素精通"]) > standard[i] ? "TRUE" : "FALSE";
+            double life_react_vice_num = reinforced_artifact_list[i][j]->entry_num["生命值"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"] + reinforced_artifact_list[i][j]->entry_num["元素精通"];
+            string life_react = life_react_vice_num >= standard[i] ? "TRUE" : "FALSE";
             if (reinforced_artifact_list[i][j]->main_type == "攻击力" || reinforced_artifact_list[i][j]->main_type == "防御力") life_react = "FALSE";
 
-            string atk = (reinforced_artifact_list[i][j]->entry_num["攻击力"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"]) > standard[i] ? "TRUE" : "FALSE";
+            double atk_vice_num = reinforced_artifact_list[i][j]->entry_num["攻击力"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"];
+            string atk = atk_vice_num >= standard[i] ? "TRUE" : "FALSE";
             if (reinforced_artifact_list[i][j]->main_type == "生命值" || reinforced_artifact_list[i][j]->main_type == "防御力") life = "FALSE";
 
-            string atk_react = (reinforced_artifact_list[i][j]->entry_num["攻击力"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"] + reinforced_artifact_list[i][j]->entry_num["元素精通"]) > standard[i] ? "TRUE" : "FALSE";
+            double atk_react_vice_num = reinforced_artifact_list[i][j]->entry_num["攻击力"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"] + reinforced_artifact_list[i][j]->entry_num["元素精通"];
+            string atk_react = atk_react_vice_num >= standard[i] ? "TRUE" : "FALSE";
             if (reinforced_artifact_list[i][j]->main_type == "生命值" || reinforced_artifact_list[i][j]->main_type == "防御力") life_react = "FALSE";
 
-            string mastery = (reinforced_artifact_list[i][j]->entry_num["元素精通"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"]) > standard[i] ? "TRUE" : "FALSE";
+            double mastery_vice_num = reinforced_artifact_list[i][j]->entry_num["元素精通"] + reinforced_artifact_list[i][j]->entry_num["暴击率"] + reinforced_artifact_list[i][j]->entry_num["暴击伤害"];
+            string mastery = mastery_vice_num >= standard[i] ? "TRUE" : "FALSE";
             if (reinforced_artifact_list[i][j]->main_type == "生命值" || reinforced_artifact_list[i][j]->main_type == "攻击力" || reinforced_artifact_list[i][j]->main_type == "防御力") life = "FALSE";
 
-            outfile_artifact_judge << i + 1 << "." << j << "," << reinforced_artifact_list[i][j]->suit_name << "," << reinforced_artifact_list[i][j]->main_type << ","
+            outfile_artifact_judge << i + 1 << "." << j + 1 << "," << reinforced_artifact_list[i][j]->suit_name << "," << reinforced_artifact_list[i][j]->main_type << ","
                                    << reinforced_artifact_list[i][j]->entry[0].first << "," << reinforced_artifact_list[i][j]->entry[0].second << ","
                                    << reinforced_artifact_list[i][j]->entry[1].first << "," << reinforced_artifact_list[i][j]->entry[1].second << ","
                                    << reinforced_artifact_list[i][j]->entry[2].first << "," << reinforced_artifact_list[i][j]->entry[2].second << ","
                                    << reinforced_artifact_list[i][j]->entry[3].first << "," << reinforced_artifact_list[i][j]->entry[3].second << ","
                                    << reinforced_artifact_list[i][j]->entry_num["生命值"] << "," << reinforced_artifact_list[i][j]->entry_num["攻击力"] << "," << reinforced_artifact_list[i][j]->entry_num["防御力"] << "," << reinforced_artifact_list[i][j]->entry_num["元素精通"] << ","
                                    << reinforced_artifact_list[i][j]->entry_num["元素充能效率"] << "," << reinforced_artifact_list[i][j]->entry_num["暴击率"] << "," << reinforced_artifact_list[i][j]->entry_num["暴击伤害"]
-                                   << "," << life << "," << life_react << "," << atk << "," << atk_react << "," << mastery << endl;
+                                   << "," << life_vice_num << "," << life << "," << life_react_vice_num << "," << life_react << "," << atk_vice_num << "," << atk << "," << atk_react_vice_num << "," << atk_react << "," << mastery_vice_num << "," << mastery << endl;
         }
     }
 
@@ -3260,131 +3256,31 @@ void reinforced_artifact_simple_judge()
 
 void get_suit(Reinforced_Artifact *pos1, Reinforced_Artifact *pos2, Reinforced_Artifact *pos3, Reinforced_Artifact *pos4, Reinforced_Artifact *pos5, string &suit1_name, string &suit2_name)
 {
-    int pos1_count = 1;
-    int pos2_count = 1;
-    int pos3_count = 1;
-    int pos4_count = 1;
-    int pos5_count = 1;
+    Reinforced_Artifact *pos[5] = {pos1, pos2, pos3, pos4, pos5};
+    int sign[5] = {1, 1, 1, 1, 1};
 
-    if (pos1_count != 0)
+    for (int i = 0; i < 5; ++i)
     {
-        if (pos2->suit_name == pos1->suit_name)
+        if (sign[i] == 0) continue;
+        for (int j = i + 1; j < 5; ++j)
+            if (sign[j] != 0 && pos[i]->suit_name == pos[j]->suit_name)
+            {
+                sign[i]++;
+                sign[j] = 0;
+            }
+        if (sign[i] >= 4)
         {
-            pos1_count += pos2_count;
-            pos2_count = 0;
-        }
-        if (pos3->suit_name == pos1->suit_name)
-        {
-            pos1_count += pos3_count;
-            pos3_count = 0;
-        }
-        if (pos4->suit_name == pos1->suit_name)
-        {
-            pos1_count += pos4_count;
-            pos4_count = 0;
-        }
-        if (pos5->suit_name == pos1->suit_name)
-        {
-            pos1_count += pos5_count;
-            pos5_count = 0;
-        }
-    }
-    if (pos1_count >= 4)
-    {
-        suit1_name = suit2_name = pos1->suit_name;
-        return;
-    }
-    else if (pos1_count >= 2)
-    {
-        if (suit1_name.empty()) suit1_name = pos1->suit_name;
-        else if (suit2_name.empty())
-        {
-            suit2_name = pos1->suit_name;
+            suit1_name = suit2_name = pos[i]->suit_name;
             return;
         }
-    }
-
-    if (pos2_count != 0)
-    {
-        if (pos3->suit_name == pos2->suit_name)
+        else if (sign[i] >= 2)
         {
-            pos2_count += pos3_count;
-            pos3_count = 0;
-        }
-        if (pos4->suit_name == pos2->suit_name)
-        {
-            pos2_count += pos4_count;
-            pos4_count = 0;
-        }
-        if (pos5->suit_name == pos2->suit_name)
-        {
-            pos2_count += pos5_count;
-            pos5_count = 0;
-        }
-    }
-    if (pos2_count >= 4)
-    {
-        suit1_name = suit2_name = pos2->suit_name;
-        return;
-    }
-    else if (pos2_count >= 2)
-    {
-        if (suit1_name.empty()) suit1_name = pos2->suit_name;
-        else if (suit2_name.empty())
-        {
-            suit2_name = pos2->suit_name;
-            return;
-        }
-    }
-
-    if (pos3_count != 0)
-    {
-        if (pos4->suit_name == pos3->suit_name)
-        {
-            pos3_count += pos4_count;
-            pos4_count = 0;
-        }
-        if (pos5->suit_name == pos3->suit_name)
-        {
-            pos3_count += pos5_count;
-            pos5_count = 0;
-        }
-    }
-    if (pos3_count >= 4)
-    {
-        suit1_name = suit2_name = pos3->suit_name;
-        return;
-    }
-    else if (pos3_count >= 2)
-    {
-        if (suit1_name.empty()) suit1_name = pos3->suit_name;
-        else if (suit2_name.empty())
-        {
-            suit2_name = pos3->suit_name;
-            return;
-        }
-    }
-
-    if (pos4_count != 0)
-    {
-        if (pos5->suit_name == pos4->suit_name)
-        {
-            pos4_count += pos5_count;
-            pos5_count = 0;
-        }
-    }
-    if (pos4_count >= 4)
-    {
-        suit1_name = suit2_name = pos4->suit_name;
-        return;
-    }
-    else if (pos4_count >= 2)
-    {
-        if (suit1_name.empty()) suit1_name = pos4->suit_name;
-        else if (suit2_name.empty())
-        {
-            suit2_name = pos4->suit_name;
-            return;
+            if (suit1_name.empty()) suit1_name = pos[i]->suit_name;
+            else if (suit2_name.empty())
+            {
+                suit2_name = pos[i]->suit_name;
+                return;
+            }
         }
     }
 }
@@ -3406,103 +3302,91 @@ void cal_optimal_artifact(character_info *characterInfo)
     vector<pair<string, double>> comb_out_data;
     auto total_start = chrono::system_clock::now();
 
-    for (auto &w_index: weapon_list)
-    {
-        if (characterInfo->c_point->weapon_type != w_index->weapon_type) continue;
-
-        auto start = chrono::system_clock::now();
-
-        for (auto &res_index: characterInfo->cal_artifact_restriction)
-        {
-            if (!res_index->weapon.empty() && res_index->weapon.find(w_index->name) == string::npos) continue;
-            for (int pos1_index = 0; pos1_index < reinforced_artifact_list[0].size(); ++pos1_index)
-                for (int pos2_index = 0; pos2_index < reinforced_artifact_list[1].size(); ++pos2_index)
-                    for (int pos3_index = 0; pos3_index < reinforced_artifact_list[2].size(); ++pos3_index)
+    for (auto &res_index: characterInfo->cal_artifact_restriction)
+        for (int pos1_index = 0; pos1_index < reinforced_artifact_list[0].size(); ++pos1_index)
+            for (int pos2_index = 0; pos2_index < reinforced_artifact_list[1].size(); ++pos2_index)
+                for (int pos3_index = 0; pos3_index < reinforced_artifact_list[2].size(); ++pos3_index)
+                {
+                    if (!res_index->main3.empty() && res_index->main3.find(reinforced_artifact_list[2][pos3_index]->main_type) == string::npos) continue;
+                    for (int pos4_index = 0; pos4_index < reinforced_artifact_list[3].size(); ++pos4_index)
                     {
-                        if (!res_index->main3.empty() && res_index->main3.find(reinforced_artifact_list[2][pos3_index]->main_type) == string::npos) continue;
-                        for (int pos4_index = 0; pos4_index < reinforced_artifact_list[3].size(); ++pos4_index)
+                        if (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos)
                         {
-                            if (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos)
-                            {
-                                if (!res_index->main4.empty() && res_index->main4.find("伤害加成") == string::npos) continue;
-                                if (reinforced_artifact_list[3][pos4_index]->main_type != (characterInfo->c_point->ele_type + "伤害加成")) continue;
-                            }
-                            else if (!res_index->main4.empty() && res_index->main4.find(reinforced_artifact_list[3][pos4_index]->main_type) == string::npos) continue;
-                            for (int pos5_index = 0; pos5_index < reinforced_artifact_list[4].size(); ++pos5_index)
-                            {
-                                if (!res_index->main5.empty() && res_index->main5.find(reinforced_artifact_list[4][pos5_index]->main_type) == string::npos) continue;
-
-                                string suit1_name;
-                                string suit2_name;
-                                get_suit(reinforced_artifact_list[0][pos1_index], reinforced_artifact_list[1][pos2_index], reinforced_artifact_list[2][pos3_index],
-                                         reinforced_artifact_list[3][pos4_index], reinforced_artifact_list[4][pos5_index], suit1_name, suit2_name);
-
-                                if (suit1_name.empty() || suit2_name.empty()) continue;
-                                if (!((res_index->suit1.empty() || res_index->suit1.find(suit1_name) != string::npos) && (res_index->suit2.empty() || res_index->suit2.find(suit2_name) != string::npos)) &&
-                                    !((res_index->suit1.empty() || res_index->suit1.find(suit2_name) != string::npos) && (res_index->suit2.empty() || res_index->suit2.find(suit1_name) != string::npos)))
-                                    continue;
-
-                                auto *temp = new Group(characterInfo->c_point, w_index, find_artifact_by_name(suit1_name), find_artifact_by_name(suit2_name),
-                                                       reinforced_artifact_list[2][pos3_index]->main_type,
-                                                       (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos) ? "伤害加成" : reinforced_artifact_list[3][pos4_index]->main_type,
-                                                       reinforced_artifact_list[4][pos5_index]->main_type,
-                                                       characterInfo->team_config, characterInfo->attack_config_list, characterInfo->recharge_restriction);
-                                temp->data[0] = reinforced_artifact_list[0][pos1_index];
-                                temp->data[1] = reinforced_artifact_list[1][pos2_index];
-                                temp->data[2] = reinforced_artifact_list[2][pos3_index];
-                                temp->data[3] = reinforced_artifact_list[3][pos4_index];
-                                temp->data[4] = reinforced_artifact_list[4][pos5_index];
-
-                                int check_num = temp->init_check_data("cal_optimal_artifact");
-                                if (check_num == 0)//pass
-                                {
-                                    temp->cal_assigned_artifact_damage();
-                                    string info = temp->c_point->name + "," + temp->team_config->teammate_all + "," + suit1_name + "," + suit2_name
-                                                  + ",1." + to_string(pos1_index) + ",2." + to_string(pos2_index) + ",3." + to_string(pos3_index) + ",4." + to_string(pos4_index) + ",5." + to_string(pos5_index);
-                                    comb_out_data.emplace_back(info, temp->total_damage);
-                                    delete temp;
-                                }
-                                else if (check_num == 1)//error:suit1
-                                {
-                                    delete temp;
-                                    goto NEXTPOS5;
-                                }
-                                else if (check_num == 2)//error:suit2
-                                {
-                                    delete temp;
-                                    goto NEXTPOS5;
-                                }
-                                else if (check_num == 3)//error:pos3
-                                {
-                                    delete temp;
-                                    goto NEXTPOS3;
-                                }
-                                else if (check_num == 4)//error:pos4
-                                {
-                                    delete temp;
-                                    goto NEXTPOS4;
-                                }
-                                else if (check_num == 5)//error:pos5
-                                {
-                                    delete temp;
-                                    goto NEXTPOS5;
-                                }
-                                else if (check_num == 6)//error:recharge
-                                {
-                                    delete temp;
-                                    goto NEXTPOS5;
-                                }
-                                NEXTPOS5:;
-                            }
-                            NEXTPOS4:;
+                            if (!res_index->main4.empty() && res_index->main4.find("伤害加成") == string::npos) continue;
+                            if (reinforced_artifact_list[3][pos4_index]->main_type != (characterInfo->c_point->ele_type + "伤害加成")) continue;
                         }
-                        NEXTPOS3:;
-                    }
-        }
+                        else if (!res_index->main4.empty() && res_index->main4.find(reinforced_artifact_list[3][pos4_index]->main_type) == string::npos) continue;
+                        for (int pos5_index = 0; pos5_index < reinforced_artifact_list[4].size(); ++pos5_index)
+                        {
+                            if (!res_index->main5.empty() && res_index->main5.find(reinforced_artifact_list[4][pos5_index]->main_type) == string::npos) continue;
 
-        chrono::duration<double> time = chrono::system_clock::now() - start;
-        cout << characterInfo->c_point->name << " " << w_index->name << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << " ";
-    }
+                            string suit1_name;
+                            string suit2_name;
+                            get_suit(reinforced_artifact_list[0][pos1_index], reinforced_artifact_list[1][pos2_index], reinforced_artifact_list[2][pos3_index],
+                                     reinforced_artifact_list[3][pos4_index], reinforced_artifact_list[4][pos5_index], suit1_name, suit2_name);
+                            if (!((res_index->suit1.empty() || res_index->suit1.find(suit1_name) != string::npos) && (res_index->suit2.empty() || res_index->suit2.find(suit2_name) != string::npos)) &&
+                                !((res_index->suit1.empty() || res_index->suit1.find(suit2_name) != string::npos) && (res_index->suit2.empty() || res_index->suit2.find(suit1_name) != string::npos)))
+                                continue;
+
+                            //TODO:TEST
+                            if (suit1_name.empty() || suit2_name.empty()) continue;
+
+                            auto *temp = new Group(characterInfo->c_point, find_weapon_by_name(res_index->weapon), find_artifact_by_name(suit1_name), find_artifact_by_name(suit2_name),
+                                                   reinforced_artifact_list[2][pos3_index]->main_type,
+                                                   (reinforced_artifact_list[3][pos4_index]->main_type.find("伤害加成") != string::npos) ? "伤害加成" : reinforced_artifact_list[3][pos4_index]->main_type,
+                                                   reinforced_artifact_list[4][pos5_index]->main_type,
+                                                   characterInfo->team_config, characterInfo->attack_config_list, characterInfo->recharge_restriction);
+                            temp->data[0] = reinforced_artifact_list[0][pos1_index];
+                            temp->data[1] = reinforced_artifact_list[1][pos2_index];
+                            temp->data[2] = reinforced_artifact_list[2][pos3_index];
+                            temp->data[3] = reinforced_artifact_list[3][pos4_index];
+                            temp->data[4] = reinforced_artifact_list[4][pos5_index];
+
+                            int check_num = temp->init_check_data("cal_optimal_artifact");
+                            if (check_num == 0)//pass
+                            {
+                                temp->cal_assigned_artifact_damage();
+                                string info = temp->c_point->name + "," + temp->team_config->teammate_all + "," + suit1_name + "," + suit2_name
+                                              + ",1." + to_string(pos1_index) + ",2." + to_string(pos2_index) + ",3." + to_string(pos3_index) + ",4." + to_string(pos4_index) + ",5." + to_string(pos5_index);
+                                comb_out_data.emplace_back(info, temp->total_damage);
+                                delete temp;
+                            }
+                            else if (check_num == 1)//error:suit1
+                            {
+                                delete temp;
+                                goto NEXTPOS5;
+                            }
+                            else if (check_num == 2)//error:suit2
+                            {
+                                delete temp;
+                                goto NEXTPOS5;
+                            }
+                            else if (check_num == 3)//error:pos3
+                            {
+                                delete temp;
+                                goto NEXTPOS3;
+                            }
+                            else if (check_num == 4)//error:pos4
+                            {
+                                delete temp;
+                                goto NEXTPOS4;
+                            }
+                            else if (check_num == 5)//error:pos5
+                            {
+                                delete temp;
+                                goto NEXTPOS5;
+                            }
+                            else if (check_num == 6)//error:recharge
+                            {
+                                delete temp;
+                                goto NEXTPOS5;
+                            }
+                            NEXTPOS5:;
+                        }
+                        NEXTPOS4:;
+                    }
+                    NEXTPOS3:;
+                }
 
     if (!comb_out_data.empty())
     {
