@@ -1,12 +1,19 @@
 # ninja log v5
 8	2120	1679394649768084868	CMakeFiles/GenshinCalculator.dir/Group.cpp.o	dd938a436a0506b3
-1	99	1682326812777425464	build.ninja	89e03212562c2f6c
-5505	5600	1681216471547269402	GenshinCalculator	c1cc757f8edfa173
+1	99	1688635529553397538	build.ninja	89e03212562c2f6c
+9967	10209	1683124898642488710	GenshinCalculator	c1cc757f8edfa173
 8	1856	1679394649504876740	CMakeFiles/GenshinCalculator.dir/Weapon.cpp.o	f28e1a57a56e4554
-9	5504	1681216471446725655	CMakeFiles/GenshinCalculator.dir/main.cpp.o	2fbc1ddd19f639ec
+36	9966	1683124898372740617	CMakeFiles/GenshinCalculator.dir/main.cpp.o	2fbc1ddd19f639ec
 11	989	1671732497924198345	CMakeFiles/GenshinCalculator.dir/Gcsim_Script.cpp.o	727a54237fcde3e0
 7	1835	1679394649481394422	CMakeFiles/GenshinCalculator.dir/Artifact.cpp.o	96f31680690e2e4e
 7	1972	1679394649619857556	CMakeFiles/GenshinCalculator.dir/Character.cpp.o	5b52470828103e4e
 9	2075	1681215298813171646	CMakeFiles/GenshinCalculator.dir/Reinforced_Artifact.cpp.o	9ab223d08580c0f6
-36	9966	1683124898372740617	CMakeFiles/GenshinCalculator.dir/main.cpp.o	2fbc1ddd19f639ec
-9967	10209	1683124898642488710	GenshinCalculator	c1cc757f8edfa173
+19	1792	1688636187363434820	CMakeFiles/GenshinCalculator.dir/Artifact.cpp.o	96f31680690e2e4e
+26	1823	1688636187399469864	CMakeFiles/GenshinCalculator.dir/Reinforced_Artifact.cpp.o	9ab223d08580c0f6
+23	1839	1688636187419152250	CMakeFiles/GenshinCalculator.dir/Weapon.cpp.o	f28e1a57a56e4554
+19	1964	1688636187545775190	CMakeFiles/GenshinCalculator.dir/Character.cpp.o	5b52470828103e4e
+24	2032	1688636187613631405	CMakeFiles/GenshinCalculator.dir/Group.cpp.o	dd938a436a0506b3
+18	4239	1688636189810987129	CMakeFiles/GenshinCalculator.dir/main.cpp.o	2fbc1ddd19f639ec
+4240	6442	1688636192025875109	GenshinCalculator	c1cc757f8edfa173
+13	3182	1688636565422648687	CMakeFiles/GenshinCalculator.dir/main.cpp.o	2fbc1ddd19f639ec
+3183	3303	1688636565549915212	GenshinCalculator	c1cc757f8edfa173

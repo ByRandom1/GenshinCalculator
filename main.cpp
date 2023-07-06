@@ -432,9 +432,9 @@ void init_character_data()
     character_list.push_back(new Character("八重神子", "yaemiko", "雷", "法器", 10372, 340, 569, "暴击率", 0.192,
                                            6, vector<bool>{false, true, false, false, false, true, true, true}, "雷", vector<double>{0.714, 0.693, 1.024}, vector<double>{0.674, 0.655, 0.967},
                                            "雷", vector<double>{2.572}, vector<double>{2.429}, "雷", vector<double>{2.81}, vector<double>{2.61},
-                                           10, 1, false, vector<bool>{false, true, false, true, false, true, true, true}, vector<double>{2.518}, vector<double>{2.37}, vector<double>{2.133}, vector<double>{2.015},
+                                           10 + 3, 1, false, vector<bool>{false, true, false, true, false, true, true, true}, vector<double>{2.518}, vector<double>{2.37}, vector<double>{2.133}, vector<double>{2.015},
                                            10, 90, false, vector<bool>{false, true, false, false, false, true, true, true}, vector<double>{5.53, 7.09}, vector<double>{5.2, 6.68}, vector<double>{4.68, 6.01}, vector<double>{4.42, 5.68},
-                                           2, temp, false, false, true));//Q1+3
+                                           4, temp, false, false, true));//Q1+3
     temp.clear();
 
     temp.push_back(nullptr);//E喷火距离提高20%
@@ -1560,6 +1560,9 @@ void init_artifact_data()
                                          nullptr));//(special)
     artifact_list.push_back(new Artifact("花海甘露之光", "dewflowersglow", new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2),
                                          nullptr));//(special)
+                                         //TODO：TEST
+    artifact_list.push_back(new Artifact("黄金剧团", "goldentroupe", new Set(new Condition("ALL", "ALL", "E"), "伤害加成", 0.2),
+                                         nullptr));//(special)
 }
 
 //build new artifact(all) 保证二件套效果和四件套效果分开
@@ -1685,6 +1688,14 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
                 data->add_percentage("伤害加成", 0.5, (name + "_extra_special"));
             else
                 data->add_percentage("伤害加成", 0.1, (name + "_extra_special"));
+        }
+    }
+    else if (if_4_piece && name == "黄金剧团")
+    {
+        if (data->attack_config->condition->attack_way == "E")
+        {
+            data->add_percentage("伤害加成", 0.2, (name + "_extra_special"));
+            if (data->attack_config->background) data->add_percentage("伤害加成", 0.2, (name + "_extra_special"));
         }
     }
     return true;
@@ -2067,8 +2078,8 @@ void Deployment::get_team_data()
     if (team_config->teammate_all.find("八重神子") != string::npos)
     {
         //constellation>=4 E命中
-//        if (config->condition->ele_type == "雷")
-//            add_percentage("伤害加成", 0.2, "team_八重神子");
+        if (attack_config->condition->ele_type == "雷")
+            add_percentage("伤害加成", 0.2, "team_八重神子");
         Electro_num++;
     }
     if (team_config->teammate_all.find("香菱") != string::npos)
