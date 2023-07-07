@@ -60,9 +60,10 @@ struct weapon_artifact_related_arguments
     //weapon
     int sword_wuqie_level = -1;//雾切，普通攻击造成元素伤害时，持续5秒；施放元素爆发时，持续10秒；角色元素能量低于100%时
     int sword_shengxian_level = -1;//圣显之钥，E命中。20s，3层
+    int sword_langya_level = -1;//狼牙，EQ命中，10s，4层
     int catalyst_shenle_level = -1;//神乐铃，释放E，16s，3层
     bool catalyst_biluo_enable = false;//碧落之珑，创造护盾，3s
-    int catalyst_sifeng_level = -1;
+    int catalyst_sifeng_level = -1;//四风，站场4s，4层
     int bow_feilei_level = -1;//飞雷，普通攻击造成伤害时，持续5秒；施放元素战技时，持续10秒；此外，角色元素能量低于100%时
     int bow_dongji_level = -1;//冬极，普通攻击、重击、元素战技或元素爆发命中敌人
     bool bow_pomo_fullenergy = false;//破魔
@@ -76,6 +77,7 @@ struct weapon_artifact_related_arguments
     bool chensha_enable;//辰砂
     bool shenlin_enable;//草套，EQ命中，8s
     int shuixian_level;//水仙，A重A下落AEQ命中，8s
+    int zhuying_level;//逐影，生命值变动，5s
 
     weapon_artifact_related_arguments(int cangbai_level_,
                                       bool qianyan_enable_,
@@ -83,11 +85,12 @@ struct weapon_artifact_related_arguments
                                       bool chensha_enable_,
                                       bool shenlin_enable_,
                                       int shuixian_level_,
+                                      int zhuying_level_,
 
                                       string weapon_type,
                                       int wuqie_shenle_feilei_humo,
                                       int shengxian_biluo_dongji_chisha,
-                                      int none_sifeng_pomo_shizuo)
+                                      int langya_sifeng_pomo_shizuo)
     {
         cangbai_level = cangbai_level_;
         qianyan_enable = qianyan_enable_;
@@ -95,23 +98,25 @@ struct weapon_artifact_related_arguments
         chensha_enable = chensha_enable_;
         shenlin_enable = shenlin_enable_;
         shuixian_level = shuixian_level_;
+        zhuying_level = zhuying_level_;
 
         if (weapon_type == "单手剑")
         {
             sword_wuqie_level = wuqie_shenle_feilei_humo;
             sword_shengxian_level = shengxian_biluo_dongji_chisha;
+            sword_langya_level = langya_sifeng_pomo_shizuo;
         }
         else if (weapon_type == "法器")
         {
             catalyst_shenle_level = wuqie_shenle_feilei_humo;
             catalyst_biluo_enable = shengxian_biluo_dongji_chisha;
-            catalyst_sifeng_level = none_sifeng_pomo_shizuo;
+            catalyst_sifeng_level = langya_sifeng_pomo_shizuo;
         }
         else if (weapon_type == "弓")
         {
             bow_feilei_level = wuqie_shenle_feilei_humo;
             bow_dongji_level = shengxian_biluo_dongji_chisha;
-            bow_pomo_fullenergy = none_sifeng_pomo_shizuo;
+            bow_pomo_fullenergy = langya_sifeng_pomo_shizuo;
         }
         else if (weapon_type == "双手剑")
         {
@@ -121,7 +126,7 @@ struct weapon_artifact_related_arguments
         {
             polearm_humo_halflife = wuqie_shenle_feilei_humo;
             polearm_chisha_level = shengxian_biluo_dongji_chisha;
-            polearm_shizuo_level = none_sifeng_pomo_shizuo;
+            polearm_shizuo_level = langya_sifeng_pomo_shizuo;
         }
     }
 };
@@ -706,6 +711,11 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("暗巷闪光", "thealleyflash", "单手剑", 620, "元素精通", 55.0, 1, temp));
     temp.clear();
 
+    //TODO:NEW
+    temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.12));
+    weapon_list.push_back(new Weapon("海渊终曲", "", "单手剑", 565, "攻击力", 0.276, 1, temp));
+    temp.clear();
+
     //(special)
     weapon_list.push_back(new Weapon("试作斩岩", "prototyperancour", "单手剑", 565, "伤害加成", 0.345, 5, temp));
     temp.clear();
@@ -716,6 +726,11 @@ void init_weapon_data()
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A|重A"), "伤害加成", 0.2));
     weapon_list.push_back(new Weapon("黑剑", "theblacksword", "单手剑", 510, "暴击率", 0.276, 1, temp));
+    temp.clear();
+
+    //TODO:NEW
+    temp.push_back(new Set(new Condition("ALL", "ALL", "E|Q"), "伤害加成", 0.16));
+    weapon_list.push_back(new Weapon("狼牙", "", "单手剑", 510, "暴击率", 0.276, 1, temp));
     temp.clear();
 
     //(special)
@@ -732,6 +747,12 @@ void init_weapon_data()
     temp.push_back(new Set(new Condition("ALL", "ALL", "E"), "伤害加成", 0.16));
     temp.push_back(new Set(new Condition("ALL", "ALL", "E"), "暴击率", 0.06));
     weapon_list.push_back(new Weapon("腐殖之剑", "festeringdesire", "单手剑", 510, "元素充能效率", 0.459, 5, temp));
+    temp.clear();
+
+    //TODO:NEW
+    temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素充能效率", 0.16));
+    temp.push_back(new Set(new Condition("ALL", "ALL", "E"), "暴击率", 0.08));
+    weapon_list.push_back(new Weapon("灰河渡手", "", "单手剑", 510, "元素充能效率", 0.459, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "伤害加成", 0.12));//元素伤害，2层
@@ -801,6 +822,11 @@ void init_weapon_data()
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "元素充能效率", 0.24));//E后
     weapon_list.push_back(new Weapon("证誓之明瞳", "oathsworneye", "法器", 565, "攻击力", 0.276, 5, temp));
+    temp.clear();
+
+    //TODO:NEW
+    temp.push_back(new Set(new Condition("火|水|雷|冰|风|岩|草", "ALL", "ALL"), "伤害加成", 0.08));
+    weapon_list.push_back(new Weapon("纯水流华", "", "法器", 565, "攻击力", 0.276, 1, temp));
     temp.clear();
 
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.2));//冲刺
@@ -1172,6 +1198,17 @@ bool Weapon::get_extra_special(Deployment *data) const
 //        if (data->attack_config->react_type.find("燃烧") != string::npos || data->attack_config->react_type.find("激化") != string::npos || data->attack_config->react_type.find("绽放") != string::npos)
 //            data->add_percentage("元素精通", (60.0 * (0.75 + level * 0.25)), (name + "_extra_special"));
 //    }
+//TODO:NEW
+    else if (name == "狼牙")
+    {
+        if (data->attack_config->condition->attack_way == "E" || data->attack_config->condition->attack_way == "Q")
+        {
+            if (data->attack_config->args->sword_langya_level >= 4) data->add_percentage("暴击率", (0.08 * (0.75 + level * 0.25)), (name + "_extra_special"));
+            else if (data->attack_config->args->sword_langya_level == 3) data->add_percentage("暴击率", (0.06 * (0.75 + level * 0.25)), (name + "_extra_special"));
+            else if (data->attack_config->args->sword_langya_level == 2) data->add_percentage("暴击率", (0.04 * (0.75 + level * 0.25)), (name + "_extra_special"));
+            else if (data->attack_config->args->sword_langya_level == 1) data->add_percentage("暴击率", (0.02 * (0.75 + level * 0.25)), (name + "_extra_special"));
+        }
+    }
     else if (name == "匣里龙吟")
     {
         if (data->team_config->ele_attach_type.find("火") != string::npos || data->team_config->ele_attach_type.find("雷") != string::npos)
@@ -1560,8 +1597,10 @@ void init_artifact_data()
                                          nullptr));//(special)
     artifact_list.push_back(new Artifact("花海甘露之光", "dewflowersglow", new Set(new Condition("ALL", "ALL", "ALL"), "生命值", 0.2),
                                          nullptr));//(special)
-                                         //TODO：TEST
-    artifact_list.push_back(new Artifact("黄金剧团", "goldentroupe", new Set(new Condition("ALL", "ALL", "E"), "伤害加成", 0.2),
+    //TODO：NEW
+    artifact_list.push_back(new Artifact("逐影猎人", "", new Set(new Condition("ALL", "ALL", "平A|重A"), "伤害加成", 0.15),
+                                         nullptr));//(special)
+    artifact_list.push_back(new Artifact("黄金剧团", "", new Set(new Condition("ALL", "ALL", "E"), "伤害加成", 0.2),
                                          nullptr));//(special)
 }
 
@@ -1689,6 +1728,13 @@ bool Artifact::get_extra_special(Deployment *data, bool if_4_piece) const
             else
                 data->add_percentage("伤害加成", 0.1, (name + "_extra_special"));
         }
+    }
+        //TODO:NEW
+    else if (if_4_piece && name == "逐影猎人")
+    {
+        if (data->attack_config->args->zhuying_level == 1) data->add_percentage("暴击率", 0.11, (name + "_extra_special"));
+        else if (data->attack_config->args->zhuying_level == 2) data->add_percentage("暴击率", 0.22, (name + "_extra_special"));
+        else if (data->attack_config->args->zhuying_level >= 3) data->add_percentage("暴击率", 0.33, (name + "_extra_special"));
     }
     else if (if_4_piece && name == "黄金剧团")
     {
@@ -3150,7 +3196,7 @@ void cal_optimal_substats(character_info *characterInfo)
         }
         c_w_pair.clear();
 
-        cout << characterInfo->c_point->name << " " << w_index->name << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << " ";
+        cout << characterInfo->c_point->name << " " << w_index->name << " " << " time=" << time.count() << "s" << ((time.count() > 30) ? "!!!" : "") << endl;
     }
 
     if (!comb_out_data.empty())
