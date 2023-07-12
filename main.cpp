@@ -231,10 +231,11 @@ struct character_info
                                                                                                  (bool) stoi(find_param(parsed_attack_config_info, "chensha_enable").empty() ? "0" : find_param(parsed_attack_config_info, "chensha_enable")),
                                                                                                  (bool) stoi(find_param(parsed_attack_config_info, "shenlin_enable").empty() ? "0" : find_param(parsed_attack_config_info, "shenlin_enable")),
                                                                                                  stoi(find_param(parsed_attack_config_info, "shuixian_level").empty() ? "0" : find_param(parsed_attack_config_info, "shuixian_level")),
+                                                                                                 stoi(find_param(parsed_attack_config_info, "zhuying_level").empty() ? "0" : find_param(parsed_attack_config_info, "zhuying_level")),
                                                                                                  c_point_->weapon_type,
                                                                                                  stoi(find_param(parsed_attack_config_info, "wuqie_shenle_feilei_humo").empty() ? "0" : find_param(parsed_attack_config_info, "wuqie_shenle_feilei_humo")),
                                                                                                  stoi(find_param(parsed_attack_config_info, "shengxian_biluo_dongji_chisha").empty() ? "0" : find_param(parsed_attack_config_info, "shengxian_biluo_dongji_chisha")),
-                                                                                                 stoi(find_param(parsed_attack_config_info, "none_sifeng_pomo_shizuo").empty() ? "0" : find_param(parsed_attack_config_info, "none_sifeng_pomo_shizuo")))));
+                                                                                                 stoi(find_param(parsed_attack_config_info, "langya_sifeng_pomo_shizuo").empty() ? "0" : find_param(parsed_attack_config_info, "langya_sifeng_pomo_shizuo")))));
         }
     }
 
@@ -712,6 +713,7 @@ void init_weapon_data()
     temp.clear();
 
     //TODO:NEW
+    //(convert)
     temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.12));
     weapon_list.push_back(new Weapon("海渊终曲", "", "单手剑", 565, "攻击力", 0.276, 1, temp));
     temp.clear();
@@ -729,6 +731,7 @@ void init_weapon_data()
     temp.clear();
 
     //TODO:NEW
+    //(special)
     temp.push_back(new Set(new Condition("ALL", "ALL", "E|Q"), "伤害加成", 0.16));
     weapon_list.push_back(new Weapon("狼牙", "", "单手剑", 510, "暴击率", 0.276, 1, temp));
     temp.clear();
@@ -825,6 +828,7 @@ void init_weapon_data()
     temp.clear();
 
     //TODO:NEW
+    //(convert)
     temp.push_back(new Set(new Condition("火|水|雷|冰|风|岩|草", "ALL", "ALL"), "伤害加成", 0.08));
     weapon_list.push_back(new Weapon("纯水流华", "", "法器", 565, "攻击力", 0.276, 1, temp));
     temp.clear();
@@ -856,6 +860,10 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("试作金珀", "prototypeamber", "法器", 510, "生命值", 0.413, 5, temp));
     temp.clear();
 
+    //(special)
+    weapon_list.push_back(new Weapon("盈满之实", "fruitoffulfillment", "法器", 510, "元素充能效率", 0.459, 5, temp));
+    temp.clear();
+
     //(recharge)
     weapon_list.push_back(new Weapon("西风秘典", "favoniuscodex", "法器", 510, "元素充能效率", 0.459, 5, temp));
     temp.clear();
@@ -865,8 +873,9 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("流浪的晚星", "wanderingevenstar", "法器", 510, "元素精通", 165.0, 1, temp));
     temp.clear();
 
+    //TODO:NEW
     //(special)
-    weapon_list.push_back(new Weapon("盈满之实", "fruitoffulfillment", "法器", 510, "元素充能效率", 0.459, 5, temp));
+    weapon_list.push_back(new Weapon("遗祀玉珑", "", "法器", 454, "暴击率", 0.368, 1, temp));
     temp.clear();
 
     weapon_list.push_back(new Weapon("昭心", "eyeofperception", "法器", 454, "攻击力", 0.551, 5, temp));
@@ -894,6 +903,12 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("飞雷之弦振", "thunderingpulse", "弓", 608, "暴击伤害", 0.662, 1, temp));
     temp.clear();
 
+    //TODO:NEW
+    //(special)
+    temp.push_back(new Set(new Condition("ALL", "ALL", "ALL"), "攻击力", 0.12));
+    weapon_list.push_back(new Weapon("最初的大魔术", "", "弓", 608, "暴击伤害", 0.662, 1, temp));
+    temp.clear();
+
     //高估
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A|重A"), "伤害加成", 0.12));
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A"), "伤害加成", 0.16));//2层
@@ -918,6 +933,11 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("若水", "aquasimulacra", "弓", 542, "暴击伤害", 0.882, 1, temp));
     temp.clear();
 
+    //TODO:NEW
+    temp.push_back(new Set(new Condition("ALL", "ALL", "重A"), "伤害加成", 0.28));
+    weapon_list.push_back(new Weapon("烈阳之嗣", "", "弓", 565, "暴击率", 0.184, 1, temp));
+    temp.clear();
+
     //(special)
     weapon_list.push_back(new Weapon("暗巷猎手", "alleyhunter", "弓", 565, "攻击力", 0.276, 1, temp));
     temp.clear();
@@ -940,6 +960,11 @@ void init_weapon_data()
     //(special)
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A"), "伤害加成", 0.4));
     weapon_list.push_back(new Weapon("弓藏", "rust", "弓", 510, "攻击力", 0.413, 5, temp));
+    temp.clear();
+
+    //TODO:NEW
+    //(special)
+    weapon_list.push_back(new Weapon("静谧之曲", "", "弓", 510, "攻击力", 0.413, 1, temp));
     temp.clear();
 
     weapon_list.push_back(new Weapon("试作澹月", "prototypecrescent", "弓", 510, "攻击力", 0.413, 5, temp));
@@ -1005,6 +1030,11 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("赤角石溃杵", "redhornstonethresher", "双手剑", 542, "暴击伤害", 0.882, 1, temp));
     temp.clear();
 
+    //TODO:NEW
+    //TODO:自身元素附着
+    weapon_list.push_back(new Weapon("聊聊棒", "", "双手剑", 565, "暴击率", 0.184, 1, temp));
+    temp.clear();
+
     weapon_list.push_back(new Weapon("试作古华", "prototypearchaic", "双手剑", 565, "攻击力", 0.276, 5, temp));
     temp.clear();
 
@@ -1038,6 +1068,11 @@ void init_weapon_data()
 
     //(special)
     weapon_list.push_back(new Weapon("恶王丸", "akuoumaru", "双手剑", 510, "攻击力", 0.413, 1, temp));
+    temp.clear();
+
+    //TODO:NEW
+    //(special)
+    weapon_list.push_back(new Weapon("浪影阔剑", "", "双手剑", 510, "攻击力", 0.413, 1, temp));
     temp.clear();
 
     //(special)
@@ -1106,6 +1141,11 @@ void init_weapon_data()
     weapon_list.push_back(new Weapon("千岩长枪", "lithicspear", "长柄武器", 565, "攻击力", 0.276, 1, temp));
     temp.clear();
 
+    //TODO:NEW
+    //(recharge)
+    weapon_list.push_back(new Weapon("公义的酬报", "", "长柄武器", 565, "生命值", 0.276, 1, temp));
+    temp.clear();
+
     temp.push_back(new Set(new Condition("ALL", "ALL", "平A|重A"), "额外倍率", 0.2));
     weapon_list.push_back(new Weapon("流月针", "crescentpike", "长柄武器", 565, "伤害加成", 0.345, 5, temp));
     temp.clear();
@@ -1125,6 +1165,11 @@ void init_weapon_data()
 
     //(special)
     weapon_list.push_back(new Weapon("试作星镰", "prototypestarglitter", "长柄武器", 510, "元素充能效率", 0.459, 5, temp));
+    temp.clear();
+
+    //TODO:NEW
+    //(special)
+    weapon_list.push_back(new Weapon("峡湾长歌", "", "长柄武器", 510, "暴击率", 0.276, 1, temp));
     temp.clear();
 
     //(special)
@@ -1312,6 +1357,15 @@ bool Weapon::get_extra_special(Deployment *data) const
             data->add_percentage("攻击力", -0.25, (name + "_extra_special"));//元素反应，5层
         }
     }
+        //TODO:NEW
+    else if (name == "遗祀玉珑")
+    {
+        if (data->attack_config->background)
+        {
+            data->add_percentage("元素精通", (40.0 * (0.75 + level * 0.25)), (name + "_extra_special"));
+            data->add_percentage("生命值", (0.32 * (0.75 + level * 0.25)), (name + "_extra_special"));
+        }
+    }
     else if (name == "嘟嘟可故事集")
     {
         if (!data->attack_config->background)
@@ -1338,6 +1392,17 @@ bool Weapon::get_extra_special(Deployment *data) const
             else if (data->attack_config->args->bow_feilei_level >= 3) data->add_percentage("伤害加成", (0.40 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
+        //TODO:NEW
+    else if (name == "最初的大魔术")
+    {
+        int same = 1;
+        if (data->team_config->teammate_1->ele_type == data->c_point->ele_type) same += 1;
+        if (data->team_config->teammate_2->ele_type == data->c_point->ele_type) same += 1;
+        if (data->team_config->teammate_3->ele_type == data->c_point->ele_type) same += 1;
+        if (same == 1) data->add_percentage("攻击力", (0.08 * (0.75 + level * 0.25)), (name + "_extra_special"));
+        else if (same == 2) data->add_percentage("攻击力", (0.16 * (0.75 + level * 0.25)), (name + "_extra_special"));
+        else if (same >= 3) data->add_percentage("攻击力", (0.40 * (0.75 + level * 0.25)), (name + "_extra_special"));
+    }
     else if (name == "暗巷猎手")
     {
         if (data->attack_config->background)
@@ -1353,6 +1418,12 @@ bool Weapon::get_extra_special(Deployment *data) const
     {
         if (data->attack_config->condition->attack_way == "重A")
             data->add_percentage("伤害加成", -0.1, (name + "_extra_special"));
+    }
+        //TODO:NEW
+    else if (name == "静谧之曲")
+    {
+        if (data->c_point->heal_sustain || data->team_config->teammate_1->heal_sustain || data->team_config->teammate_2->heal_sustain || data->team_config->teammate_3->heal_sustain)
+            data->add_percentage("伤害加成", 0.16 * (0.75 + level * 0.25), (name + "_extra_special"));
     }
     else if (name == "幽夜华尔兹")
     {
@@ -1420,6 +1491,12 @@ bool Weapon::get_extra_special(Deployment *data) const
         if (data->attack_config->condition->attack_way == "Q")
             data->add_percentage("伤害加成", min(334.0, data->c_point->Q_energy + data->team_config->teammate_1->Q_energy + data->team_config->teammate_2->Q_energy + data->team_config->teammate_3->Q_energy)
                                              * 0.0012 * (0.75 + level * 0.25), (name + "_extra_special"));
+    }
+        //TODO:NEW
+    else if (name == "浪影阔剑")
+    {
+        if (data->c_point->heal_sustain || data->team_config->teammate_1->heal_sustain || data->team_config->teammate_2->heal_sustain || data->team_config->teammate_3->heal_sustain)
+            data->add_percentage("攻击力", 0.24 * (0.75 + level * 0.25), (name + "_extra_special"));
     }
     else if (name == "钟剑")
     {
@@ -1489,6 +1566,15 @@ bool Weapon::get_extra_special(Deployment *data) const
                 data->add_percentage("伤害加成", (0.08 * (0.75 + level * 0.25)), (name + "_extra_special"));
         }
     }
+        //TODO:NEW
+    else if (name == "峡湾长歌")
+    {
+        int diff_element_num = 1;
+        if (data->team_config->teammate_1->ele_type != data->c_point->ele_type) diff_element_num++;
+        if (data->team_config->teammate_2->ele_type != data->team_config->teammate_1->ele_type && data->team_config->teammate_2->ele_type != data->c_point->ele_type) diff_element_num++;
+        if (data->team_config->teammate_3->ele_type != data->team_config->teammate_2->ele_type && data->team_config->teammate_3->ele_type != data->team_config->teammate_1->ele_type && data->team_config->teammate_3->ele_type != data->c_point->ele_type) diff_element_num++;
+        if (diff_element_num >= 3) data->add_percentage("元素精通", (120.0 * (0.75 + level * 0.25)), (name + "_extra_special"));
+    }
     else if (name == "风信之锋")
     {
         if (data->attack_config->react_type != "NONE")
@@ -1514,6 +1600,9 @@ void Weapon::modify_useful_attribute(Deployment *data)
         data->data_list[str2index_full("元素精通")]->useful = true;
     else if (data->w_point->name == "圣显之钥" && data->attack_config->args->sword_shengxian_level > 0 && data->data_list[str2index_full("元素精通")]->useful)
         data->data_list[str2index_full("生命值")]->useful = true;
+        //TODO:NEW
+    else if (data->w_point->name == "海渊终曲" && data->data_list[str2index_full("攻击力")]->useful && (data->c_point->heal_sustain || data->team_config->teammate_1->heal_sustain || data->team_config->teammate_2->heal_sustain || data->team_config->teammate_3->heal_sustain))
+        data->data_list[str2index_full("生命值")]->useful = true;
     else if (data->w_point->name == "辰砂之纺锤" && data->attack_config->condition->attack_way == "E")
         data->data_list[str2index_full("防御力")]->useful = true;
     else if (data->w_point->name == "西福斯的月光" && (data->data_list[str2index_full("元素充能效率")]->useful || data->need_to_satisfy_recharge))
@@ -1521,6 +1610,9 @@ void Weapon::modify_useful_attribute(Deployment *data)
     else if (data->w_point->name == "不灭月华" && data->attack_config->condition->attack_way == "平A")
         data->data_list[str2index_full("生命值")]->useful = true;
     else if (data->w_point->name == "碧落之珑" && data->attack_config->args->catalyst_biluo_enable)
+        data->data_list[str2index_full("生命值")]->useful = true;
+        //TODO:NEW
+    else if (data->w_point->name == "纯水流华" && data->data_list[str2index_full("伤害加成")]->useful && (data->c_point->heal_sustain || data->team_config->teammate_1->heal_sustain || data->team_config->teammate_2->heal_sustain || data->team_config->teammate_3->heal_sustain))
         data->data_list[str2index_full("生命值")]->useful = true;
     else if (data->w_point->name == "流浪的晚星" && data->data_list[str2index_full("攻击力")]->useful)
         data->data_list[str2index_full("元素精通")]->useful = true;
@@ -1874,6 +1966,12 @@ void Deployment::check_useful_attribute()
         if (base_skillrate != 0)
             if ((data_list[str2index_full("防御力")]->value_per_entry * 0.4 * (0.75 + w_point->level * 0.25) * base_def / (base_skillrate * base_atk)) < data_list[str2index_full("攻击力")]->value_per_entry)
                 data_list[str2index_full("防御力")]->useful = attack_config->useful_attributes[str2index_full("防御力")];
+    }
+        //TODO:NEW
+    else if (w_point->name == "海渊终曲")
+    {
+        if ((data_list[str2index_full("生命值")]->value_per_entry * 0.25 * 0.024 * (0.75 + w_point->level * 0.25) * base_life) < data_list[str2index_full("攻击力")]->value_per_entry * base_atk)
+            data_list[str2index_full("生命值")]->useful = attack_config->useful_attributes[str2index_full("生命值")];
     }
     else if (w_point->name == "西福斯的月光")
     {
@@ -2302,6 +2400,7 @@ void Deployment::satisfy_recharge_requirement()
 
     //"西风长枪" 3*2/6s
     //"喜多院十文字" 3*5-3/E 不吃充能
+    //"公义的酬报" 8/10s 不吃充能
 
     if (c_point->name == "胡桃")
     {
@@ -2310,6 +2409,8 @@ void Deployment::satisfy_recharge_requirement()
 
         if (w_point->name == "西风长枪") energy += 3 * front * white;
         else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
+            //TODO:NEW
+        else if (w_point->name == "公义的酬报" && (c_point->heal_sustain || team_config->teammate_1->heal_sustain || team_config->teammate_2->heal_sustain || team_config->teammate_3->heal_sustain)) Q_energy_modify -= 8 * (0.75 + w_point->level * 0.25);
     }
     else if (c_point->name == "艾尔海森")
     {
@@ -2329,6 +2430,8 @@ void Deployment::satisfy_recharge_requirement()
 
         if (w_point->name == "西风长枪") energy += 3 * front * white;
         else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
+            //TODO:NEW
+        else if (w_point->name == "公义的酬报" && (c_point->heal_sustain || team_config->teammate_1->heal_sustain || team_config->teammate_2->heal_sustain || team_config->teammate_3->heal_sustain)) Q_energy_modify -= 8 * (0.75 + w_point->level * 0.25);
 
         energy = min(energy, Q_energy_modify / 2.4);
     }
@@ -2388,6 +2491,8 @@ void Deployment::satisfy_recharge_requirement()
 
         if (w_point->name == "西风长枪") energy += 3 * front * white;
         else if (w_point->name == "喜多院十文字") Q_energy_modify -= 12;
+            //TODO:NEW
+        else if (w_point->name == "公义的酬报" && (c_point->heal_sustain || team_config->teammate_1->heal_sustain || team_config->teammate_2->heal_sustain || team_config->teammate_3->heal_sustain)) Q_energy_modify -= 8 * (0.75 + w_point->level * 0.25);
     }
     else if (c_point->name == "行秋")
     {
@@ -2444,10 +2549,22 @@ void Deployment::get_convert_value(double &life, double &atk, double &def, doubl
             mastery_add += life * 0.0012 * (0.75 + w_point->level * 0.25) * base_life;//生命->精通
         }
     }
+        //TODO:NEW
+    else if (w_point->name == "海渊终曲")//生命->攻击
+    {
+        if (c_point->heal_sustain || team_config->teammate_1->heal_sustain || team_config->teammate_2->heal_sustain || team_config->teammate_3->heal_sustain)
+            atk_add += min(life * 0.25 * 0.024 * (0.75 + w_point->level * 0.25) * base_life, 150 * (0.75 + w_point->level * 0.25)) / base_atk;//生命->攻击
+    }
     else if (w_point->name == "西福斯的月光")//精通->充能
         recharge_add += mastery * 0.00036 * (0.75 + w_point->level * 0.25);//精通->充能
     else if (w_point->name == "碧落之珑" && attack_config->args->catalyst_biluo_enable)//生命->增伤
         damplus_add += min(life * (0.001 + w_point->level * 0.002) * base_life / 1000, 0.04 + w_point->level * 0.08);//生命->增伤
+        //TODO:NEW
+    else if (w_point->name == "纯水流华")//生命->增伤
+    {
+        if (c_point->heal_sustain || team_config->teammate_1->heal_sustain || team_config->teammate_2->heal_sustain || team_config->teammate_3->heal_sustain)
+            damplus_add += min(life * 0.24 * 0.02 * (0.75 + w_point->level * 0.25) * base_life / 1000, 0.12 * (0.75 + w_point->level * 0.25));//生命->增伤
+    }
     else if (w_point->name == "流浪的晚星")//精通->攻击
         atk_add += mastery * 0.24 * (0.75 + w_point->level * 0.25) / base_atk;//精通->攻击
     else if (w_point->name == "玛海菈的水色")//精通->攻击
@@ -2862,25 +2979,25 @@ void generate_sample_config()
     outfile << "A add cal_all_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
     outfile << "A add cal_artifact_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
     outfile << "A add team_config E_energy_times= recharge= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
-    outfile << "A add attack_config attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
+    outfile << "A add attack_config attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= zhuying_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= langya_sifeng_pomo_shizuo=" << endl;
     outfile << endl;
     outfile << "B add gcsim_config weapon= suit1= suit2= main3= main4= main5=" << endl;
     outfile << "B add cal_all_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
     outfile << "B add cal_artifact_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
     outfile << "B add team_config E_energy_times= recharge= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
-    outfile << "B add attack_config attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
+    outfile << "B add attack_config attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= zhuying_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= langya_sifeng_pomo_shizuo=" << endl;
     outfile << endl;
     outfile << "C add gcsim_config weapon= suit1= suit2= main3= main4= main5=" << endl;
     outfile << "C add cal_all_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
     outfile << "C add cal_artifact_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
     outfile << "C add team_config E_energy_times= recharge= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
-    outfile << "C add attack_config attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=" << endl;
+    outfile << "C add attack_config attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= zhuying_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= langya_sifeng_pomo_shizuo=" << endl;
     outfile << endl;
     outfile << "D add gcsim_config weapon= suit1= suit2= main3= main4= main5=" << endl;
     outfile << "D add cal_all_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
     outfile << "D add cal_artifact_restriction weapon= suit1= suit2= main3= main4= main5=" << endl;
     outfile << "D add team_config E_energy_times= recharge= team_weapon_artifact= ele_attach_type= ele_allow_spread=" << endl;
-    outfile << "D add attack_config attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= none_sifeng_pomo_shizuo=";
+    outfile << "D add attack_config attack_way= rate_pos= background= react_type= attack_time= cangbai_level= qianyan_enable= monv_level= chensha_enable= shenlin_enable= shuixian_level= zhuying_level= wuqie_shenle_feilei_humo= shengxian_biluo_dongji_chisha= langya_sifeng_pomo_shizuo=";
 
     outfile.close();
 }
