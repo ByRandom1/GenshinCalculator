@@ -1,5 +1,0 @@
-/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja -S /Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinCalculator -B /Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinCalculator/cmake-build-debug
-LIBRARIES = /usr/local/Cellar/jsoncpp/1.9.5/lib/libjsoncpp.25.dylib;/usr/local/Cellar/jsoncpp/1.9.5/lib/libjsoncpp.dylib
--- Configuring done
--- Generating done
--- Build files have been written to: /Users/maxwell/Downloads/资料/游戏资料/Genshin/GenshinCalculator/cmake-build-debug
